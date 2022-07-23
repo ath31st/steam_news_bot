@@ -23,7 +23,7 @@ public class SendMessageService {
     public SendMessage createMenuMessage(String chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(Constants.MENU);
+        sendMessage.setText(Constants.SETTINGS);
         InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineButton());
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;

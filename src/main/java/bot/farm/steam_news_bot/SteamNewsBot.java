@@ -4,7 +4,9 @@ package bot.farm.steam_news_bot;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.service.ButtonService;
 import bot.farm.steam_news_bot.service.SendMessageService;
+import bot.farm.steam_news_bot.service.SteamService;
 import bot.farm.steam_news_bot.service.UserService;
+import bot.farm.steam_news_bot.util.UserState;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,11 +30,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     private ButtonService buttonService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SteamService steamService;
 
     @Value("${steamnewsbot.botName}")
     private String BOT_NAME;
     @Value("${steamnewsbot.botToken}")
     private String BOT_TOKEN;
+    private UserState state = UserState.DEFAULT;
 
     @Override
     public String getBotUsername() {
@@ -46,48 +51,64 @@ public class SteamNewsBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String chatId = String.valueOf(update.getMessage().getChatId());
-            String inputText = update.getMessage().getText();
+        String chatId;
+        String inputText;
 
-            switch (inputText) {
-                case "/start":
-                    sendTextMessage(chatId, START);
-                    break;
-                case "/help":
-                    sendTextMessage(chatId, HELP);
-                    break;
-                case "/settings":
-                    try {
-                        execute(sendMessageService.createMenuMessage(chatId));
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
+        switch (state) {
+            case DEFAULT -> {
+                if (update.hasMessage() && update.getMessage().hasText()) {
+                    chatId = String.valueOf(update.getMessage().getChatId());
+                    inputText = update.getMessage().getText();
+
+                    switch (inputText) {
+                        case "/start" -> sendTextMessage(chatId, START);
+                        case "/help" -> sendTextMessage(chatId, HELP);
+                        case "/settings" -> sendMenuMessage(chatId);
+                        default -> sendTextMessage(chatId, WRONG_COMMAND);
                     }
-                    break;
-                default:
-                    sendTextMessage(chatId, WRONG_COMMAND);
-                    break;
+                }
             }
+            case SET_STEAM_ID -> {
+                if (update.hasMessage() && update.getMessage().hasText()) {
+                    chatId = String.valueOf(update.getMessage().getChatId());
+                    inputText = update.getMessage().getText().strip();
+                    if (SteamService.isValidSteamId(inputText)) {
+                        User user = new User();
+                        user.setChatId(chatId);
+                        user.setName(update.getMessage().getFrom().getUserName());
+                        user.setSteamId(Long.valueOf(inputText));
+                        userService.saveOrUpdateUserInDb(user);
+                        sendTextMessage(chatId, "Your steam ID: " + inputText);
+                    } else {
+                        sendTextMessage(chatId, "You entered an incorrect steam ID");
+                    }
+                    state = UserState.DEFAULT;
+                }
+            }
+
         }
 
         if (update.hasCallbackQuery()) {
-            String chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
+            chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
             String callBackData = update.getCallbackQuery().getData();
 
             switch (callBackData) {
                 case "/set_steam_id":
                     sendTextMessage(chatId, "Enter your Steam ID");
-                    User user = new User();
-                    user.setChatId(chatId);
-                    user.setSteamId(1234L);
-                    userService.saveUserInDb(user);
+                    state = UserState.SET_STEAM_ID;
+                    break;
+                case "/check_steam_id":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId());
+    //                    steamService.getOwnedGames(userService.findUserByChatId(chatId).get().getSteamId()).forEach(System.out::println);
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
                     break;
                 default:
                     sendTextMessage(chatId, "Wrong query");
                     break;
-
             }
-            //  executeCommands(chatId);
         }
     }
 
@@ -98,11 +119,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);
         }
     }
-//    private void executeCommands(String chatId) {
-//        try {
-//
-//        } catch (TelegramApiException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+
+    private void sendMenuMessage(String chatId) {
+        try {
+            execute(sendMessageService.createMenuMessage(chatId));
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

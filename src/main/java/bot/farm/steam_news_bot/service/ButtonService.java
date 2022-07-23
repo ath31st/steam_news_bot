@@ -15,12 +15,12 @@ public class ButtonService {
         List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
 
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("\u30DF " + "Set steam ID");
+        inlineKeyboardButton1.setText("\u30DF " + "Set/Update steam ID");
         inlineKeyboardButton1.setCallbackData("/set_steam_id");
 
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton2.setText("\u26ce " + "Hollow button");
-        inlineKeyboardButton2.setCallbackData("Hollow button yet");
+        inlineKeyboardButton2.setText("\u26ce " + "Check your steam ID");
+        inlineKeyboardButton2.setCallbackData("/check_steam_id");
 
 
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);

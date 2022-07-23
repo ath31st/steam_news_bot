@@ -1,22 +1,19 @@
 package bot.farm.steam_news_bot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class User {
+public class Game {
     @Id
-    private String chatId;
-    @NotNull
-    private String name;
-    @NotNull
-    private Long steamId;
+    private Long appid;
 }
