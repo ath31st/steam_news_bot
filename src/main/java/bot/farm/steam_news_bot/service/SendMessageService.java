@@ -13,7 +13,7 @@ public class SendMessageService {
 
     public SendMessage createMessage(String chatId, String message) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
+        sendMessage.enableMarkdownV2(true);
         sendMessage.enableHtml(true);
         sendMessage.setChatId(chatId);
         sendMessage.setText(message);

@@ -111,11 +111,15 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                 case "/check_steam_id":
                     if (userService.findUserByChatId(chatId).isPresent()) {
                         sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId());
+
+
                         List<Game> games = userService.findUserByChatId(chatId).get().getGamesAppids();
                        for (Game g : games){
                            String finalChatId = chatId;
-                           steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId,s1));
+                           steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId,s1.toString()));
                        }
+
+
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }

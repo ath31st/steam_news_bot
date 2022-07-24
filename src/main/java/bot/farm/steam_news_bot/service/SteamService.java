@@ -1,6 +1,7 @@
 package bot.farm.steam_news_bot.service;
 
 import bot.farm.steam_news_bot.entity.Game;
+import bot.farm.steam_news_bot.entity.NewsItem;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,10 +45,10 @@ public class SteamService {
         return games;
     }
 
-    public List<String> getNewsByOwnedGames(String appid) {
+    public List<NewsItem> getNewsByOwnedGames(String appid) {
         String newsForAppUrl = String.format(GET_NEWS_FOR_APP_URL, appid);
 
-        List<String> newsItems;
+        List<NewsItem> newsItems;
         try {
             URL url = new URL(newsForAppUrl);
             HttpURLConnection connection = getConnection(url);
@@ -109,8 +110,9 @@ public class SteamService {
         return ownedGames;
     }
 
-    private static List<String> convertRawJsonToListNewsItems(String rawJson) throws Exception {
-        List<String> newsItems = new ArrayList<>();
+    private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson) throws Exception {
+        List<NewsItem> newsItems = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
 
         JsonNode arrNode = new ObjectMapper()
                 .readTree(rawJson)
@@ -119,11 +121,7 @@ public class SteamService {
         if (arrNode.isArray()) {
             for (JsonNode objNode : arrNode) {
                 if (checkDateOfNews(Integer.parseInt(objNode.get("date").toString()))) {
-                    if (objNode.get("url").toString().isBlank()) {
-                        newsItems.add(objNode.get("contents").toString());
-                    } else {
-                        newsItems.add(objNode.get("url").toString().replaceAll(" ", ""));
-                    }
+                    newsItems.add(mapper.convertValue(objNode, NewsItem.class));
                 }
             }
         }
