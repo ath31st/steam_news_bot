@@ -1,7 +1,9 @@
 package bot.farm.steam_news_bot;
 
 
+import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
+import bot.farm.steam_news_bot.repository.GameRepository;
 import bot.farm.steam_news_bot.service.ButtonService;
 import bot.farm.steam_news_bot.service.SendMessageService;
 import bot.farm.steam_news_bot.service.SteamService;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.List;
 
 import static bot.farm.steam_news_bot.util.Constants.*;
 
@@ -32,6 +36,8 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     private UserService userService;
     @Autowired
     private SteamService steamService;
+    @Autowired
+    private GameRepository gameRepository;
 
     @Value("${steamnewsbot.botName}")
     private String BOT_NAME;
@@ -77,8 +83,13 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         user.setChatId(chatId);
                         user.setName(update.getMessage().getFrom().getUserName());
                         user.setSteamId(Long.valueOf(inputText));
+                        user.setGamesAppids(steamService.getOwnedGames(user.getSteamId()));
+
+                        gameRepository.saveAll(user.getGamesAppids());
                         userService.saveOrUpdateUserInDb(user);
-                        sendTextMessage(chatId, "Your steam ID: " + inputText);
+
+                        sendTextMessage(chatId, "Your steam ID: " + inputText + "\n" +
+                                "You have " + user.getGamesAppids().size() + " games on your account");
                     } else {
                         sendTextMessage(chatId, "You entered an incorrect steam ID");
                     }
@@ -100,7 +111,11 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                 case "/check_steam_id":
                     if (userService.findUserByChatId(chatId).isPresent()) {
                         sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId());
-    //                    steamService.getOwnedGames(userService.findUserByChatId(chatId).get().getSteamId()).forEach(System.out::println);
+                        List<Game> games = userService.findUserByChatId(chatId).get().getGamesAppids();
+                       for (Game g : games){
+                           String finalChatId = chatId;
+                           steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId,s1));
+                       }
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
