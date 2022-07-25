@@ -15,6 +15,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,8 +25,8 @@ import java.util.regex.Pattern;
 public class SteamService {
     @Value("${steamnewsbot.steamwebapikey}")
     private String steamWebApiKey;
-    private final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
-    private final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
+    private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
+    private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
     private final static String USER_AGENT = "Mozilla/5.0";
 
     public List<Game> getOwnedGames(Long steamId) {
@@ -129,9 +130,8 @@ public class SteamService {
 
     private static boolean checkDateOfNews(int seconds) {
          LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
-       // LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.of(2022, Month.JULY, 23, 15, 00).atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
-        return localDateTimeOfNews.toLocalDate().equals(localDateTime.toLocalDate());
+        return localDateTimeOfNews.plus(1800000,ChronoUnit.MILLIS).isAfter(localDateTime);
     }
 
 }

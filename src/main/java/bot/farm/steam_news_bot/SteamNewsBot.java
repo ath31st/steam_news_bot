@@ -1,13 +1,7 @@
 package bot.farm.steam_news_bot;
 
 
-import bot.farm.steam_news_bot.entity.Game;
-import bot.farm.steam_news_bot.entity.User;
-import bot.farm.steam_news_bot.repository.GameRepository;
-import bot.farm.steam_news_bot.service.ButtonService;
-import bot.farm.steam_news_bot.service.SendMessageService;
-import bot.farm.steam_news_bot.service.SteamService;
-import bot.farm.steam_news_bot.service.UserService;
+import bot.farm.steam_news_bot.service.*;
 import bot.farm.steam_news_bot.util.UserState;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.util.List;
 
 import static bot.farm.steam_news_bot.util.Constants.*;
 
@@ -39,7 +31,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     @Autowired
     private SteamService steamService;
     @Autowired
-    private GameRepository gameRepository;
+    private GameService gameService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
     @Value("${steamnewsbot.botName}")
@@ -82,17 +74,11 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     chatId = String.valueOf(update.getMessage().getChatId());
                     inputText = update.getMessage().getText().strip();
                     if (SteamService.isValidSteamId(inputText)) {
-                        User user = new User();
-                        user.setChatId(chatId);
-                        user.setName(update.getMessage().getFrom().getUserName());
-                        user.setSteamId(Long.valueOf(inputText));
-                        user.setGamesAppids(steamService.getOwnedGames(user.getSteamId()));
+                        userService.saveOrUpdateUserInDb(chatId,update.getMessage().getFrom().getUserName(),inputText);
+                        gameService.saveGamesInDb(userService.findUserByChatId(chatId).get().getGamesAppids());
 
-                        gameRepository.saveAll(user.getGamesAppids());
-                        userService.saveOrUpdateUserInDb(user);
-
-                        sendTextMessage(chatId, "Your steam ID: " + inputText + "\n" +
-                                "You have " + user.getGamesAppids().size() + " games on your account");
+                        sendTextMessage(chatId, "Your steam ID: " + inputText + "\n" + "Nice library! You have " +
+                                userService.findUserByChatId(chatId).get().getGamesAppids().size() + " owned games on your account");
                     } else {
                         sendTextMessage(chatId, "You entered an incorrect steam ID");
                     }
@@ -114,15 +100,6 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                 case "/check_steam_id":
                     if (userService.findUserByChatId(chatId).isPresent()) {
                         sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId());
-
-
-                        List<Game> games = userService.findUserByChatId(chatId).get().getGamesAppids();
-                        for (Game g : games) {
-                            String finalChatId = chatId;
-                            steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId, s1.toString()));
-                        }
-
-
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
