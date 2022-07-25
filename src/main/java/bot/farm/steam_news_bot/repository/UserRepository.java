@@ -10,7 +10,8 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User,String> {
     Optional<User> findUserByChatId(String chatId);
 
-    List<User> findByGamesAppids_Appid(String appid);
+    List<User> findByGames_Appid(String appid);
+
 
 
 

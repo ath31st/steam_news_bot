@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,5 +24,5 @@ public class User {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private List<Game> gamesAppids = new ArrayList<>();
+    private List<Game> games;
 }

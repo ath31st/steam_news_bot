@@ -78,7 +78,7 @@ public class SchedulerConfig {
     @Scheduled(fixedDelay = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getAllUsers();
-        users.forEach(user -> gameService.saveGamesInDb(user.getGamesAppids()));
+        users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
 
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.getAllGames().size()));
     }
@@ -87,6 +87,9 @@ public class SchedulerConfig {
         try {
             steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
         } catch (TelegramApiException e) {
+
+            //TODO продумать здесь удаление отписавшихся юзеров, если chatID не отправляется
+
             throw new RuntimeException(e);
         }
     }

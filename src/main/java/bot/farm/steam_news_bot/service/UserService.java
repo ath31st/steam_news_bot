@@ -18,12 +18,15 @@ public class UserService {
         this.steamService = steamService;
     }
 
-    public void saveOrUpdateUserInDb(String chatId,String name, String steamId) {
+    public void saveOrUpdateUserInDb(String chatId, String name, String steamId) {
+        if (userRepository.findUserByChatId(chatId).isPresent())
+            userRepository.delete(userRepository.findUserByChatId(chatId).get());
+
         User user = new User();
         user.setChatId(chatId);
         user.setName(name);
         user.setSteamId(Long.valueOf(steamId));
-        user.setGamesAppids(steamService.getOwnedGames(user.getSteamId()));
+        user.setGames(steamService.getOwnedGames(user.getSteamId()));
 
         userRepository.save(user);
     }
@@ -39,7 +42,7 @@ public class UserService {
     }
 
     public List<User> getUsersByAppid(String appid) {
-        return new ArrayList<>(userRepository.findByGamesAppids_Appid(appid));
+        return new ArrayList<>(userRepository.findByGames_Appid(appid));
     }
 
 

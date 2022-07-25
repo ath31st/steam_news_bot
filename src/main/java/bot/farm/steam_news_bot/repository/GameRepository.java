@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface GameRepository extends CrudRepository<Game,String> {
     Optional<Game> getGameByAppid(String appid);
+
+    boolean existsByAppid(String appid);
+
 }

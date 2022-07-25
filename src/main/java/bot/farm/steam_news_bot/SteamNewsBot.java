@@ -74,11 +74,20 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     chatId = String.valueOf(update.getMessage().getChatId());
                     inputText = update.getMessage().getText().strip();
                     if (SteamService.isValidSteamId(inputText)) {
-                        userService.saveOrUpdateUserInDb(chatId,update.getMessage().getFrom().getUserName(),inputText);
-                        gameService.saveGamesInDb(userService.findUserByChatId(chatId).get().getGamesAppids());
 
-                        sendTextMessage(chatId, "Your steam ID: " + inputText + "\n" + "Nice library! You have " +
-                                userService.findUserByChatId(chatId).get().getGamesAppids().size() + " owned games on your account");
+                        gameService.saveGamesInDb(steamService.getOwnedGames(Long.valueOf(inputText)));
+                        userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
+
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("Your steam ID: ")
+                                .append(inputText)
+                                .append(System.lineSeparator())
+                                .append("Hi ").append(userService.findUserByChatId(chatId).get().getName()).append("!")
+                                .append(System.lineSeparator())
+                                .append("Nice library! You have ")
+                                .append(userService.findUserByChatId(chatId).get().getGames().size())
+                                .append(" owned games on your account");
+                        sendTextMessage(chatId, sb.toString());
                     } else {
                         sendTextMessage(chatId, "You entered an incorrect steam ID");
                     }
@@ -105,7 +114,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     }
                     break;
                 default:
-                    sendTextMessage(chatId, "Wrong query");
+                    sendTextMessage(chatId, WRONG_COMMAND);
                     break;
             }
         }

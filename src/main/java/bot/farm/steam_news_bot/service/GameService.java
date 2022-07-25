@@ -17,12 +17,16 @@ public class GameService {
 
     public List<Game> getAllGames() {
         List<Game> games = new ArrayList<>();
-        gameRepository.findAll().iterator().forEachRemaining(games::add);
+        gameRepository.findAll()
+                .iterator()
+                .forEachRemaining(games::add);
         return games;
     }
 
     public void saveGamesInDb(List<Game> games) {
-        gameRepository.saveAll(games);
+        games.stream()
+                .filter(game -> !gameRepository.existsByAppid(game.getAppid()))
+                .forEach(gameRepository::save);
     }
 
     public Game getGame(String appid) {
