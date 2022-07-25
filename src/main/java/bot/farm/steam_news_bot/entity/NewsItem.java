@@ -1,17 +1,15 @@
 package bot.farm.steam_news_bot.entity;
 
-import bot.farm.steam_news_bot.util.SecondsToLocalDateTimeConverter;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import bot.farm.steam_news_bot.util.CustomDataDeserializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,9 +30,8 @@ public class NewsItem {
 
     @JsonProperty("feedlabel")
     private String feedLabel;
-    @Convert(converter = SecondsToLocalDateTimeConverter.class)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime date;
+    @JsonDeserialize(using = CustomDataDeserializer.class)
+    private String date;
 
     @JsonProperty("feedname")
     private String feedName;
@@ -45,6 +42,16 @@ public class NewsItem {
 
     @Override
     public String toString() {
-        return date + "\n" + title + '\n' + contents + '\n' + url;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        return stringBuilder
+                .append("<b>").append(date).append("</b>") // bold it
+                .append(System.lineSeparator())
+                .append("<b>").append(title).append("</b>")
+                .append(System.lineSeparator())
+                .append(contents)
+                .append(System.lineSeparator())
+                .append("<a href=\"").append(url).append("\">").append("LINK").append("</a>")
+                .toString();
     }
 }

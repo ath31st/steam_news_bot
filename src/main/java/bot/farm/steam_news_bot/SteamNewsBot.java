@@ -12,6 +12,8 @@ import bot.farm.steam_news_bot.util.UserState;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     @Autowired
     private GameRepository gameRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
     @Value("${steamnewsbot.botName}")
     private String BOT_NAME;
     @Value("${steamnewsbot.botToken}")
@@ -114,10 +117,10 @@ public class SteamNewsBot extends TelegramLongPollingBot {
 
 
                         List<Game> games = userService.findUserByChatId(chatId).get().getGamesAppids();
-                       for (Game g : games){
-                           String finalChatId = chatId;
-                           steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId,s1.toString()));
-                       }
+                        for (Game g : games) {
+                            String finalChatId = chatId;
+                            steamService.getNewsByOwnedGames(g.getAppid()).forEach(s1 -> sendTextMessage(finalChatId, s1.toString()));
+                        }
 
 
                     } else {

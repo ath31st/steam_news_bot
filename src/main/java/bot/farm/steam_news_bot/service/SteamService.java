@@ -14,7 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -129,8 +128,8 @@ public class SteamService {
     }
 
     private static boolean checkDateOfNews(int seconds) {
-        // LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
-        LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.of(2022, Month.JULY, 23, 15, 00).atZone(ZoneId.systemDefault()));
+         LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
+       // LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.of(2022, Month.JULY, 23, 15, 00).atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
         return localDateTimeOfNews.toLocalDate().equals(localDateTime.toLocalDate());
     }
