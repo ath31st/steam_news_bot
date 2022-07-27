@@ -22,6 +22,9 @@ public class GameService {
                 .forEachRemaining(games::add);
         return games;
     }
+    public List<Game> getAllGamesByActiveUsers(){
+        return gameRepository.findByUsers_ActiveTrue();
+    }
 
     public void saveGamesInDb(List<Game> games) {
         games.stream()

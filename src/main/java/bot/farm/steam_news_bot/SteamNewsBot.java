@@ -108,7 +108,8 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     break;
                 case "/check_steam_id":
                     if (userService.findUserByChatId(chatId).isPresent()) {
-                        sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId());
+                        sendTextMessage(chatId, "Your steam ID: " + userService.findUserByChatId(chatId).get().getSteamId() +
+                                "\n" + "Status: " + (userService.findUserByChatId(chatId).get().isActive() ? "active" : "inactive"));
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }

@@ -46,7 +46,7 @@ public class SchedulerConfig {
 
     @Scheduled(fixedDelay = 1800000)
     private void updateAndSendNewsItems() {
-        List<Game> games = gameService.getAllGames();
+        List<Game> games = gameService.getAllGamesByActiveUsers();
 
         if (!games.isEmpty()) {
 
@@ -86,7 +86,6 @@ public class SchedulerConfig {
         try {
             steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
         } catch (TelegramApiException e) {
-            //TODO продумать здесь удаление отписавшихся юзеров, если chatID не отправляется
             if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
                 userService.updateActiveForUser(chatId, false);
 

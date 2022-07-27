@@ -20,7 +20,6 @@ public class Game {
     private String appid;
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @ManyToMany(mappedBy = "games")
     private List<User> users;
 }
