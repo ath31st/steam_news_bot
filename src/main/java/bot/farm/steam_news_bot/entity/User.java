@@ -21,8 +21,9 @@ public class User {
     private String name;
     @NotNull
     private Long steamId;
+    private boolean active;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private List<Game> games;
 }

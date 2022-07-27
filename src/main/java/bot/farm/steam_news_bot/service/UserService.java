@@ -23,12 +23,20 @@ public class UserService {
             userRepository.delete(userRepository.findUserByChatId(chatId).get());
 
         User user = new User();
+        user.setActive(true);
         user.setChatId(chatId);
         user.setName(name);
         user.setSteamId(Long.valueOf(steamId));
         user.setGames(steamService.getOwnedGames(user.getSteamId()));
 
         userRepository.save(user);
+    }
+    public void updateActiveForUser(String chatId, boolean active){
+        if (userRepository.findUserByChatId(chatId).isPresent()){
+            User user = findUserByChatId(chatId).get();
+            user.setActive(active);
+            userRepository.save(user);
+        }
     }
 
     public Optional<User> findUserByChatId(String chatId) {
@@ -42,7 +50,10 @@ public class UserService {
     }
 
     public List<User> getUsersByAppid(String appid) {
-        return new ArrayList<>(userRepository.findByGames_Appid(appid));
+        return new ArrayList<>(userRepository.findByGames_AppidAndActiveTrue(appid));
+    }
+    public List<User> getUsersByActive(boolean isActive){
+        return new ArrayList<>(userRepository.findByActive(isActive));
     }
 
 

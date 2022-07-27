@@ -113,6 +113,23 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
                     break;
+                case "/set_active_mode":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        userService.updateActiveForUser(chatId, true);
+                        sendTextMessage(chatId, "You are set \"active\" mode. Now the bot will send you news");
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
+                    break;
+                case "/set_inactive_mode":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        userService.updateActiveForUser(chatId, false);
+                        sendTextMessage(chatId, "You are set \"inactive\" mode. " +
+                                "Now the bot will not send you news until you activate the \"active\" mode again");
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
+                    break;
                 default:
                     sendTextMessage(chatId, WRONG_COMMAND);
                     break;

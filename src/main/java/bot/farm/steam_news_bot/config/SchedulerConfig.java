@@ -61,11 +61,10 @@ public class SchedulerConfig {
             logger.info(String.format("found %d fresh news", newsItems.size()));
 
             for (NewsItem newsItem : newsItems) {
-
-                logger.info(String.format("%d news in list.", newsItems.size()));
-
                 if (!userService.getUsersByAppid(newsItem.getAppid()).isEmpty()) {
                     userService.getUsersByAppid(newsItem.getAppid())
+                            .stream()
+                            .peek(user -> logger.info("newsItem for user " + user.getName() + " is ready!"))
                             .forEach(user -> sendTextMessage(user.getChatId(), newsItem.toString()));
                 }
             }
@@ -77,7 +76,7 @@ public class SchedulerConfig {
 
     @Scheduled(fixedDelay = 86400000)
     private void updateGamesDb() {
-        List<User> users = userService.getAllUsers();
+        List<User> users = userService.getUsersByActive(true);
         users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
 
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.getAllGames().size()));
@@ -87,10 +86,14 @@ public class SchedulerConfig {
         try {
             steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
         } catch (TelegramApiException e) {
-
             //TODO продумать здесь удаление отписавшихся юзеров, если chatID не отправляется
+            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
+                userService.updateActiveForUser(chatId, false);
 
-            throw new RuntimeException(e);
+                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
