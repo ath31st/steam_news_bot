@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class GameService {
@@ -22,7 +23,7 @@ public class GameService {
                 .forEachRemaining(games::add);
         return games;
     }
-    public List<Game> getAllGamesByActiveUsers(){
+    public Set<Game> getAllGamesByActiveUsers(){
         return gameRepository.findByUsers_ActiveTrue();
     }
 

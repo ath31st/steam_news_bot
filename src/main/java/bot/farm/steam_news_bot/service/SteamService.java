@@ -122,9 +122,7 @@ public class SteamService {
             for (JsonNode objNode : arrNode) {
                 if (checkDateOfNews(Integer.parseInt(objNode.get("date").toString()))) {
                     NewsItem newsItem = mapper.convertValue(objNode, NewsItem.class);
-                    if (newsItem.getContents().startsWith("{STEAM_CLAN_IMAGE}")) {
-                        newsItem.setContents(deleteLinksOnImagesFromText(newsItem.getContents()));
-                    }
+                    newsItem.setContents(deleteLinksOnImagesFromText(newsItem.getContents()));
                     newsItems.add(newsItem);
                 }
             }
@@ -136,14 +134,13 @@ public class SteamService {
         LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
         return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
+        // return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
     }
 
     private static String deleteLinksOnImagesFromText(String text) {
-        if (text.contains(".png"))
-            text = text.substring(text.indexOf(".png") + 4);
-        if (text.contains(".jpg"))
-            text = text.substring(text.indexOf(".jpg") + 4);
-        return text;
+        Pattern pattern = Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*");
+        Matcher matcher = pattern.matcher(text);
+        return matcher.replaceAll("");
     }
 
 

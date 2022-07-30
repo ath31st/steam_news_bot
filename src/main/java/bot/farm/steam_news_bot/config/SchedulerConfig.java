@@ -16,8 +16,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @EnableScheduling
@@ -31,6 +36,7 @@ public class SchedulerConfig {
     private final SendMessageService sendMessageService;
     private final GameService gameService;
     private static final List<NewsItem> newsItems = new ArrayList<>();
+    private static final HashMap<String, String> gamesAppidName = new HashMap<>();
 
     public SchedulerConfig(SteamNewsBot steamNewsBot,
                            SteamService steamService,
@@ -44,17 +50,22 @@ public class SchedulerConfig {
         this.gameService = gameService;
     }
 
-    @Scheduled(fixedDelay = 1800000)
+    @Scheduled(fixedRate = 1800000)
     private void updateAndSendNewsItems() {
-        List<Game> games = gameService.getAllGamesByActiveUsers();
+        Instant startCycle = Instant.now();
+
+        Set<Game> games = gameService.getAllGamesByActiveUsers();
 
         if (!games.isEmpty()) {
 
             logger.info(String.format("%d games in list.", games.size()));
-
+            Instant start = Instant.now();
             for (Game game : games) {
                 newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
+                gamesAppidName.put(game.getAppid(), game.getName());
             }
+
+            logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds());
         }
         if (!newsItems.isEmpty()) {
 
@@ -64,17 +75,18 @@ public class SchedulerConfig {
                 if (!userService.getUsersByAppid(newsItem.getAppid()).isEmpty()) {
                     userService.getUsersByAppid(newsItem.getAppid())
                             .stream()
-                            .peek(user -> logger.info("newsItem for user " + user.getName() + " is ready!"))
-                            .forEach(user -> sendTextMessage(user.getChatId(), newsItem.toString()));
+                            .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
+                            .forEach(user -> sendTextMessage(user.getChatId(),
+                                    "<b>" + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem));
                 }
             }
             newsItems.clear();
             logger.info("newsItems list cleared!");
         }
-        logger.info("The cycle of updating and sending news is over");
+        logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");
     }
 
-    @Scheduled(fixedDelay = 86400000)
+    @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
         users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
