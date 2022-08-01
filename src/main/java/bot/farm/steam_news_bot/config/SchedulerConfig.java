@@ -18,7 +18,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +64,7 @@ public class SchedulerConfig {
                 gamesAppidName.put(game.getAppid(), game.getName());
             }
 
-            logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds());
+            logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
         }
         if (!newsItems.isEmpty()) {
 
@@ -81,6 +80,7 @@ public class SchedulerConfig {
                 }
             }
             newsItems.clear();
+            gamesAppidName.clear();
             logger.info("newsItems list cleared!");
         }
         logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");

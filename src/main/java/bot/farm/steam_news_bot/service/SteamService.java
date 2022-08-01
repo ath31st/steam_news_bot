@@ -133,8 +133,8 @@ public class SteamService {
     private static boolean checkDateOfNews(int seconds) {
         LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
-        return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
-        // return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
+      //  return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
+         return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
     }
 
     private static String deleteLinksOnImagesFromText(String text) {
