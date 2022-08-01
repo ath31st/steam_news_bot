@@ -138,11 +138,24 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendTextMessage(String chatId, String text) {
+//    public void sendTextMessage(String chatId, String text) {
+//        try {
+//            execute(sendMessageService.createMessage(chatId, text));
+//        } catch (TelegramApiException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+    public void sendTextMessage(String chatId, String text) {
         try {
             execute(sendMessageService.createMessage(chatId, text));
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
+                userService.updateActiveForUser(chatId, false);
+
+                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

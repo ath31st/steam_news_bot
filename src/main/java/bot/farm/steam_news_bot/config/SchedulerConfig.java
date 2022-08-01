@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -75,7 +74,7 @@ public class SchedulerConfig {
                     userService.getUsersByAppid(newsItem.getAppid())
                             .stream()
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
-                            .forEach(user -> sendTextMessage(user.getChatId(),
+                            .forEach(user -> steamNewsBot.sendTextMessage(user.getChatId(),
                                     "<b>" + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem));
                 }
             }
@@ -94,17 +93,17 @@ public class SchedulerConfig {
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.getAllGames().size()));
     }
 
-    private void sendTextMessage(String chatId, String text) {
-        try {
-            steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
-        } catch (TelegramApiException e) {
-            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
-                userService.updateActiveForUser(chatId, false);
-
-                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
-            } else {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void sendTextMessage(String chatId, String text) {
+//        try {
+//            steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
+//        } catch (TelegramApiException e) {
+//            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
+//                userService.updateActiveForUser(chatId, false);
+//
+//                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+//            } else {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 }
