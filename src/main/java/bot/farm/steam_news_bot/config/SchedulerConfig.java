@@ -5,7 +5,6 @@ import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.NewsItem;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.service.GameService;
-import bot.farm.steam_news_bot.service.SendMessageService;
 import bot.farm.steam_news_bot.service.SteamService;
 import bot.farm.steam_news_bot.service.UserService;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ public class SchedulerConfig {
     private final SteamNewsBot steamNewsBot;
     private final SteamService steamService;
     private final UserService userService;
-    private final SendMessageService sendMessageService;
     private final GameService gameService;
     private static final List<NewsItem> newsItems = new ArrayList<>();
     private static final HashMap<String, String> gamesAppidName = new HashMap<>();
@@ -39,12 +37,10 @@ public class SchedulerConfig {
     public SchedulerConfig(SteamNewsBot steamNewsBot,
                            SteamService steamService,
                            UserService userService,
-                           SendMessageService sendMessageService,
                            GameService gameService) {
         this.steamNewsBot = steamNewsBot;
         this.steamService = steamService;
         this.userService = userService;
-        this.sendMessageService = sendMessageService;
         this.gameService = gameService;
     }
 
@@ -90,7 +86,11 @@ public class SchedulerConfig {
         List<User> users = userService.getUsersByActive(true);
         users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
 
-        logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.getAllGames().size()));
+//        users.forEach(user -> {
+//            gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId()));
+//            gameService.saveGamesInDb(steamService.getWishListGames(user.getSteamId()));
+//        });
+        logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
     }
 
 }

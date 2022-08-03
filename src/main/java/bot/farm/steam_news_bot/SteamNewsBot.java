@@ -138,13 +138,6 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
     }
 
-//    public void sendTextMessage(String chatId, String text) {
-//        try {
-//            execute(sendMessageService.createMessage(chatId, text));
-//        } catch (TelegramApiException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
     public void sendTextMessage(String chatId, String text) {
         try {
             execute(sendMessageService.createMessage(chatId, text));
@@ -166,6 +159,5 @@ public class SteamNewsBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);
         }
     }
-
 
 }

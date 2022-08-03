@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class SteamService {
     @Value("${steamnewsbot.steamwebapikey}")
     private String steamWebApiKey;
-  //  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
+    //  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
     private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
     private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
     private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/wishlist/profiles/%s/wishlistdata/";
@@ -39,7 +39,7 @@ public class SteamService {
         try {
             URL url = new URL(ownedGamesUrl);
             HttpURLConnection connection = getConnection(url);
-            String rawJson = getRawJsonFromConnection(connection);
+            String rawJson = getRawDataFromConnection(connection);
             games = convertRawJsonToListGames(rawJson);
             connection.disconnect();
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class SteamService {
         try {
             URL url = new URL(newsForAppUrl);
             HttpURLConnection connection = getConnection(url);
-            String rawJson = getRawJsonFromConnection(connection);
+            String rawJson = getRawDataFromConnection(connection);
             newsItems = convertRawJsonToListNewsItems(rawJson);
             connection.disconnect();
         } catch (Exception e) {
@@ -63,14 +63,15 @@ public class SteamService {
         }
         return newsItems;
     }
-    public List<Game> getWihListGames(Long steamId){
+
+    public List<Game> getWishListGames(Long steamId) {
         String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
 
         List<Game> wishListGames;
         try {
             URL url = new URL(wishListGamesUrl);
             HttpURLConnection connection = getConnection(url);
-            String rawJson = getRawJsonFromConnection(connection);
+            String rawJson = getRawDataFromConnection(connection);
             wishListGames = convertRawJsonToWishListGames(rawJson);
             connection.disconnect();
         } catch (Exception e) {
@@ -99,7 +100,7 @@ public class SteamService {
         return connection;
     }
 
-    private String getRawJsonFromConnection(HttpURLConnection connection) {
+    private String getRawDataFromConnection(HttpURLConnection connection) {
         StringBuilder response = new StringBuilder();
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
             String inputLine;
@@ -130,18 +131,17 @@ public class SteamService {
 
     private static List<Game> convertRawJsonToWishListGames(String rawJson) throws JsonProcessingException {
         List<Game> wishListGames = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = new ObjectMapper().readTree(rawJson);
 
-        JsonNode arrNode = new ObjectMapper()
-                .readTree(rawJson);
-        if (arrNode.isArray()) {
-            for (JsonNode objNode : arrNode) {
+        if (jsonNode.isObject()) {
+            jsonNode.fields().forEachRemaining(node -> {
                 Game game = new Game();
-                game.setName(objNode.get("name").toString());
-
+                game.setAppid(node.getKey());
+                game.setName(node.getValue().get("name").toString());
                 wishListGames.add(game);
-            }
+            });
         }
+
         return wishListGames;
     }
 

@@ -31,11 +31,10 @@ public class UserService {
 
         userRepository.save(user);
     }
-    public void updateActiveForUser(String chatId, boolean active){
-        if (userRepository.findUserByChatId(chatId).isPresent()){
-            User user = findUserByChatId(chatId).get();
-            user.setActive(active);
-            userRepository.save(user);
+
+    public void updateActiveForUser(String chatId, boolean active) {
+        if (userRepository.findUserByChatId(chatId).isPresent()) {
+            userRepository.updateActiveByChatId(active, chatId);
         }
     }
 
@@ -52,7 +51,8 @@ public class UserService {
     public List<User> getUsersByAppid(String appid) {
         return new ArrayList<>(userRepository.findByGames_AppidAndActiveTrue(appid));
     }
-    public List<User> getUsersByActive(boolean isActive){
+
+    public List<User> getUsersByActive(boolean isActive) {
         return new ArrayList<>(userRepository.findByActive(isActive));
     }
 
