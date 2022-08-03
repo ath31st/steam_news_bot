@@ -23,7 +23,8 @@ public class GameService {
                 .forEachRemaining(games::add);
         return games;
     }
-    public Set<Game> getAllGamesByActiveUsers(){
+
+    public Set<Game> getAllGamesByActiveUsers() {
         return gameRepository.findByUsers_ActiveTrue();
     }
 
@@ -36,5 +37,13 @@ public class GameService {
     public Game getGame(String appid) {
         return gameRepository.getGameByAppid(appid).orElseThrow(
                 () -> new RuntimeException(String.format("Game with appid № %s not found!", appid)));
+    }
+
+    public long countAllGames() {
+        return gameRepository.count();
+    }
+
+    public long countByUsersActive(boolean active) {
+        return gameRepository.countByUsers_Active(active);
     }
 }

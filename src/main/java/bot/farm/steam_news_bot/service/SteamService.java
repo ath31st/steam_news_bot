@@ -2,6 +2,7 @@ package bot.farm.steam_news_bot.service;
 
 import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.NewsItem;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +26,10 @@ import java.util.regex.Pattern;
 public class SteamService {
     @Value("${steamnewsbot.steamwebapikey}")
     private String steamWebApiKey;
-    private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
+  //  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
+    private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
     private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
+    private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/wishlist/profiles/%s/wishlistdata/";
     private final static String USER_AGENT = "Mozilla/5.0";
 
     public List<Game> getOwnedGames(Long steamId) {
@@ -59,6 +62,21 @@ public class SteamService {
             throw new RuntimeException(e);
         }
         return newsItems;
+    }
+    public List<Game> getWihListGames(Long steamId){
+        String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
+
+        List<Game> wishListGames;
+        try {
+            URL url = new URL(wishListGamesUrl);
+            HttpURLConnection connection = getConnection(url);
+            String rawJson = getRawJsonFromConnection(connection);
+            wishListGames = convertRawJsonToWishListGames(rawJson);
+            connection.disconnect();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return wishListGames;
     }
 
     public static boolean isValidSteamId(String steamId) {
@@ -94,7 +112,7 @@ public class SteamService {
         return response.toString();
     }
 
-    private static List<Game> convertRawJsonToListGames(String rawJson) throws Exception {
+    private static List<Game> convertRawJsonToListGames(String rawJson) throws JsonProcessingException {
         List<Game> ownedGames = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -108,6 +126,23 @@ public class SteamService {
             }
         }
         return ownedGames;
+    }
+
+    private static List<Game> convertRawJsonToWishListGames(String rawJson) throws JsonProcessingException {
+        List<Game> wishListGames = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode arrNode = new ObjectMapper()
+                .readTree(rawJson);
+        if (arrNode.isArray()) {
+            for (JsonNode objNode : arrNode) {
+                Game game = new Game();
+                game.setName(objNode.get("name").toString());
+
+                wishListGames.add(game);
+            }
+        }
+        return wishListGames;
     }
 
     private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson) throws Exception {

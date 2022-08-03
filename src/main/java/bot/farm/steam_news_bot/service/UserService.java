@@ -56,5 +56,4 @@ public class UserService {
         return new ArrayList<>(userRepository.findByActive(isActive));
     }
 
-
 }

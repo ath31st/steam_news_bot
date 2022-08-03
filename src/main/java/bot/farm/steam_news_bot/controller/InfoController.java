@@ -29,7 +29,7 @@ public class InfoController {
 
     @GetMapping("/games")
     public ResponseEntity getCountGames() {
-        return ResponseEntity.ok(Map.of("total games in database", gameService.getAllGames().size(),
-                "games active users", gameService.getAllGamesByActiveUsers().size()));
+        return ResponseEntity.ok(Map.of("total games in database", gameService.countAllGames(),
+                "games active users", gameService.countByUsersActive(true)));
     }
 }

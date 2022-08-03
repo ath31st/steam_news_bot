@@ -93,17 +93,4 @@ public class SchedulerConfig {
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.getAllGames().size()));
     }
 
-//    private void sendTextMessage(String chatId, String text) {
-//        try {
-//            steamNewsBot.execute(sendMessageService.createMessage(chatId, text));
-//        } catch (TelegramApiException e) {
-//            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
-//                userService.updateActiveForUser(chatId, false);
-//
-//                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
-//            } else {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//    }
 }
