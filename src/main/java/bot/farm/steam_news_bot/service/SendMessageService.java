@@ -28,4 +28,15 @@ public class SendMessageService {
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
     }
+
+    public SendMessage createNewsMessage(String chatId, String message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdownV2(true);
+        sendMessage.enableHtml(true);
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(message);
+        InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineBanButton());
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+        return sendMessage;
+    }
 }

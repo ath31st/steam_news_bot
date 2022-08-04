@@ -58,9 +58,9 @@ public class SchedulerConfig {
             games.stream()
                     .parallel()
                     .forEach(game -> {
-                newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
-                gamesAppidName.put(game.getAppid(), game.getName());
-            });
+                        newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
+                        gamesAppidName.put(game.getAppid(), game.getName());
+                    });
 
 
             logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
@@ -74,8 +74,9 @@ public class SchedulerConfig {
                     userService.getUsersByAppid(newsItem.getAppid())
                             .stream()
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
-                            .forEach(user -> steamNewsBot.sendTextMessage(user.getChatId(),
-                                    "<b>" + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem));
+                            .forEach(user ->
+                                    steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
+                                            + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem));
                 }
             }
             newsItems.clear();

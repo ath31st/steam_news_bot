@@ -42,6 +42,25 @@ public class ButtonService {
         inlineKeyButtonList.add(inlineKeyboardButtonsRow2);
         return inlineKeyButtonList;
     }
+    public List<List<InlineKeyboardButton>> createInlineBanButton() {
+        List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
+
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        inlineKeyboardButton1.setText("\uD83D\uDEAB " + "Unsubscribe");
+        inlineKeyboardButton1.setCallbackData("/unsubscribe");
+
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        inlineKeyboardButton2.setText("\uD83D\uDDD1 " + "Ban list");
+        inlineKeyboardButton2.setCallbackData("/ban_list");
+
+        inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
+        inlineKeyboardButtonsRow1.add(inlineKeyboardButton2);
+
+        inlineKeyButtonList.add(inlineKeyboardButtonsRow1);
+        return inlineKeyButtonList;
+    }
+
     public InlineKeyboardMarkup setInlineKeyMarkup(List<List<InlineKeyboardButton>> inlineList) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.setKeyboard(inlineList);

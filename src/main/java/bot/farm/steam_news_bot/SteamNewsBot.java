@@ -131,6 +131,22 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
                     break;
+                case "/unsubscribe":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        String game = update.getCallbackQuery().getMessage().getText();
+                        game = game.substring(0, game.indexOf("\n"));
+                        sendTextMessage(chatId, "You will no longer receive news about " + game);
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
+                    break;
+                case "/ban_list":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        sendTextMessage(chatId, "Plug o_O");
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
+                    break;
                 default:
                     sendTextMessage(chatId, WRONG_COMMAND);
                     break;
@@ -141,6 +157,20 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     public void sendTextMessage(String chatId, String text) {
         try {
             execute(sendMessageService.createMessage(chatId, text));
+        } catch (TelegramApiException e) {
+            if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
+                userService.updateActiveForUser(chatId, false);
+
+                logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void sendNewsMessage(String chatId, String text) {
+        try {
+            execute(sendMessageService.createNewsMessage(chatId, text));
         } catch (TelegramApiException e) {
             if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
                 userService.updateActiveForUser(chatId, false);
