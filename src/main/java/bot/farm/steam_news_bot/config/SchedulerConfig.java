@@ -16,10 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Configuration
 @EnableScheduling
@@ -31,8 +31,8 @@ public class SchedulerConfig {
     private final SteamService steamService;
     private final UserService userService;
     private final GameService gameService;
-    private static final List<NewsItem> newsItems = new ArrayList<>();
-    private static final HashMap<String, String> gamesAppidName = new HashMap<>();
+    private static final CopyOnWriteArrayList<NewsItem> newsItems = new CopyOnWriteArrayList<>();
+    private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
 
     public SchedulerConfig(SteamNewsBot steamNewsBot,
                            SteamService steamService,
@@ -54,10 +54,14 @@ public class SchedulerConfig {
 
             logger.info(String.format("%d games in list.", games.size()));
             Instant start = Instant.now();
-            for (Game game : games) {
+
+            games.stream()
+                    .parallel()
+                    .forEach(game -> {
                 newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
                 gamesAppidName.put(game.getAppid(), game.getName());
-            }
+            });
+
 
             logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
         }
