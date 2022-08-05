@@ -95,12 +95,11 @@ public class SchedulerConfig {
     @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
-  //      users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
-
-        users.forEach(user -> {
-            gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId()));
-            gameService.saveGamesInDb(steamService.getWishListGames(user.getSteamId()));
-        });
+        users.stream()
+                .parallel()
+                .forEach(user -> {
+                    gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId()));
+                });
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
     }
 
