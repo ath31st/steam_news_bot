@@ -1,6 +1,7 @@
 package bot.farm.steam_news_bot.repository;
 
 import bot.farm.steam_news_bot.entity.BlackListGame;
+import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,15 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
 @Repository
-public interface UserRepository extends CrudRepository<User,String> {
+public interface UserRepository extends CrudRepository<User, String> {
     Optional<User> findUserByChatId(String chatId);
 
     List<User> findByActive(boolean active);
 
     List<User> findByGames_AppidAndActiveTrue(String appid);
-
-    List<User> findByGames_AppidAndActiveTrueAndBlackListGames_AppidNotContains(String appid, String appid1);
 
     @Transactional
     @Modifying

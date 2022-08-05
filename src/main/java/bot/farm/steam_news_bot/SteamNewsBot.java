@@ -1,7 +1,6 @@
 package bot.farm.steam_news_bot;
 
 
-import bot.farm.steam_news_bot.entity.BlackListGame;
 import bot.farm.steam_news_bot.service.*;
 import bot.farm.steam_news_bot.util.UserState;
 import lombok.Getter;
@@ -170,6 +169,18 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                             sendTextMessage(chatId, "Your black list is empty");
                         } else {
                             sendTextMessage(chatId, "Your personal black list: " + blackListService.getBlackListForPrint(chatId));
+                        }
+                    } else {
+                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                    }
+                    break;
+                case "/clear_black_list":
+                    if (userService.findUserByChatId(chatId).isPresent()) {
+                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
+                            sendTextMessage(chatId, "Your black list is empty");
+                        } else {
+                            blackListService.removeAllByChatId(chatId);
+                            sendTextMessage(chatId, "Your black list is cleared");
                         }
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");

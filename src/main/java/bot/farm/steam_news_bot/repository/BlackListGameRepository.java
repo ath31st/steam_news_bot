@@ -16,12 +16,19 @@ public interface BlackListGameRepository extends JpaRepository<BlackListGame, Lo
 
     boolean existsByChatIdAndName(String chatId, String name);
 
+    boolean existsByChatIdAndAppid(String chatId, String appid);
+
     @Transactional
     @Modifying
     @Query("delete from BlackListGame b where b.chatId = ?1 and b.name = ?2")
     void deleteByChatIdAndName(String chatId, String name);
 
     List<BlackListGame> findByChatId(String chatId);
+
+    @Transactional
+    @Modifying
+    @Query("delete from BlackListGame b where b.chatId = ?1")
+    void deleteByChatId(String chatId);
 
 
 }

@@ -4,6 +4,7 @@ import bot.farm.steam_news_bot.SteamNewsBot;
 import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.NewsItem;
 import bot.farm.steam_news_bot.entity.User;
+import bot.farm.steam_news_bot.service.BlackListService;
 import bot.farm.steam_news_bot.service.GameService;
 import bot.farm.steam_news_bot.service.SteamService;
 import bot.farm.steam_news_bot.service.UserService;
@@ -31,17 +32,20 @@ public class SchedulerConfig {
     private final SteamService steamService;
     private final UserService userService;
     private final GameService gameService;
+    private final BlackListService blackListService;
     private static final CopyOnWriteArrayList<NewsItem> newsItems = new CopyOnWriteArrayList<>();
     private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
 
     public SchedulerConfig(SteamNewsBot steamNewsBot,
                            SteamService steamService,
                            UserService userService,
-                           GameService gameService) {
+                           GameService gameService,
+                           BlackListService blackListService) {
         this.steamNewsBot = steamNewsBot;
         this.steamService = steamService;
         this.userService = userService;
         this.gameService = gameService;
+        this.blackListService = blackListService;
     }
 
     @Scheduled(fixedRate = 1800000)
@@ -70,10 +74,11 @@ public class SchedulerConfig {
             logger.info(String.format("found %d fresh news", newsItems.size()));
 
             for (NewsItem newsItem : newsItems) {
-                if (!userService.getUsersByAppid(newsItem.getAppid()).isEmpty()) {
-                    userService.getUsersByAppid(newsItem.getAppid())
+                if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
+                    userService.getUsersWithFilters(newsItem.getAppid())
                             .stream()
                             .parallel()
+                            .filter(user -> !blackListService.existsByChatIdAndAppid(user.getChatId(), newsItem.getAppid()))
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
                             .forEach(user ->
                                     steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
@@ -90,12 +95,12 @@ public class SchedulerConfig {
     @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
-        users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
+  //      users.forEach(user -> gameService.saveGamesInDb(user.getGames()));
 
-//        users.forEach(user -> {
-//            gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId()));
-//            gameService.saveGamesInDb(steamService.getWishListGames(user.getSteamId()));
-//        });
+        users.forEach(user -> {
+            gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId()));
+            gameService.saveGamesInDb(steamService.getWishListGames(user.getSteamId()));
+        });
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
     }
 

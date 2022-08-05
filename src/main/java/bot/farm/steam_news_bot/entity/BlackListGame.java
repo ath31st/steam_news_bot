@@ -15,12 +15,11 @@ import java.util.*;
 public class BlackListGame {
 
     @Id
-    @Column(unique = true, nullable = false)
-    private String appid;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
     private String chatId;
-
-
+    private String appid;
     private String name;
 
     @ManyToMany(mappedBy = "blackListGames")

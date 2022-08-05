@@ -3,13 +3,12 @@ package bot.farm.steam_news_bot.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -33,9 +32,10 @@ public class User {
     private List<Game> games;
 
     @ManyToMany()
-    @JoinTable(name = "users_black_list_games",
-            joinColumns = @JoinColumn(name = "user_"),
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JoinTable(name = "user_black_list_games",
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "black_list_games_id"))
-    private List<BlackListGame> blackListGames = new ArrayList<>();
+    private List<BlackListGame> blackListGames;
 
 }

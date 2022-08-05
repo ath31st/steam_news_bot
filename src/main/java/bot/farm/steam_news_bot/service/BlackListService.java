@@ -21,6 +21,10 @@ public class BlackListService {
         return blackListGameRepository.existsByChatIdAndName(chatId, name);
     }
 
+    public boolean existsByChatIdAndAppid(String chatId, String appid) {
+        return blackListGameRepository.existsByChatIdAndAppid(chatId, appid);
+    }
+
     public void addGameToBlackList(String chatId, String name) {
         if (blackListGameRepository.findByChatIdAndName(chatId, name).isEmpty()) {
             BlackListGame game = new BlackListGame();
@@ -33,8 +37,11 @@ public class BlackListService {
 
     public void removeGameFromBlackList(String chatId, String name) {
         if (blackListGameRepository.findByChatIdAndName(chatId, name).isPresent()) {
-            blackListGameRepository.deleteByChatIdAndName(chatId,name);
+            blackListGameRepository.deleteByChatIdAndName(chatId, name);
         }
+    }
+    public void removeAllByChatId(String chatId){
+        blackListGameRepository.deleteByChatId(chatId);
     }
 
     public List<BlackListGame> getBlackListByChatId(String chatId) {
