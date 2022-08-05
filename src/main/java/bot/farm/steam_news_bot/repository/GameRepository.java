@@ -13,6 +13,8 @@ public interface GameRepository extends CrudRepository<Game,String> {
 
     Optional<Game> getGameByAppid(String appid);
 
+    Optional<Game> findByName(String name);
+
     Set<Game> findByUsers_ActiveTrue();
 
     boolean existsByAppid(String appid);
