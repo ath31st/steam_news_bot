@@ -73,6 +73,7 @@ public class SchedulerConfig {
                 if (!userService.getUsersByAppid(newsItem.getAppid()).isEmpty()) {
                     userService.getUsersByAppid(newsItem.getAppid())
                             .stream()
+                            .parallel()
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
                             .forEach(user ->
                                     steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"

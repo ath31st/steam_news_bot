@@ -51,11 +51,16 @@ public class ButtonService {
         inlineKeyboardButton1.setCallbackData("/unsubscribe");
 
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton2.setText("\uD83D\uDDD1 " + "Ban list");
-        inlineKeyboardButton2.setCallbackData("/ban_list");
+        inlineKeyboardButton2.setText(" " + "Subscribe");
+        inlineKeyboardButton2.setCallbackData("/subscribe");
+
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        inlineKeyboardButton3.setText("\uD83D\uDDD1 " + "Black list");
+        inlineKeyboardButton3.setCallbackData("/black_list");
 
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton2);
+        inlineKeyboardButtonsRow1.add(inlineKeyboardButton3);
 
         inlineKeyButtonList.add(inlineKeyboardButtonsRow1);
         return inlineKeyButtonList;

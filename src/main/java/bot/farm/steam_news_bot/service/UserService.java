@@ -1,5 +1,6 @@
 package bot.farm.steam_news_bot.service;
 
+import bot.farm.steam_news_bot.entity.BlackListGame;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,10 @@ public class UserService {
 
     public List<User> getUsersByAppid(String appid) {
         return new ArrayList<>(userRepository.findByGames_AppidAndActiveTrue(appid));
+    }
+
+    public List<User> getUsersWithFilters(String appid) {
+       return userRepository.findByGames_AppidAndActiveTrueAndBlackListGames_AppidNotContains(appid, appid);
     }
 
     public List<User> getUsersByActive(boolean isActive) {

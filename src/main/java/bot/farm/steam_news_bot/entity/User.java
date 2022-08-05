@@ -6,7 +6,10 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,4 +31,11 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "game_id"))
     private List<Game> games;
+
+    @ManyToMany()
+    @JoinTable(name = "users_black_list_games",
+            joinColumns = @JoinColumn(name = "user_"),
+            inverseJoinColumns = @JoinColumn(name = "black_list_games_id"))
+    private List<BlackListGame> blackListGames = new ArrayList<>();
+
 }
