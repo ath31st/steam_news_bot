@@ -10,6 +10,6 @@ public class Constants {
     public static final String HELP = "1. The news is updated every half hour\n" +
             "2. If you don't know where to find the steam ID, then follow the link https://store.steampowered.com/account/"
             + "\n" + "Steam ID looks like 765XXXXXXXXXX";
-    public static final String WRONG_COMMAND = "Patience, my friend. There is no fresh news yet.";
+    public static final String WRONG_COMMAND = "Patience, my friend. There is no fresh news yet";
 
 }
