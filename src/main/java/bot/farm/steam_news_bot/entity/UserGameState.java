@@ -29,4 +29,16 @@ public class UserGameState {
     private boolean isBanned;
     private boolean isOwned;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserGameState that = (UserGameState) o;
+        return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(game, that.game);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, user, game);
+    }
 }

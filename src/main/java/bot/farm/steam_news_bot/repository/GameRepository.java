@@ -10,7 +10,8 @@ import java.util.Set;
 @Repository
 public interface GameRepository extends CrudRepository<Game,String> {
     long countByStates_User_ActiveTrue();
- //   long countByUsers_Active(boolean active);
+
+    Set<Game> findByStates_User_ChatIdAndStates_IsBannedTrue(String chatId);
 
     Optional<Game> getGameByAppid(String appid);
 

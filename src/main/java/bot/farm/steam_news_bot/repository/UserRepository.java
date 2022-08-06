@@ -1,6 +1,7 @@
 package bot.farm.steam_news_bot.repository;
 
 import bot.farm.steam_news_bot.entity.User;
+import bot.farm.steam_news_bot.entity.UserGameState;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,13 +14,19 @@ import java.util.Set;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, String> {
+    boolean existsByChatId(String chatId);
+
+    User findByChatId(String chatId);
+
+    long countByChatIdAndStates_IsOwnedTrue(String chatId);
+
     Optional<User> findUserByChatId(String chatId);
 
     List<User> findByActive(boolean active);
 
-  //  List<User> findByGames_AppidAndActiveTrue(String appid);
-
     Set<User> findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(String appid);
+
+    boolean existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(String chatId, String name);
 
     @Transactional
     @Modifying

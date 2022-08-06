@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class GameService {
@@ -16,12 +17,11 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public List<Game> getAllGames() {
-        List<Game> games = new ArrayList<>();
-        gameRepository.findAll()
-                .iterator()
-                .forEachRemaining(games::add);
-        return games;
+    public String getBanListByChatId(String chatId) {
+        Set<Game> games = gameRepository.findByStates_User_ChatIdAndStates_IsBannedTrue(chatId);
+        return games.stream()
+                .map(Game::getName)
+                .collect(Collectors.joining(" ,"));
     }
 
     public Set<Game> getAllGamesByActiveUsers() {

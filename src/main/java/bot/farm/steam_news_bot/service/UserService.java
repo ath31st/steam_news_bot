@@ -2,6 +2,7 @@ package bot.farm.steam_news_bot.service;
 
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.entity.UserGameState;
+import bot.farm.steam_news_bot.repository.UserGameStateRepository;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserGameStateRepository userGameStateRepository;
     private final SteamService steamService;
 
-    public UserService(UserRepository userRepository, SteamService steamService) {
+    public UserService(UserRepository userRepository, UserGameStateRepository userGameStateRepository, SteamService steamService) {
         this.userRepository = userRepository;
+        this.userGameStateRepository = userGameStateRepository;
         this.steamService = steamService;
     }
 
@@ -33,12 +36,14 @@ public class UserService {
         } else {
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
+            userGameStateRepository.deleteByUser(user);
             user.setStates(getSetStatesByUser(user));
 
             userRepository.save(user);
         }
     }
-    private Set<UserGameState> getSetStatesByUser(User user){
+
+    private Set<UserGameState> getSetStatesByUser(User user) {
         return steamService.getOwnedGames(user.getSteamId())
                 .stream()
                 .parallel()
@@ -48,9 +53,14 @@ public class UserService {
                     userGameState.setGame(game);
                     userGameState.setBanned(false);
                     userGameState.setWished(false);
+                    userGameState.setOwned(true);
                     return userGameState;
                 })
                 .collect(Collectors.toSet());
+    }
+
+    public long getCountOwnedGames(String chatId) {
+        return userRepository.countByChatIdAndStates_IsOwnedTrue(chatId);
     }
 
     public void updateActiveForUser(String chatId, boolean active) {
@@ -75,6 +85,18 @@ public class UserService {
 
     public List<User> getUsersByActive(boolean isActive) {
         return new ArrayList<>(userRepository.findByActive(isActive));
+    }
+
+    public boolean existsByChatId(String chatId) {
+        return userRepository.existsByChatId(chatId);
+    }
+
+    public User getUserByChatId(String chatId) {
+        return userRepository.findByChatId(chatId);
+    }
+
+    public boolean checkBanForGameByChatId(String chatId, String name) {
+        return userRepository.existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
     }
 
 }
