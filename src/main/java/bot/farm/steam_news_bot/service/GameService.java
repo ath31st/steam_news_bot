@@ -25,7 +25,7 @@ public class GameService {
     }
 
     public Set<Game> getAllGamesByActiveUsers() {
-        return gameRepository.findByUsers_ActiveTrue();
+        return gameRepository.findByStates_User_ActiveTrue();
     }
 
     public void saveGamesInDb(List<Game> games) {
@@ -43,7 +43,7 @@ public class GameService {
         return gameRepository.count();
     }
 
-    public long countByUsersActive(boolean active) {
-        return gameRepository.countByUsers_Active(active);
+    public long countByUsersActive() {
+        return gameRepository.countByStates_User_ActiveTrue();
     }
 }

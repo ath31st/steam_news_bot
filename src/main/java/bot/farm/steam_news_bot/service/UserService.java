@@ -1,12 +1,12 @@
 package bot.farm.steam_news_bot.service;
 
 import bot.farm.steam_news_bot.entity.User;
+import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -26,16 +26,31 @@ public class UserService {
             user.setChatId(chatId);
             user.setName(name);
             user.setSteamId(Long.valueOf(steamId));
-            user.setGames(steamService.getOwnedGames(user.getSteamId()));
+            user.setStates(getSetStatesByUser(user));
 
             userRepository.save(user);
+
         } else {
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
-            user.setGames(steamService.getOwnedGames(user.getSteamId()));
+            user.setStates(getSetStatesByUser(user));
 
             userRepository.save(user);
         }
+    }
+    private Set<UserGameState> getSetStatesByUser(User user){
+        return steamService.getOwnedGames(user.getSteamId())
+                .stream()
+                .parallel()
+                .map(game -> {
+                    UserGameState userGameState = new UserGameState();
+                    userGameState.setUser(user);
+                    userGameState.setGame(game);
+                    userGameState.setBanned(false);
+                    userGameState.setWished(false);
+                    return userGameState;
+                })
+                .collect(Collectors.toSet());
     }
 
     public void updateActiveForUser(String chatId, boolean active) {
@@ -55,7 +70,7 @@ public class UserService {
     }
 
     public List<User> getUsersWithFilters(String appid) {
-        return new ArrayList<>(userRepository.findByGames_AppidAndActiveTrue(appid));
+        return new ArrayList<>(userRepository.findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(appid));
     }
 
     public List<User> getUsersByActive(boolean isActive) {

@@ -9,13 +9,15 @@ import java.util.Set;
 
 @Repository
 public interface GameRepository extends CrudRepository<Game,String> {
-    long countByUsers_Active(boolean active);
+    long countByStates_User_ActiveTrue();
+ //   long countByUsers_Active(boolean active);
 
     Optional<Game> getGameByAppid(String appid);
 
     Optional<Game> findByName(String name);
 
-    Set<Game> findByUsers_ActiveTrue();
+//   Set<Game> findByUsers_ActiveTrue();
+    Set<Game> findByStates_User_ActiveTrue();
 
     boolean existsByAppid(String appid);
 

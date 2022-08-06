@@ -32,8 +32,6 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     private SteamService steamService;
     @Autowired
     private GameService gameService;
-    @Autowired
-    private BlackListService blackListService;
 
     private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
     @Value("${steamnewsbot.botName}")
@@ -78,7 +76,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     if (SteamService.isValidSteamId(inputText)) {
 
                         sendTextMessage(chatId, "It will take a few seconds");
-                        gameService.saveGamesInDb(steamService.getOwnedGames(Long.valueOf(inputText)));
+                    //    gameService.saveGamesInDb(steamService.getOwnedGames(Long.valueOf(inputText)));
                         userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
 
                         StringBuilder sb = new StringBuilder();
@@ -88,7 +86,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                                 .append("Hi ").append(userService.findUserByChatId(chatId).get().getName()).append("!")
                                 .append(System.lineSeparator())
                                 .append("Nice library! You have ")
-                                .append(userService.findUserByChatId(chatId).get().getGames().size())
+                               // .append(userService.findUserByChatId(chatId).get().getGames().size())
                                 .append(" owned games on your account");
                         sendTextMessage(chatId, sb.toString());
                     } else {
@@ -136,52 +134,52 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     break;
                 case "/unsubscribe":
                     if (userService.findUserByChatId(chatId).isPresent()) {
-                        String gameTitle = update.getCallbackQuery().getMessage().getText();
-                        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
-                        if (blackListService.existsByChatIdAndName(chatId, gameTitle)) {
-                            sendTextMessage(chatId, "You have already unsubscribed from " + gameTitle);
-                        } else {
-                            blackListService.addGameToBlackList(chatId, gameTitle);
-                            sendTextMessage(chatId, "You will no longer receive news about " + gameTitle);
-                        }
-
-                    } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+//                        String gameTitle = update.getCallbackQuery().getMessage().getText();
+//                        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
+//                        if (blackListService.existsByChatIdAndName(chatId, gameTitle)) {
+//                            sendTextMessage(chatId, "You have already unsubscribed from " + gameTitle);
+//                        } else {
+//                            blackListService.addGameToBlackList(chatId, gameTitle);
+//                            sendTextMessage(chatId, "You will no longer receive news about " + gameTitle);
+//                        }
+//
+//                    } else {
+//                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
                     break;
                 case "/subscribe":
                     if (userService.findUserByChatId(chatId).isPresent()) {
-                        String gameTitle = update.getCallbackQuery().getMessage().getText();
-                        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
-                        if (blackListService.existsByChatIdAndName(chatId, gameTitle)) {
-                            blackListService.removeGameFromBlackList(chatId, gameTitle);
-                            sendTextMessage(chatId, "Now you will again receive news about " + gameTitle);
-                        } else {
-                            sendTextMessage(chatId, "You have already subscribed to this " + gameTitle);
-                        }
-                    } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+//                        String gameTitle = update.getCallbackQuery().getMessage().getText();
+//                        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
+//                        if (blackListService.existsByChatIdAndName(chatId, gameTitle)) {
+//                            blackListService.removeGameFromBlackList(chatId, gameTitle);
+//                            sendTextMessage(chatId, "Now you will again receive news about " + gameTitle);
+//                        } else {
+//                            sendTextMessage(chatId, "You have already subscribed to this " + gameTitle);
+//                        }
+//                    } else {
+//                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
                     break;
                 case "/black_list":
                     if (userService.findUserByChatId(chatId).isPresent()) {
-                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
-                            sendTextMessage(chatId, "Your black list is empty");
-                        } else {
-                            sendTextMessage(chatId, "Your personal black list: " + blackListService.getBlackListForPrint(chatId));
-                        }
-                    } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+//                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
+//                            sendTextMessage(chatId, "Your black list is empty");
+//                        } else {
+//                            sendTextMessage(chatId, "Your personal black list: " + blackListService.getBlackListForPrint(chatId));
+//                        }
+//                    } else {
+//                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
                     break;
                 case "/clear_black_list":
                     if (userService.findUserByChatId(chatId).isPresent()) {
-                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
-                            sendTextMessage(chatId, "Your black list is empty");
-                        } else {
-                            blackListService.removeAllByChatId(chatId);
-                            sendTextMessage(chatId, "Your black list is cleared");
-                        }
+//                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
+//                            sendTextMessage(chatId, "Your black list is empty");
+//                        } else {
+//                            blackListService.removeAllByChatId(chatId);
+//                            sendTextMessage(chatId, "Your black list is cleared");
+//                        }
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }

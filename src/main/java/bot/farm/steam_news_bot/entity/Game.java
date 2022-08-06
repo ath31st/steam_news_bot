@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,12 +18,12 @@ import java.util.Objects;
 @Table(name = "games")
 public class Game {
     @Id
-    @Column(unique = true, nullable = false)
+    @Column(name = "game_id",unique = true, nullable = false)
     private String appid;
     private String name;
 
-    @ManyToMany(mappedBy = "games")
-    private List<User> users;
+    @OneToMany(mappedBy = "game")
+    Set<UserGameState> states;
 
     @Override
     public boolean equals(Object o) {

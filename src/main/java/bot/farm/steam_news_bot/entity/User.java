@@ -6,7 +6,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @Column(unique = true, nullable = false)
+    @Column(name = "user_id", unique = true, nullable = false)
     private String chatId;
     @NotNull
     private String name;
@@ -23,10 +24,19 @@ public class User {
     private Long steamId;
     private boolean active;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_game",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "game_id"))
-    private List<Game> games;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    Set<UserGameState> states;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(chatId, user.chatId) && Objects.equals(name, user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chatId, name);
+    }
 }
