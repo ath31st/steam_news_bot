@@ -32,7 +32,6 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     private SteamService steamService;
     @Autowired
     private GameService gameService;
-
     @Autowired
     private BlackListService blackListService;
 
@@ -78,6 +77,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     inputText = update.getMessage().getText().strip();
                     if (SteamService.isValidSteamId(inputText)) {
 
+                        sendTextMessage(chatId, "It will take a few seconds");
                         gameService.saveGamesInDb(steamService.getOwnedGames(Long.valueOf(inputText)));
                         userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
 
