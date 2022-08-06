@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -22,4 +23,17 @@ public class Game {
 
     @ManyToMany(mappedBy = "games")
     private List<User> users;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Game game = (Game) o;
+        return Objects.equals(appid, game.appid) && Objects.equals(name, game.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appid, name);
+    }
 }

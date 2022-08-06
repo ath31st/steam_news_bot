@@ -14,6 +14,7 @@ public class ButtonService {
         List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
         List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> inlineKeyboardButtonsRow2 = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtonsRow3 = new ArrayList<>();
 
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
         inlineKeyboardButton1.setText("\u03BB " + "Set/Update steam ID");
@@ -31,6 +32,13 @@ public class ButtonService {
         inlineKeyboardButton4.setText("\u2611 " + "Set \"inactive\" mode");
         inlineKeyboardButton4.setCallbackData("/set_inactive_mode");
 
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+        inlineKeyboardButton5.setText("\uD83E\uDDF9 " + "Clear black list");
+        inlineKeyboardButton5.setCallbackData("/clear_black_list");
+
+        InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+        inlineKeyboardButton6.setText("\uD83D\uDDD1 " + "Black list");
+        inlineKeyboardButton6.setCallbackData("/black_list");
 
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton2);
@@ -38,8 +46,12 @@ public class ButtonService {
         inlineKeyboardButtonsRow2.add(inlineKeyboardButton3);
         inlineKeyboardButtonsRow2.add(inlineKeyboardButton4);
 
+        inlineKeyboardButtonsRow3.add(inlineKeyboardButton5);
+        inlineKeyboardButtonsRow3.add(inlineKeyboardButton6);
+
         inlineKeyButtonList.add(inlineKeyboardButtonsRow1);
         inlineKeyButtonList.add(inlineKeyboardButtonsRow2);
+        inlineKeyButtonList.add(inlineKeyboardButtonsRow3);
         return inlineKeyButtonList;
     }
     public List<List<InlineKeyboardButton>> createInlineBanButton() {
@@ -51,8 +63,8 @@ public class ButtonService {
         inlineKeyboardButton1.setCallbackData("/unsubscribe");
 
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton2.setText("\uD83D\uDDD1 " + "Ban list");
-        inlineKeyboardButton2.setCallbackData("/ban_list");
+        inlineKeyboardButton2.setText("✅ " + "Subscribe");
+        inlineKeyboardButton2.setCallbackData("/subscribe");
 
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton2);

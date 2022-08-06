@@ -19,17 +19,23 @@ public class UserService {
     }
 
     public void saveOrUpdateUserInDb(String chatId, String name, String steamId) {
-        if (userRepository.findUserByChatId(chatId).isPresent())
-            userRepository.delete(userRepository.findUserByChatId(chatId).get());
+        if (userRepository.findUserByChatId(chatId).isEmpty()) {
 
-        User user = new User();
-        user.setActive(true);
-        user.setChatId(chatId);
-        user.setName(name);
-        user.setSteamId(Long.valueOf(steamId));
-        user.setGames(steamService.getOwnedGames(user.getSteamId()));
+            User user = new User();
+            user.setActive(true);
+            user.setChatId(chatId);
+            user.setName(name);
+            user.setSteamId(Long.valueOf(steamId));
+            user.setGames(steamService.getOwnedGames(user.getSteamId()));
 
-        userRepository.save(user);
+            userRepository.save(user);
+        } else {
+            User user = userRepository.findUserByChatId(chatId).get();
+            user.setSteamId(Long.valueOf(steamId));
+            user.setGames(steamService.getOwnedGames(user.getSteamId()));
+
+            userRepository.save(user);
+        }
     }
 
     public void updateActiveForUser(String chatId, boolean active) {
@@ -48,7 +54,7 @@ public class UserService {
         return users;
     }
 
-    public List<User> getUsersByAppid(String appid) {
+    public List<User> getUsersWithFilters(String appid) {
         return new ArrayList<>(userRepository.findByGames_AppidAndActiveTrue(appid));
     }
 

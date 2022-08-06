@@ -34,9 +34,9 @@ public class GameService {
                 .forEach(gameRepository::save);
     }
 
-    public Game getGame(String appid) {
-        return gameRepository.getGameByAppid(appid).orElseThrow(
-                () -> new RuntimeException(String.format("Game with appid № %s not found!", appid)));
+    public Game getGame(String name) {
+        return gameRepository.findByName(name).orElseThrow(
+                () -> new RuntimeException(String.format("Game with appid № %s not found!", name)));
     }
 
     public long countAllGames() {
