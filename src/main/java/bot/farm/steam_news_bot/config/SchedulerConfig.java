@@ -74,7 +74,6 @@ public class SchedulerConfig {
                     userService.getUsersWithFilters(newsItem.getAppid())
                             .stream()
                             .parallel()
-                       //     .filter(user -> !blackListService.existsByChatIdAndAppid(user.getChatId(), newsItem.getAppid()))
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
                             .forEach(user ->
                                     steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
@@ -91,9 +90,10 @@ public class SchedulerConfig {
  //   @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
-        users.stream()
-                .parallel()
-                .forEach(user -> gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId())));
+        // СДЕЛАТЬ ЗДЕСЬ ПРОДУМАННОЕ ОБНОВЛЕНИЕ СПИСКА ИГР
+//        users.stream()
+//                .parallel()
+//                .forEach(user -> gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId())));
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
     }
 

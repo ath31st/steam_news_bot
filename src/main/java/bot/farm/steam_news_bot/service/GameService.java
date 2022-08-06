@@ -4,7 +4,6 @@ import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,18 +24,14 @@ public class GameService {
     }
 
     public Set<Game> getAllGamesByActiveUsers() {
-        return gameRepository.findByStates_User_ActiveTrue();
+      //  return gameRepository.findByStates_User_ActiveTrue();
+        return gameRepository.findByStates_User_ActiveTrueAndStates_IsBannedFalse();
     }
 
     public void saveGamesInDb(List<Game> games) {
         games.stream()
                 .filter(game -> !gameRepository.existsByAppid(game.getAppid()))
                 .forEach(gameRepository::save);
-    }
-
-    public Game getGame(String name) {
-        return gameRepository.findByName(name).orElseThrow(
-                () -> new RuntimeException(String.format("Game with appid № %s not found!", name)));
     }
 
     public long countAllGames() {

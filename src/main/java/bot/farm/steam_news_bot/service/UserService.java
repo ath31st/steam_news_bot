@@ -2,22 +2,26 @@ package bot.farm.steam_news_bot.service;
 
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.entity.UserGameState;
-import bot.farm.steam_news_bot.repository.UserGameStateRepository;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final UserGameStateRepository userGameStateRepository;
+    private final UserGameStateService userGameStateService;
     private final SteamService steamService;
 
-    public UserService(UserRepository userRepository, UserGameStateRepository userGameStateRepository, SteamService steamService) {
+    public UserService(UserRepository userRepository,
+                       UserGameStateService userGameStateService,
+                       SteamService steamService) {
         this.userRepository = userRepository;
-        this.userGameStateRepository = userGameStateRepository;
+        this.userGameStateService = userGameStateService;
         this.steamService = steamService;
     }
 
@@ -36,7 +40,9 @@ public class UserService {
         } else {
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
-            userGameStateRepository.deleteByUser(user);
+
+            userGameStateService.deleteByUser(user);
+
             user.setStates(getSetStatesByUser(user));
 
             userRepository.save(user);
@@ -79,12 +85,12 @@ public class UserService {
         return users;
     }
 
-    public List<User> getUsersWithFilters(String appid) {
-        return new ArrayList<>(userRepository.findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(appid));
+    public Set<User> getUsersWithFilters(String appid) {
+        return userRepository.findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(appid);
     }
 
     public List<User> getUsersByActive(boolean isActive) {
-        return new ArrayList<>(userRepository.findByActive(isActive));
+        return userRepository.findByActive(isActive);
     }
 
     public boolean existsByChatId(String chatId) {

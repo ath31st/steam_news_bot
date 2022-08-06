@@ -8,16 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Repository
 public interface UserGameStateRepository extends JpaRepository<UserGameState, Long> {
 
     UserGameState findByUser_ChatIdAndGame_Name(String chatId, String name);
-
+    Set<UserGameState> findByUser_ChatIdAndIsBannedTrue(String chatId);
     @Transactional
     @Modifying
     @Query("update UserGameState u set u.isBanned = ?1 where u.id = ?2")
     void updateIsBannedById(boolean isBanned, Long id);
-
 
     @Transactional
     @Modifying

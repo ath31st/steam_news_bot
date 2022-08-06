@@ -175,12 +175,13 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     break;
                 case "/clear_black_list":
                     if (userService.existsByChatId(chatId)) {
-//                        if (blackListService.getBlackListByChatId(chatId).isEmpty()) {
-//                            sendTextMessage(chatId, "Your black list is empty");
-//                        } else {
-//                            blackListService.removeAllByChatId(chatId);
-//                            sendTextMessage(chatId, "Your black list is cleared");
-//                        }
+                        if (gameService.getBanListByChatId(chatId).isBlank()) {
+                            sendTextMessage(chatId, "Your black list is empty");
+                        } else {
+                            userGameStateService.getBlackListByChatId(chatId)
+                                    .forEach(state -> userGameStateService.updateStateForGameById(false,state.getId()));
+                            sendTextMessage(chatId, "Your black list is cleared");
+                        }
                     } else {
                         sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
                     }
