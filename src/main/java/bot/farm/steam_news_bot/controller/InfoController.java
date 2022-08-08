@@ -24,7 +24,7 @@ public class InfoController {
     @GetMapping("/users")
     public ResponseEntity getCountUsers() {
         return ResponseEntity.ok(Map.of("total users in database", userService.getAllUsers().size(),
-                "active users", userService.getUsersByActive(true).size()));
+                "active users", userService.countUsersByActive(true)));
     }
 
     @GetMapping("/games")

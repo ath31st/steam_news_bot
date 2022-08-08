@@ -24,27 +24,30 @@ import java.util.regex.Pattern;
 
 @Service
 public class SteamService {
+
     @Value("${steamnewsbot.steamwebapikey}")
     private String steamWebApiKey;
-    //  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=%s&include_appinfo=true&steamid=%s";
     private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
     private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
     private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/wishlist/profiles/%s/wishlistdata/";
     private final static String USER_AGENT = "Mozilla/5.0";
 
-    public List<Game> getOwnedGames(Long steamId) {
+    public List<Game> getOwnedGames(Long steamId) throws IOException, NullPointerException {
         String ownedGamesUrl = String.format(GET_OWNED_GAMES_URL, steamWebApiKey, steamId);
 
         List<Game> games;
-        try {
-            URL url = new URL(ownedGamesUrl);
-            HttpURLConnection connection = getConnection(url);
-            String rawJson = getRawDataFromConnection(connection);
-            games = convertRawJsonToListGames(rawJson);
-            connection.disconnect();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        URL url = new URL(ownedGamesUrl);
+        HttpURLConnection connection = getConnection(url);
+        String rawJson = getRawDataFromConnection(connection);
+
+        if (rawJson.equals("{\"response\":{}}")) {
+            throw new NullPointerException("Account is hidden");
         }
+
+        games = convertRawJsonToListGames(rawJson);
+        connection.disconnect();
+
         return games;
     }
 
@@ -94,7 +97,7 @@ public class SteamService {
         connection.setReadTimeout(5000);
         connection.setRequestMethod("GET");
         int responseCode = connection.getResponseCode();
-        if (responseCode == 404) {
+        if (responseCode == 404 | responseCode == 500) {
             throw new IllegalArgumentException();
         }
         return connection;
@@ -145,7 +148,7 @@ public class SteamService {
         return wishListGames;
     }
 
-    private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson) throws Exception {
+    private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson) throws JsonProcessingException {
         List<NewsItem> newsItems = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -169,8 +172,8 @@ public class SteamService {
         LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
         // TODO CHECK THIS LINE!
-       // return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
-         return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
+        // return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
+        return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
     }
 
     private static String deleteLinksOnImagesFromText(String text) {

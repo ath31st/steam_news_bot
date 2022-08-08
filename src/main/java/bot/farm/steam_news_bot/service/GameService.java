@@ -5,7 +5,6 @@ import bot.farm.steam_news_bot.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,13 +16,13 @@ public class GameService {
     }
 
     public String getBanListByChatId(String chatId) {
-        Set<Game> games = gameRepository.findByStates_User_ChatIdAndStates_IsBannedTrue(chatId);
+        List<Game> games = gameRepository.findByStates_User_ChatIdAndStates_IsBannedTrue(chatId);
         return games.stream()
                 .map(Game::getName)
                 .collect(Collectors.joining(" ,"));
     }
 
-    public Set<Game> getAllGamesByActiveUsers() {
+    public List<Game> getAllGamesByActiveUsers() {
       //  return gameRepository.findByStates_User_ActiveTrue();
         return gameRepository.findByStates_User_ActiveTrueAndStates_IsBannedFalse();
     }

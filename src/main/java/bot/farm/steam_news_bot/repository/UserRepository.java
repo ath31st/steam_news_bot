@@ -1,7 +1,6 @@
 package bot.farm.steam_news_bot.repository;
 
 import bot.farm.steam_news_bot.entity.User;
-import bot.farm.steam_news_bot.entity.UserGameState;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,6 +18,8 @@ public interface UserRepository extends CrudRepository<User, String> {
     User findByChatId(String chatId);
 
     long countByChatIdAndStates_IsOwnedTrue(String chatId);
+
+    long countByActive(boolean active);
 
     Optional<User> findUserByChatId(String chatId);
 

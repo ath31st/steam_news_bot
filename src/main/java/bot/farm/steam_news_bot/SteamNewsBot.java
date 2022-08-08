@@ -15,6 +15,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
+
 import static bot.farm.steam_news_bot.util.Constants.*;
 
 @Component
@@ -78,18 +80,27 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     if (SteamService.isValidSteamId(inputText)) {
 
                         sendTextMessage(chatId, "It will take a few seconds");
-                        userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
 
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("Your steam ID: ")
-                                .append(inputText)
-                                .append(System.lineSeparator())
-                                .append("Hi ").append(userService.findUserByChatId(chatId).get().getName()).append("!")
-                                .append(System.lineSeparator())
-                                .append("Nice library! You have ")
-                                .append(userService.getCountOwnedGames(chatId))
-                                .append(" owned games on your account");
-                        sendTextMessage(chatId, sb.toString());
+                        try {
+                            userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
+
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Your steam ID: ")
+                                    .append(inputText)
+                                    .append(System.lineSeparator())
+                                    .append("Hi ").append(userService.findUserByChatId(chatId).get().getName()).append("!")
+                                    .append(System.lineSeparator())
+                                    .append("Nice library! You have ")
+                                    .append(userService.getCountOwnedGames(chatId))
+                                    .append(" owned games on your account");
+                            sendTextMessage(chatId, sb.toString());
+                        } catch (NullPointerException e) {
+                            logger.error("User {} entered id {} - this is hidden account" , chatId, inputText);
+                            sendTextMessage(chatId, "Steam account with id " + inputText +" is hidden");
+                        } catch (IOException e) {
+                            logger.error("User {} entered id {}, account dont exists" , chatId, inputText);
+                            sendTextMessage(chatId, "Steam account with id " + inputText +" dont exists");
+                        }
                     } else {
                         sendTextMessage(chatId, "You entered an incorrect steam ID");
                     }

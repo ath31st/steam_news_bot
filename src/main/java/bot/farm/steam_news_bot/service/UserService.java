@@ -5,6 +5,7 @@ import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class UserService {
         this.steamService = steamService;
     }
 
-    public void saveOrUpdateUserInDb(String chatId, String name, String steamId) {
+    public void saveOrUpdateUserInDb(String chatId, String name, String steamId) throws IOException, NullPointerException {
         if (userRepository.findUserByChatId(chatId).isEmpty()) {
 
             User user = new User();
@@ -49,7 +50,7 @@ public class UserService {
         }
     }
 
-    private Set<UserGameState> getSetStatesByUser(User user) {
+    private Set<UserGameState> getSetStatesByUser(User user) throws IOException, NullPointerException {
         return steamService.getOwnedGames(user.getSteamId())
                 .stream()
                 .parallel()
@@ -91,6 +92,10 @@ public class UserService {
 
     public List<User> getUsersByActive(boolean isActive) {
         return userRepository.findByActive(isActive);
+    }
+
+    public long countUsersByActive(boolean active) {
+        return userRepository.countByActive(active);
     }
 
     public boolean existsByChatId(String chatId) {

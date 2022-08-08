@@ -5,6 +5,7 @@ import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserGameStateRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -24,7 +25,7 @@ public class UserGameStateService {
         userGameStateRepository.updateIsBannedById(isBanned, id);
     }
 
-    public Set<UserGameState> getBlackListByChatId(String chatId) {
+    public List<UserGameState> getBlackListByChatId(String chatId) {
         return userGameStateRepository.findByUser_ChatIdAndIsBannedTrue(chatId);
     }
 
