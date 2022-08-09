@@ -24,7 +24,8 @@ public class User {
     private Long steamId;
     private boolean active;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+            orphanRemoval = true)
     Set<UserGameState> states;
 
     @Override

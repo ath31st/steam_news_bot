@@ -65,6 +65,8 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     chatId = String.valueOf(update.getMessage().getChatId());
                     inputText = update.getMessage().getText();
 
+                    update.getMessage().getFrom().getLanguageCode(); // Localization code
+
                     switch (inputText) {
                         case "/start" -> sendTextMessage(chatId, START);
                         case "/help" -> sendTextMessage(chatId, HELP);
@@ -99,7 +101,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                             sendTextMessage(chatId, "Steam account with id " + inputText +" is hidden");
                         } catch (IOException e) {
                             logger.error("User {} entered id {}, account dont exists" , chatId, inputText);
-                            sendTextMessage(chatId, "Steam account with id " + inputText +" dont exists");
+                            sendTextMessage(chatId, "Steam account with id " + inputText +" don't exists");
                         }
                     } else {
                         sendTextMessage(chatId, "You entered an incorrect steam ID");

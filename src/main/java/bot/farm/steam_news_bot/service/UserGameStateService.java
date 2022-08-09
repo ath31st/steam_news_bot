@@ -1,5 +1,6 @@
 package bot.farm.steam_news_bot.service;
 
+import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserGameStateRepository;
@@ -25,11 +26,23 @@ public class UserGameStateService {
         userGameStateRepository.updateIsBannedById(isBanned, id);
     }
 
+    public void updateStateForGameById(boolean isWished, boolean isOwned, Long id) {
+        userGameStateRepository.updateIsWishedAndIsOwnedById(isWished, isOwned, id);
+    }
+
     public List<UserGameState> getBlackListByChatId(String chatId) {
         return userGameStateRepository.findByUser_ChatIdAndIsBannedTrue(chatId);
     }
 
     public void deleteByUser(User user) {
         userGameStateRepository.deleteByUser(user);
+    }
+
+    public boolean existsByUserAndGame(User user, Game game) {
+        return userGameStateRepository.existsByUserAndGame(user, game);
+    }
+
+    public UserGameState findByUserAndGame(User user, Game game) {
+        return userGameStateRepository.findByUserAndGame(user, game);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -86,13 +87,19 @@ public class SchedulerConfig {
         logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");
     }
 
- //   @Scheduled(fixedRate = 86400000)
+    @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
-        // СДЕЛАТЬ ЗДЕСЬ ПРОДУМАННОЕ ОБНОВЛЕНИЕ СПИСКА ИГР
-//        users.stream()
-//                .parallel()
-//                .forEach(user -> gameService.saveGamesInDb(steamService.getOwnedGames(user.getSteamId())));
+        users.stream()
+                .parallel() // TODO CHECK THIS!!
+                .forEach(user -> {
+                    try {
+                        userService.saveOrUpdateUserInDb(user.getChatId(), user.getName(), String.valueOf(user.getSteamId()));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage() + " error in processing user: {}, with steam ID: {}", user.getChatId(), user.getSteamId());
+                        throw new RuntimeException(e);
+                    }
+                });
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
     }
 

@@ -6,10 +6,8 @@ import bot.farm.steam_news_bot.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +40,8 @@ public class UserService {
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
 
-            userGameStateService.deleteByUser(user);
-
-            user.setStates(getSetStatesByUser(user));
+            Set<UserGameState> states = updateSetStates(getSetStatesByUser(user));
+            user.setStates(states);
 
             userRepository.save(user);
         }
@@ -52,8 +49,7 @@ public class UserService {
 
     private Set<UserGameState> getSetStatesByUser(User user) throws IOException, NullPointerException {
         return steamService.getOwnedGames(user.getSteamId())
-                .stream()
-                .parallel()
+                .parallelStream()
                 .map(game -> {
                     UserGameState userGameState = new UserGameState();
                     userGameState.setUser(user);
@@ -64,6 +60,22 @@ public class UserService {
                     return userGameState;
                 })
                 .collect(Collectors.toSet());
+    }
+
+    private Set<UserGameState> updateSetStates(Set<UserGameState> newSet) {
+        Iterator<UserGameState> iterator = newSet.iterator();
+        Set<UserGameState> tmp = new HashSet<>();
+        while (iterator.hasNext()) {
+            UserGameState ugs = iterator.next();
+            if (userGameStateService.existsByUserAndGame(ugs.getUser(), ugs.getGame())) {
+                UserGameState oldState = userGameStateService.findByUserAndGame(ugs.getUser(), ugs.getGame());
+                tmp.add(oldState);
+                iterator.remove();
+            }
+        }
+
+        newSet.addAll(tmp);
+        return newSet;
     }
 
     public long getCountOwnedGames(String chatId) {
