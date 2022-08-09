@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface GameRepository extends CrudRepository<Game,String> {
@@ -14,7 +15,7 @@ public interface GameRepository extends CrudRepository<Game,String> {
 
     List<Game> findByStates_User_ActiveTrue();
 
-    List<Game> findByStates_User_ActiveTrueAndStates_IsBannedFalse();
+    Set<Game> findByStates_User_ActiveTrueAndStates_IsBannedFalse();
 
     boolean existsByAppid(String appid);
 

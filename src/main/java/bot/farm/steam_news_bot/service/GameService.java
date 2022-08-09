@@ -5,6 +5,7 @@ import bot.farm.steam_news_bot.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +23,7 @@ public class GameService {
                 .collect(Collectors.joining(" ,"));
     }
 
-    public List<Game> getAllGamesByActiveUsers() {
+    public Set<Game> getAllGamesByActiveUsers() {
       //  return gameRepository.findByStates_User_ActiveTrue();
         return gameRepository.findByStates_User_ActiveTrueAndStates_IsBannedFalse();
     }

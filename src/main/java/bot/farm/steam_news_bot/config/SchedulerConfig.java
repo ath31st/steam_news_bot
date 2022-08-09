@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -48,7 +49,7 @@ public class SchedulerConfig {
     private void updateAndSendNewsItems() {
         Instant startCycle = Instant.now();
 
-        List<Game> games = gameService.getAllGamesByActiveUsers();
+        Set<Game> games = gameService.getAllGamesByActiveUsers();
 
         if (!games.isEmpty()) {
 
