@@ -22,6 +22,7 @@ public class User {
     private String name;
     @NotNull
     private Long steamId;
+    private String locale;
     private boolean active;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER,

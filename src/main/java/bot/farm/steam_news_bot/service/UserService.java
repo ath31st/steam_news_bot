@@ -23,11 +23,12 @@ public class UserService {
         this.steamService = steamService;
     }
 
-    public void saveOrUpdateUserInDb(String chatId, String name, String steamId) throws IOException, NullPointerException {
+    public void saveOrUpdateUserInDb(String chatId, String name, String steamId,String locale) throws IOException, NullPointerException {
         if (userRepository.findUserByChatId(chatId).isEmpty()) {
 
             User user = new User();
             user.setActive(true);
+            user.setLocale(locale);
             user.setChatId(chatId);
             user.setName(name);
             user.setSteamId(Long.valueOf(steamId));
@@ -35,17 +36,19 @@ public class UserService {
 
             userRepository.save(user);
 
-        } else {
+        }
+    }
+    public void updateUser(String chatId, String steamId, String locale) throws IOException, NullPointerException {
+        if (userRepository.findUserByChatId(chatId).isPresent()){
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
-
+            user.setLocale(locale);
             Set<UserGameState> states = updateSetStates(getSetStatesByUser(user));
             user.setStates(states);
 
             userRepository.save(user);
         }
     }
-
     private Set<UserGameState> getSetStatesByUser(User user) throws IOException, NullPointerException {
         return steamService.getOwnedGames(user.getSteamId())
                 .parallelStream()

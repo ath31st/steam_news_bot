@@ -95,7 +95,7 @@ public class SchedulerConfig {
                 .parallel() // TODO CHECK THIS!!
                 .forEach(user -> {
                     try {
-                        userService.saveOrUpdateUserInDb(user.getChatId(), user.getName(), String.valueOf(user.getSteamId()));
+                        userService.updateUser(user.getChatId(), String.valueOf(user.getSteamId()), user.getLocale());
                     } catch (IOException e) {
                         logger.error(e.getMessage() + " error in processing user: {}, with steam ID: {}", user.getChatId(), user.getSteamId());
                         throw new RuntimeException(e);

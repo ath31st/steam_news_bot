@@ -87,7 +87,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         sendTextMessage(chatId, getMessage(WAITING, locale));
 
                         try {
-                            userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
+                            userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText, locale);
                             if (userService.findUserByChatId(chatId).isPresent()) {
                                 sendTextMessage(chatId, String.format(getMessage(REGISTRATION, locale),
                                         inputText, userService.findUserByChatId(chatId).get().getName(),
