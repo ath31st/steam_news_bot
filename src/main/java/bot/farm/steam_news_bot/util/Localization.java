@@ -40,24 +40,26 @@ public class Localization {
         //START
         messages.put("start_en", """
                 Welcome! The news Steam bot is at your service!\s
-                He has a lot of news for you about releases, patches, events and much more. Hurry up to get started!\s
+                It tracks news about releases, patches, events and much more that developers have shared on the Steam platform. Hurry up to get started!\s
 
                 Psss. Don't forget to look in the menu -> settings""");
         messages.put("start_ru", """
                 Добро пожаловать! Новостной Steam бот к вашим услугам!\s
-                У него есть для вас много новостей о релизах, патчах, событиях и многом другом. Спешите начать!\s
+                Он отслеживает новости о релизах, патчах, событиях и многом другом, чем поделились разработчики на площадке Steam. Спешите начать!\s
 
                 Пссс. Не забудьте заглянуть в меню -> настройки""");
 
         //HELP
         messages.put("help_en", """
-                1. The news is updated every half hour
-                2. If you don't know where to find the Steam ID, then follow the link https://store.steampowered.com/account/
+                1. News about your games is updated every half hour
+                2. The status of your library is updated once a day
+                3. If you don't know where to find the Steam ID, then follow the link https://store.steampowered.com/account/
                 Steam ID looks like 765XXXXXXXXXX""");
         messages.put("help_ru", """
-                1. Новости обновляются каждые полчаса
-                2. Если вы не знаете где найти Steam ID, перейдите по ссылке https://store.steampowered.com/account/
-                Steam ID выглядит так 765XXXXXXXXXX""");
+                1. Новости о ваших играх обновляются каждые полчаса
+                2. Состояние вашей библиотеки обновляется раз в сутки
+                3. Если вы не знаете где найти Steam ID, перейдите по ссылке https://store.steampowered.com/account/
+                Steam ID выглядит так: 765XXXXXXXXXX""");
 
         //SETTINGS
         messages.put("settings_en", "\u2699 Settings");
@@ -73,7 +75,7 @@ public class Localization {
 
         //REGISTRATION
         messages.put("registration_en", "Your steam ID: %s\nHi %s!\nNice library! You have %d owned games on your account");
-        messages.put("registration_ru", "Твой Steam ID: %s\nПривет %s!\nОтличная библиотека! У тебя %d купленных игр на аккаунте");
+        messages.put("registration_ru", "Ваш Steam ID: %s\nПривет %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
 
         //ERROR_HIDDEN_ACC
         messages.put("error_hidden_acc_en", "Steam account with id %s is hidden");
@@ -105,7 +107,7 @@ public class Localization {
 
         //NOT_REGISTERED
         messages.put("not_registered_en", "You are not registered yet. Please select Set/Update steam ID");
-        messages.put("not_registered_ru", "Вы еще не зарегистрированы. Пожалуйста, выберите Установить/Обновить Steam ID");
+        messages.put("not_registered_ru", "Вы еще не зарегистрированы. Пожалуйста, выберите Ввести/Обновить Steam ID");
 
         //ACTIVE_MODE
         messages.put("active_mode_en", "You are set \"active\" mode. Now the bot will send you news");
