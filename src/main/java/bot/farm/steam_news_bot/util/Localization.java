@@ -25,10 +25,10 @@ public class Localization {
         NOT_REGISTERED,
         ACTIVE_MODE,
         INACTIVE_MODE,
-        ALREADY_UNSUBSCRIBED,
-        UNSUBSCRIBED,
-        ALREADY_SUBSCRIBED,
-        SUBSCRIBED,
+        ALREADY_UNSUBSCRIBE,
+        UNSUBSCRIBE,
+        ALREADY_SUBSCRIBE,
+        SUBSCRIBE,
         EMPTY_BLACK_LIST,
         BLACK_LIST,
         BLACK_LIST_CLEAR
@@ -117,19 +117,19 @@ public class Localization {
         messages.put("inactive_mode_en", "You are set \"inactive\" mode. Now the bot will not send you news until you activate the \"active\" mode again");
         messages.put("inactive_mode_ru", "Вы поставили режим \"неактивен\". Теперь бот не будет присылать вам новости, пока вы не поставите режим \"активен\" снова");
 
-        //ALREADY_UNSUBSCRIBED
+        //ALREADY_UNSUBSCRIBE
         messages.put("already unsubscribed_en", "You have already unsubscribed from ");
         messages.put("already unsubscribed_ru", "Вы уже отписаны от ");
 
-        //UNSUBSCRIBED
+        //UNSUBSCRIBE
         messages.put("unsubscribe_en", "You will no longer receive news about ");
         messages.put("unsubscribe_ru", "Вы больше не будете получать новости о ");
 
-        //ALREADY_SUBSCRIBED
+        //ALREADY_SUBSCRIBE
         messages.put("already_subscribe_en", "You have already subscribed to this ");
         messages.put("already_subscribe_ru", "Вы уже подписаны на ");
 
-        //SUBSCRIBED
+        //SUBSCRIBE
         messages.put("subscribe_en", "Now you will again receive news about ");
         messages.put("subscribe_ru", "Теперь вы будете получать новости о ");
 

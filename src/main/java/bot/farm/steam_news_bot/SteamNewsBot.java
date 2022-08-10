@@ -149,10 +149,10 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         String gameTitle = update.getCallbackQuery().getMessage().getText();
                         gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
                         if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
-                            sendTextMessage(chatId, getMessage(ALREADY_UNSUBSCRIBED, locale) + gameTitle);
+                            sendTextMessage(chatId, getMessage(ALREADY_UNSUBSCRIBE, locale) + gameTitle);
                         } else {
                             userGameStateService.updateStateForGameByChatId(chatId, gameTitle, true);
-                            sendTextMessage(chatId, getMessage(UNSUBSCRIBED, locale) + gameTitle);
+                            sendTextMessage(chatId, getMessage(UNSUBSCRIBE, locale) + gameTitle);
                         }
 
                     } else {
@@ -165,9 +165,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
                         if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
                             userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
-                            sendTextMessage(chatId, getMessage(SUBSCRIBED, locale) + gameTitle);
+                            sendTextMessage(chatId, getMessage(SUBSCRIBE, locale) + gameTitle);
                         } else {
-                            sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
+                            sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBE, locale) + gameTitle);
                         }
                     } else {
                         sendTextMessage(chatId, getMessage(NOT_REGISTERED, locale));
