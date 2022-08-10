@@ -75,7 +75,7 @@ public class Localization {
 
         //REGISTRATION
         messages.put("registration_en", "Your steam ID: %s\nHi %s!\nNice library! You have %d owned games on your account");
-        messages.put("registration_ru", "Ваш Steam ID: %s\nПривет %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
+        messages.put("registration_ru", "Ваш Steam ID: %s\nПривет, %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
 
         //ERROR_HIDDEN_ACC
         messages.put("error_hidden_acc_en", "Steam account with id %s is hidden");
