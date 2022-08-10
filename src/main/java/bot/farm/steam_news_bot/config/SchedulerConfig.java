@@ -78,7 +78,7 @@ public class SchedulerConfig {
                             .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
                             .forEach(user ->
                                     steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
-                                            + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem));
+                                            + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem, user.getLocale()));
                 }
             }
             newsItems.clear();

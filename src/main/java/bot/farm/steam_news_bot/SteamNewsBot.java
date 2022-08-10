@@ -71,7 +71,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                     switch (inputText) {
                         case "/start" -> sendTextMessage(chatId, getMessage(START, locale));
                         case "/help" -> sendTextMessage(chatId, getMessage(HELP, locale));
-                        case "/settings" -> sendMenuMessage(chatId, getMessage(SETTINGS, locale));
+                        case "/settings" -> sendMenuMessage(chatId, getMessage(SETTINGS, locale), locale);
                         default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
                     }
                 }
@@ -218,9 +218,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendNewsMessage(String chatId, String text) {
+    public void sendNewsMessage(String chatId, String text, String locale) {
         try {
-            execute(sendMessageService.createNewsMessage(chatId, text));
+            execute(sendMessageService.createNewsMessage(chatId, text, locale));
         } catch (TelegramApiException e) {
             if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
                 userService.updateActiveForUser(chatId, false);
@@ -232,9 +232,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendMenuMessage(String chatId, String message) {
+    private void sendMenuMessage(String chatId, String message, String locale) {
         try {
-            execute(sendMessageService.createMenuMessage(chatId, message));
+            execute(sendMessageService.createMenuMessage(chatId, message, locale));
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
