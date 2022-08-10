@@ -24,14 +24,7 @@ public class GameService {
     }
 
     public Set<Game> getAllGamesByActiveUsers() {
-      //  return gameRepository.findByStates_User_ActiveTrue();
         return gameRepository.findByStates_User_ActiveTrueAndStates_IsBannedFalse();
-    }
-
-    public void saveGamesInDb(List<Game> games) {
-        games.stream()
-                .filter(game -> !gameRepository.existsByAppid(game.getAppid()))
-                .forEach(gameRepository::save);
     }
 
     public long countAllGames() {

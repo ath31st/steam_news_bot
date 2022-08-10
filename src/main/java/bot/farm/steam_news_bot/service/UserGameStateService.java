@@ -34,10 +34,6 @@ public class UserGameStateService {
         return userGameStateRepository.findByUser_ChatIdAndIsBannedTrue(chatId);
     }
 
-    public void deleteByUser(User user) {
-        userGameStateRepository.deleteByUser(user);
-    }
-
     public boolean existsByUserAndGame(User user, Game game) {
         return userGameStateRepository.existsByUserAndGame(user, game);
     }

@@ -41,9 +41,8 @@ public class SteamService {
         HttpURLConnection connection = getConnection(url);
         String rawJson = getRawDataFromConnection(connection);
 
-        if (rawJson.equals("{\"response\":{}}")) {
+        if (rawJson.equals("{\"response\":{}}"))
             throw new NullPointerException("Account is hidden");
-        }
 
         games = convertRawJsonToListGames(rawJson);
         connection.disconnect();
@@ -172,8 +171,8 @@ public class SteamService {
         LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
         LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
         // TODO CHECK THIS LINE!
-         return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
-      //  return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
+        return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
+        //  return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
     }
 
     private static String deleteLinksOnImagesFromText(String text) {

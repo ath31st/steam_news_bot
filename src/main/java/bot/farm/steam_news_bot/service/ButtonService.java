@@ -58,7 +58,7 @@ public class ButtonService {
         return inlineKeyButtonList;
     }
 
-    public List<List<InlineKeyboardButton>> createInlineBanButton(String locale) {
+    public List<List<InlineKeyboardButton>> createInlineSubscribeButton(String locale) {
         List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
         List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
 

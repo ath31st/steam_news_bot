@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static bot.farm.steam_news_bot.util.Localization.Messages.*;
+
 @Component
 public class Localization {
 
@@ -38,112 +40,112 @@ public class Localization {
 
     static {
         //START
-        messages.put("start_en", """
+        messages.put(START + "_en", """
                 Welcome! The news Steam bot is at your service!\s
                 It tracks news about releases, patches, events and much more that developers have shared on the Steam platform. Hurry up to get started!\s
 
                 Psss. Don't forget to look in the menu -> settings""");
-        messages.put("start_ru", """
+        messages.put(START + "_ru", """
                 Добро пожаловать! Новостной Steam бот к вашим услугам!\s
                 Он отслеживает новости о релизах, патчах, событиях и многом другом, чем поделились разработчики на площадке Steam. Спешите начать!\s
 
                 Пссс. Не забудьте заглянуть в меню -> настройки""");
 
         //HELP
-        messages.put("help_en", """
+        messages.put(HELP + "_en", """
                 1. News about your games is updated every half hour
                 2. The status of your library is updated once a day
                 3. If you don't know where to find the Steam ID, then follow the link https://store.steampowered.com/account/
                 Steam ID looks like 765XXXXXXXXXX""");
-        messages.put("help_ru", """
+        messages.put(HELP + "_ru", """
                 1. Новости о ваших играх обновляются каждые полчаса
                 2. Состояние вашей библиотеки обновляется раз в сутки
                 3. Если вы не знаете где найти Steam ID, перейдите по ссылке https://store.steampowered.com/account/
                 Steam ID выглядит так: 765XXXXXXXXXX""");
 
         //SETTINGS
-        messages.put("settings_en", "\u2699 Settings");
-        messages.put("settings_ru", "\u2699 Настройки");
+        messages.put(SETTINGS + "_en", "\u2699 Settings");
+        messages.put(SETTINGS + "_ru", "\u2699 Настройки");
 
         //DEFAULT_MESSAGE
-        messages.put("default_message_en", "Patience, my friend. There is no fresh news yet");
-        messages.put("default_message_ru", "Терпение, мой друг. Свежих новостей еще нет");
+        messages.put(DEFAULT_MESSAGE + "_en", "Patience, my friend. There is no fresh news yet");
+        messages.put(DEFAULT_MESSAGE + "_ru", "Терпение, мой друг. Свежих новостей еще нет");
 
         //WAITING
-        messages.put("waiting_en", "It will take a few seconds");
-        messages.put("waiting_ru", "Это займет несколько секунд");
+        messages.put(WAITING + "_en", "It will take a few seconds");
+        messages.put(WAITING + "_ru", "Это займет несколько секунд");
 
         //REGISTRATION
-        messages.put("registration_en", "Your steam ID: %s\nHi %s!\nNice library! You have %d owned games on your account");
-        messages.put("registration_ru", "Ваш Steam ID: %s\nПривет, %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
+        messages.put(REGISTRATION + "_en", "Your steam ID: %s\nHi %s!\nNice library! You have %d owned games on your account");
+        messages.put(REGISTRATION + "_ru", "Ваш Steam ID: %s\nПривет, %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
 
         //ERROR_HIDDEN_ACC
-        messages.put("error_hidden_acc_en", "Steam account with id %s is hidden");
-        messages.put("error_hidden_acc_ru", "Steam аккаунт с id %s скрыт");
+        messages.put(ERROR_HIDDEN_ACC + "_en", "Steam account with id %s is hidden");
+        messages.put(ERROR_HIDDEN_ACC + "_ru", "Steam аккаунт с id %s скрыт");
 
         //ERROR_DONT_EXISTS_ACC
-        messages.put("error_dont_exists_acc_en", "Steam account with id %s don't exists");
-        messages.put("error_dont_exists_acc_ru", "Steam аккаунт с id %s не существует");
+        messages.put(ERROR_DONT_EXISTS_ACC + "_en", "Steam account with id %s don't exists");
+        messages.put(ERROR_DONT_EXISTS_ACC + "_ru", "Steam аккаунт с id %s не существует");
 
         //INCORRECT_STEAM_ID
-        messages.put("incorrect_steam_id_en", "You entered an incorrect Steam ID");
-        messages.put("incorrect_steam_id_ru", "Вы ввели некорректный Steam ID");
+        messages.put(INCORRECT_STEAM_ID + "_en", "You entered an incorrect Steam ID");
+        messages.put(INCORRECT_STEAM_ID + "_ru", "Вы ввели некорректный Steam ID");
 
         //ENTER_STEAM_ID
-        messages.put("enter_steam_id_en", "Enter your Steam ID");
-        messages.put("enter_steam_id_ru", "Введите ваш Steam ID");
+        messages.put(ENTER_STEAM_ID + "_en", "Enter your Steam ID:");
+        messages.put(ENTER_STEAM_ID + "_ru", "Введите ваш Steam ID:");
 
         //CHECK_STEAM_ID
-        messages.put("check_steam_id_en", "Your Steam ID: %d\nStatus: ");
-        messages.put("check_steam_id_ru", "Ваш Steam ID: %d\nСтатус: ");
+        messages.put(CHECK_STEAM_ID + "_en", "Your Steam ID: %d\nStatus: ");
+        messages.put(CHECK_STEAM_ID + "_ru", "Ваш Steam ID: %d\nСтатус: ");
 
         //ACTIVE
-        messages.put("active_en", "active");
-        messages.put("active_ru", "активен");
+        messages.put(ACTIVE + "_en", "active");
+        messages.put(ACTIVE + "_ru", "активен");
 
         //INACTIVE
-        messages.put("inactive_en", "inactive");
-        messages.put("inactive_ru", "неактивен");
+        messages.put(INACTIVE + "_en", "inactive");
+        messages.put(INACTIVE + "_ru", "неактивен");
 
         //NOT_REGISTERED
-        messages.put("not_registered_en", "You are not registered yet. Please select Set/Update steam ID");
-        messages.put("not_registered_ru", "Вы еще не зарегистрированы. Пожалуйста, выберите Ввести/Обновить Steam ID");
+        messages.put(NOT_REGISTERED + "_en", "You are not registered yet. Please select Set/Update steam ID");
+        messages.put(NOT_REGISTERED + "_ru", "Вы еще не зарегистрированы. Пожалуйста, выберите Ввести/Обновить Steam ID");
 
         //ACTIVE_MODE
-        messages.put("active_mode_en", "You are set \"active\" mode. Now the bot will send you news");
-        messages.put("active_mode_ru", "Вы поставили режим \"активен\". Теперь бот будет присылать вам новости");
+        messages.put(ACTIVE_MODE + "_en", "You are set \"active\" mode. Now the bot will send you news");
+        messages.put(ACTIVE_MODE + "_ru", "Вы установили режим \"активен\". Теперь бот будет присылать вам новости");
 
         //INACTIVE_MODE
-        messages.put("inactive_mode_en", "You are set \"inactive\" mode. Now the bot will not send you news until you activate the \"active\" mode again");
-        messages.put("inactive_mode_ru", "Вы поставили режим \"неактивен\". Теперь бот не будет присылать вам новости, пока вы не поставите режим \"активен\" снова");
+        messages.put(INACTIVE_MODE + "_en", "You are set \"inactive\" mode. Now the bot will not send you news until you activate the \"active\" mode again");
+        messages.put(INACTIVE_MODE + "_ru", "Вы установили режим \"неактивен\". Теперь бот не будет присылать вам новости, пока вы не поставите режим \"активен\" снова");
 
         //ALREADY_UNSUBSCRIBE
-        messages.put("already unsubscribed_en", "You have already unsubscribed from ");
-        messages.put("already unsubscribed_ru", "Вы уже отписаны от ");
+        messages.put(ALREADY_UNSUBSCRIBE + "_en", "You have already unsubscribed from ");
+        messages.put(ALREADY_UNSUBSCRIBE + "_ru", "Вы уже отписаны от ");
 
         //UNSUBSCRIBE
-        messages.put("unsubscribe_en", "You will no longer receive news about ");
-        messages.put("unsubscribe_ru", "Вы больше не будете получать новости о ");
+        messages.put(UNSUBSCRIBE + "_en", "You will no longer receive news about ");
+        messages.put(UNSUBSCRIBE + "_ru", "Вы больше не будете получать новости о ");
 
         //ALREADY_SUBSCRIBE
-        messages.put("already_subscribe_en", "You have already subscribed to this ");
-        messages.put("already_subscribe_ru", "Вы уже подписаны на ");
+        messages.put(ALREADY_SUBSCRIBE + "_en", "You have already subscribed to this ");
+        messages.put(ALREADY_SUBSCRIBE + "_ru", "Вы уже подписаны на ");
 
         //SUBSCRIBE
-        messages.put("subscribe_en", "Now you will again receive news about ");
-        messages.put("subscribe_ru", "Теперь вы будете получать новости о ");
+        messages.put(SUBSCRIBE + "_en", "Now you will again receive news about ");
+        messages.put(SUBSCRIBE + "_ru", "Теперь вы будете получать новости о ");
 
         //EMPTY_BLACK_LIST
-        messages.put("empty_black_list_en", "Your black list is empty");
-        messages.put("empty_black_list_ru", "Ваш черный список пуст");
+        messages.put(EMPTY_BLACK_LIST + "_en", "Your black list is empty");
+        messages.put(EMPTY_BLACK_LIST + "_ru", "Ваш черный список пуст");
 
         //BLACK_LIST
-        messages.put("black_list_en", "Your personal black list: ");
-        messages.put("black_list_ru", "Ваш черный список: ");
+        messages.put(BLACK_LIST + "_en", "Your personal black list: ");
+        messages.put(BLACK_LIST + "_ru", "Ваш черный список: ");
 
         //BLACK_LIST_CLEAR
-        messages.put("black_list_clear_en", "Your black list is cleared");
-        messages.put("black_list_clear_ru", "Ваш черный список очищен");
+        messages.put(BLACK_LIST_CLEAR + "_en", "Your black list is cleared");
+        messages.put(BLACK_LIST_CLEAR + "_ru", "Ваш черный список очищен");
 
     }
 
@@ -151,7 +153,7 @@ public class Localization {
         if (!locale.equals("ru")) {
             locale = "en";
         }
-        return messages.get(key.name().toLowerCase() + "_" + locale);
+        return messages.get(key + "_" + locale);
     }
 
 }

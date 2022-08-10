@@ -3,6 +3,8 @@ package bot.farm.steam_news_bot.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import static bot.farm.steam_news_bot.util.ButtonLocalization.Buttons.*;
+
 public class ButtonLocalization {
     public enum Buttons {
         SET_UPD_STEAM_ID,
@@ -16,29 +18,37 @@ public class ButtonLocalization {
     }
 
     private static final Map<String, String> buttons = new HashMap<>();
+
     static {
-        buttons.put("set_upd_steam_id_en", "Set/Update Steam ID");
-        buttons.put("set_upd_steam_id_ru", "Ввести/Обновить Steam ID");
-        buttons.put("check_steam_id_en", "Check your steam ID");
-        buttons.put("check_steam_id_ru", "Проверить Steam ID");
-        buttons.put("set_active_mode_en", "Set \"active\" mode");
-        buttons.put("set_active_mode_ru", "Режим \"активен\"");
-        buttons.put("set_inactive_mode_en", "Set \"inactive\" mode");
-        buttons.put("set_inactive_mode_ru", "Режим \"неактивен\"");
-        buttons.put("clear_black_list_en", "Clear black list");
-        buttons.put("clear_black_list_ru", "Очистить черный список");
-        buttons.put("black_list_en", "Black list");
-        buttons.put("black_list_ru", "Черный список");
-        buttons.put("unsubscribe_en", "Unsubscribe");
-        buttons.put("unsubscribe_ru", "Отписаться");
-        buttons.put("subscribe_en", "Subscribe");
-        buttons.put("subscribe_ru", "Подписаться");
+        buttons.put(SET_UPD_STEAM_ID + "_en", "Set/Update Steam ID");
+        buttons.put(SET_UPD_STEAM_ID + "_ru", "Ввести/Обновить Steam ID");
+
+        buttons.put(CHECK_STEAM_ID + "_en", "Check your steam ID");
+        buttons.put(CHECK_STEAM_ID + "_ru", "Проверить Steam ID");
+
+        buttons.put(SET_ACTIVE_MODE + "_en", "Set \"active\" mode");
+        buttons.put(SET_ACTIVE_MODE + "_ru", "Режим \"активен\"");
+
+        buttons.put(SET_INACTIVE_MODE + "_en", "Set \"inactive\" mode");
+        buttons.put(SET_INACTIVE_MODE + "_ru", "Режим \"неактивен\"");
+
+        buttons.put(CLEAR_BLACK_LIST + "_en", "Clear black list");
+        buttons.put(CLEAR_BLACK_LIST + "_ru", "Очистить черный список");
+
+        buttons.put(BLACK_LIST + "_en", "Black list");
+        buttons.put(BLACK_LIST + "_ru", "Черный список");
+
+        buttons.put(UNSUBSCRIBE + "_en", "Unsubscribe");
+        buttons.put(UNSUBSCRIBE + "_ru", "Отписаться");
+
+        buttons.put(SUBSCRIBE + "_en", "Subscribe");
+        buttons.put(SUBSCRIBE + "_ru", "Подписаться");
     }
 
     public static String getMessage(Enum<Buttons> key, String locale) {
         if (!locale.equals("ru")) {
             locale = "en";
         }
-        return buttons.get(key.name().toLowerCase() + "_" + locale);
+        return buttons.get(key + "_" + locale);
     }
 }

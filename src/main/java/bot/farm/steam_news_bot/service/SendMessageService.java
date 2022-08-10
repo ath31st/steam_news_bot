@@ -20,21 +20,15 @@ public class SendMessageService {
     }
 
     public SendMessage createMenuMessage(String chatId, String message, String locale) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(message);
+        SendMessage sendMessage = createMessage(chatId,message);
         InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineButton(locale));
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
     }
 
     public SendMessage createNewsMessage(String chatId, String message, String locale) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdownV2(true);
-        sendMessage.enableHtml(true);
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(message);
-        InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineBanButton(locale));
+        SendMessage sendMessage = createMessage(chatId,message);
+        InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineSubscribeButton(locale));
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
     }
