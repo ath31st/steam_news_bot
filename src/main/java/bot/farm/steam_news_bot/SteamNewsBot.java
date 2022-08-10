@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 
-import static bot.farm.steam_news_bot.util.Constants.*;
+import static bot.farm.steam_news_bot.util.Localization.getMessage;
 
 @Component
 @Getter
@@ -58,20 +58,20 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         String chatId;
         String inputText;
+        String locale;
 
         switch (state) {
             case DEFAULT -> {
                 if (update.hasMessage() && update.getMessage().hasText()) {
                     chatId = String.valueOf(update.getMessage().getChatId());
                     inputText = update.getMessage().getText();
-
-                    update.getMessage().getFrom().getLanguageCode(); // Localization code
+                    locale = update.getMessage().getFrom().getLanguageCode();
 
                     switch (inputText) {
-                        case "/start" -> sendTextMessage(chatId, START);
-                        case "/help" -> sendTextMessage(chatId, HELP);
-                        case "/settings" -> sendMenuMessage(chatId);
-                        default -> sendTextMessage(chatId, WRONG_COMMAND);
+                        case "/start" -> sendTextMessage(chatId, getMessage("start", locale));
+                        case "/help" -> sendTextMessage(chatId, getMessage("help", locale));
+                        case "/settings" -> sendMenuMessage(chatId, getMessage("settings", locale));
+                        default -> sendTextMessage(chatId, getMessage("default_message", locale));
                     }
                 }
             }
@@ -79,32 +79,28 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                 if (update.hasMessage() && update.getMessage().hasText()) {
                     chatId = String.valueOf(update.getMessage().getChatId());
                     inputText = update.getMessage().getText().strip();
+                    locale = update.getMessage().getFrom().getLanguageCode();
+
                     if (SteamService.isValidSteamId(inputText)) {
 
-                        sendTextMessage(chatId, "It will take a few seconds");
+                        sendTextMessage(chatId, getMessage("waiting", locale));
 
                         try {
                             userService.saveOrUpdateUserInDb(chatId, update.getMessage().getFrom().getUserName(), inputText);
 
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("Your steam ID: ")
-                                    .append(inputText)
-                                    .append(System.lineSeparator())
-                                    .append("Hi ").append(userService.findUserByChatId(chatId).get().getName()).append("!")
-                                    .append(System.lineSeparator())
-                                    .append("Nice library! You have ")
-                                    .append(userService.getCountOwnedGames(chatId))
-                                    .append(" owned games on your account");
-                            sendTextMessage(chatId, sb.toString());
+                            sendTextMessage(chatId, String.format(getMessage("registration", locale),
+                                    inputText, userService.findUserByChatId(chatId).get().getName(),
+                                    userService.getCountOwnedGames(chatId)));
+
                         } catch (NullPointerException e) {
-                            logger.error("User {} entered id {} - this is hidden account" , chatId, inputText);
-                            sendTextMessage(chatId, "Steam account with id " + inputText +" is hidden");
+                            logger.error("User {} entered id {} - this is hidden account", chatId, inputText);
+                            sendTextMessage(chatId, String.format(getMessage("error_hidden_acc", locale), inputText));
                         } catch (IOException e) {
-                            logger.error("User {} entered id {}, account dont exists" , chatId, inputText);
-                            sendTextMessage(chatId, "Steam account with id " + inputText +" don't exists");
+                            logger.error("User {} entered id {}, account dont exists", chatId, inputText);
+                            sendTextMessage(chatId, String.format(getMessage("error_dont_exists_acc", locale), inputText));
                         }
                     } else {
-                        sendTextMessage(chatId, "You entered an incorrect steam ID");
+                        sendTextMessage(chatId, getMessage("incorrect_steam_id", locale));
                     }
                     state = UserState.DEFAULT;
                 }
@@ -115,35 +111,36 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             chatId = String.valueOf(update.getCallbackQuery().getMessage().getChatId());
             String callBackData = update.getCallbackQuery().getData();
+            locale = update.getCallbackQuery().getFrom().getLanguageCode();
 
             switch (callBackData) {
                 case "/set_steam_id":
-                    sendTextMessage(chatId, "Enter your Steam ID");
+                    sendTextMessage(chatId, getMessage("enter_steam_id", locale));
                     state = UserState.SET_STEAM_ID;
                     break;
                 case "/check_steam_id":
                     if (userService.existsByChatId(chatId)) {
-                        sendTextMessage(chatId, "Your steam ID: " + userService.getUserByChatId(chatId).getSteamId() +
-                                "\n" + "Status: " + (userService.getUserByChatId(chatId).isActive() ? "active" : "inactive"));
+                        sendTextMessage(chatId, String.format(getMessage("check_steam_id", locale),
+                                userService.getUserByChatId(chatId).getSteamId()) +
+                                (userService.getUserByChatId(chatId).isActive() ? getMessage("active", locale) : getMessage("inactive", locale)));
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/set_active_mode":
                     if (userService.existsByChatId(chatId)) {
                         userService.updateActiveForUser(chatId, true);
-                        sendTextMessage(chatId, "You are set \"active\" mode. Now the bot will send you news");
+                        sendTextMessage(chatId, getMessage("active_mode",locale));
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/set_inactive_mode":
                     if (userService.existsByChatId(chatId)) {
                         userService.updateActiveForUser(chatId, false);
-                        sendTextMessage(chatId, "You are set \"inactive\" mode. " +
-                                "Now the bot will not send you news until you activate the \"active\" mode again");
+                        sendTextMessage(chatId, getMessage("inactive_mode", locale));
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/unsubscribe":
@@ -151,14 +148,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         String gameTitle = update.getCallbackQuery().getMessage().getText();
                         gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
                         if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
-                            sendTextMessage(chatId, "You have already unsubscribed from " + gameTitle);
+                            sendTextMessage(chatId, getMessage("already_unsubscribed", locale) + gameTitle);
                         } else {
                             userGameStateService.updateStateForGameByChatId(chatId, gameTitle, true);
-                            sendTextMessage(chatId, "You will no longer receive news about " + gameTitle);
+                            sendTextMessage(chatId, getMessage("unsubscribe", locale) + gameTitle);
                         }
 
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/subscribe":
@@ -167,40 +164,40 @@ public class SteamNewsBot extends TelegramLongPollingBot {
                         gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
                         if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
                             userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
-                            sendTextMessage(chatId, "Now you will again receive news about " + gameTitle);
+                            sendTextMessage(chatId, getMessage("subscribe", locale) + gameTitle);
                         } else {
-                            sendTextMessage(chatId, "You have already subscribed to this " + gameTitle);
+                            sendTextMessage(chatId, getMessage("already_subscribe", locale) + gameTitle);
                         }
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/black_list":
                     if (userService.existsByChatId(chatId)) {
                         if (gameService.getBanListByChatId(chatId).isBlank()) {
-                            sendTextMessage(chatId, "Your black list is empty");
+                            sendTextMessage(chatId, getMessage("empty_black_list", locale));
                         } else {
-                            sendTextMessage(chatId, "Your personal black list: " + gameService.getBanListByChatId(chatId));
+                            sendTextMessage(chatId, getMessage("black_list", locale) + gameService.getBanListByChatId(chatId));
                         }
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 case "/clear_black_list":
                     if (userService.existsByChatId(chatId)) {
                         if (gameService.getBanListByChatId(chatId).isBlank()) {
-                            sendTextMessage(chatId, "Your black list is empty");
+                            sendTextMessage(chatId, getMessage("empty_black_list", locale));
                         } else {
                             userGameStateService.getBlackListByChatId(chatId)
-                                    .forEach(state -> userGameStateService.updateStateForGameById(false,state.getId()));
-                            sendTextMessage(chatId, "Your black list is cleared");
+                                    .forEach(state -> userGameStateService.updateStateForGameById(false, state.getId()));
+                            sendTextMessage(chatId, getMessage("black_list_clear", locale));
                         }
                     } else {
-                        sendTextMessage(chatId, "You are not registered yet. Please select Set/Update steam ID");
+                        sendTextMessage(chatId, getMessage("not_registered", locale));
                     }
                     break;
                 default:
-                    sendTextMessage(chatId, WRONG_COMMAND);
+                    sendTextMessage(chatId, getMessage("default_message", locale));
                     break;
             }
         }
@@ -234,9 +231,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendMenuMessage(String chatId) {
+    private void sendMenuMessage(String chatId, String message) {
         try {
-            execute(sendMessageService.createMenuMessage(chatId));
+            execute(sendMessageService.createMenuMessage(chatId, message));
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,5 @@
 package bot.farm.steam_news_bot.service;
 
-import bot.farm.steam_news_bot.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,10 +19,10 @@ public class SendMessageService {
         return sendMessage;
     }
 
-    public SendMessage createMenuMessage(String chatId) {
+    public SendMessage createMenuMessage(String chatId, String message) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(Constants.SETTINGS);
+        sendMessage.setText(message);
         InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineButton());
         sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         return sendMessage;
