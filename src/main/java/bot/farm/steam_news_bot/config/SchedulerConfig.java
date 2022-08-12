@@ -57,8 +57,7 @@ public class SchedulerConfig {
 
     @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
-        List<User> users = userService.getUsersByActive(true);
-        users.forEach(user -> {
+        userService.getUsersByActive(true).forEach(user -> {
             try {
                 userService.updateUser(user.getChatId(), String.valueOf(user.getSteamId()), user.getLocale());
             } catch (IOException e) {
@@ -71,8 +70,7 @@ public class SchedulerConfig {
     }
 
     private void updateNewsItemsList(Set<Game> games) {
-        if (games.isEmpty())
-            return;
+        if (games.isEmpty()) return;
 
         logger.info(String.format("%d games in list.", games.size()));
 
@@ -88,22 +86,32 @@ public class SchedulerConfig {
     }
 
     private void sendNewsItems() {
-        if (newsItems.isEmpty())
-            return;
+        if (newsItems.isEmpty()) return;
 
         logger.info(String.format("found %d fresh news", newsItems.size()));
-
-        for (NewsItem newsItem : newsItems) {
-            if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
-                userService.getUsersWithFilters(newsItem.getAppid())
-                        .stream()
-                        .parallel()
+        newsItems.stream()
+                .filter(newsItem -> !userService.getUsersWithFilters(newsItem.getAppid()).isEmpty())
+                .forEach(newsItem -> userService.getUsersWithFilters(newsItem.getAppid())
+                        .parallelStream()
                         .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
                         .forEach(user ->
                                 steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
-                                        + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem, user.getLocale()));
-            }
-        }
+                                        + gamesAppidName.get(newsItem.getAppid()) + "</b>"
+                                        + System.lineSeparator() + newsItem, user.getLocale())));
+
+//        for (NewsItem newsItem : newsItems) {
+//            if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
+//                userService.getUsersWithFilters(newsItem.getAppid())
+//                        .stream()
+//                        .parallel()
+//                        .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
+//                        .forEach(user ->
+//                                steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
+//                                        + gamesAppidName.get(newsItem.getAppid()) + "</b>"
+//                                        + System.lineSeparator() + newsItem, user.getLocale()));
+//            }
+//        }
+
         newsItems.clear();
         gamesAppidName.clear();
 
