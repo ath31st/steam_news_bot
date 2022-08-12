@@ -23,26 +23,27 @@ public class UserService {
         this.steamService = steamService;
     }
 
-    public void saveOrUpdateUserInDb(String chatId,
-                                     String name,
-                                     String steamId,
-                                     String locale) throws IOException, NullPointerException {
-        if (userRepository.findUserByChatId(chatId).isEmpty()) {
+    public void saveUser(String chatId,
+                         String name,
+                         String steamId,
+                         String locale) throws IOException, NullPointerException {
+        if (userRepository.findUserByChatId(chatId).isPresent()) return;
 
-            User user = new User();
-            user.setActive(true);
-            user.setLocale(locale);
-            user.setChatId(chatId);
-            user.setName(name);
-            user.setSteamId(Long.valueOf(steamId));
-            user.setStates(getSetStatesByUser(user));
+        User user = new User();
+        user.setActive(true);
+        user.setLocale(locale);
+        user.setChatId(chatId);
+        user.setName(name);
+        user.setSteamId(Long.valueOf(steamId));
+        user.setStates(getSetStatesByUser(user));
 
-            userRepository.save(user);
+        userRepository.save(user);
 
-        }
     }
 
-    public void updateUser(String chatId, String steamId, String locale) throws IOException, NullPointerException {
+    public void updateUser(String chatId,
+                           String steamId,
+                           String locale) throws IOException, NullPointerException {
         if (userRepository.findUserByChatId(chatId).isPresent()) {
             User user = userRepository.findUserByChatId(chatId).get();
             user.setSteamId(Long.valueOf(steamId));
