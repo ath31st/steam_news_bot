@@ -49,59 +49,65 @@ public class SchedulerConfig {
     private void updateAndSendNewsItems() {
         Instant startCycle = Instant.now();
 
-        Set<Game> games = gameService.getAllGamesByActiveUsers();
+        updateNewsItemsList(gameService.getAllGamesByActiveUsers());
+        sendNewsItems();
 
-        if (!games.isEmpty()) {
-
-            logger.info(String.format("%d games in list.", games.size()));
-            Instant start = Instant.now();
-
-            games.stream()
-                    .parallel()
-                    .forEach(game -> {
-                        newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
-                        gamesAppidName.put(game.getAppid(), game.getName());
-                    });
-
-
-            logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
-        }
-        if (!newsItems.isEmpty()) {
-
-            logger.info(String.format("found %d fresh news", newsItems.size()));
-
-            for (NewsItem newsItem : newsItems) {
-                if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
-                    userService.getUsersWithFilters(newsItem.getAppid())
-                            .stream()
-                            .parallel()
-                            .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
-                            .forEach(user ->
-                                    steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
-                                            + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem, user.getLocale()));
-                }
-            }
-            newsItems.clear();
-            gamesAppidName.clear();
-            logger.info("newsItems list cleared!");
-        }
         logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");
     }
 
     @Scheduled(fixedRate = 86400000)
     private void updateGamesDb() {
         List<User> users = userService.getUsersByActive(true);
-        users.stream()
-                .parallel() // TODO CHECK THIS!!
-                .forEach(user -> {
-                    try {
-                        userService.updateUser(user.getChatId(), String.valueOf(user.getSteamId()), user.getLocale());
-                    } catch (IOException e) {
-                        logger.error(e.getMessage() + " error in processing user: {}, with steam ID: {}", user.getChatId(), user.getSteamId());
-                        throw new RuntimeException(e);
-                    }
-                });
+        users.forEach(user -> {
+            try {
+                userService.updateUser(user.getChatId(), String.valueOf(user.getSteamId()), user.getLocale());
+            } catch (IOException e) {
+                logger.error(e.getMessage() + " error in processing user: {}, with steam ID: {}", user.getChatId(), user.getSteamId());
+                throw new RuntimeException(e);
+            }
+        });
+
         logger.info(String.format("GamesDB successful updated! In base %d games.", gameService.countAllGames()));
+    }
+
+    private void updateNewsItemsList(Set<Game> games) {
+        if (games.isEmpty())
+            return;
+
+        logger.info(String.format("%d games in list.", games.size()));
+
+        Instant start = Instant.now();
+        games.parallelStream()
+                .forEach(game -> {
+                    newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
+                    gamesAppidName.put(game.getAppid(), game.getName());
+                });
+
+        logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
+
+    }
+
+    private void sendNewsItems() {
+        if (newsItems.isEmpty())
+            return;
+
+        logger.info(String.format("found %d fresh news", newsItems.size()));
+
+        for (NewsItem newsItem : newsItems) {
+            if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
+                userService.getUsersWithFilters(newsItem.getAppid())
+                        .stream()
+                        .parallel()
+                        .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
+                        .forEach(user ->
+                                steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
+                                        + gamesAppidName.get(newsItem.getAppid()) + "</b>" + System.lineSeparator() + newsItem, user.getLocale()));
+            }
+        }
+        newsItems.clear();
+        gamesAppidName.clear();
+
+        logger.info("newsItems list cleared!");
     }
 
 }
