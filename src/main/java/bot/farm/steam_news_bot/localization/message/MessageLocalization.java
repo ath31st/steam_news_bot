@@ -1,40 +1,14 @@
-package bot.farm.steam_news_bot.util;
+package bot.farm.steam_news_bot.localization.message;
 
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static bot.farm.steam_news_bot.util.Localization.Messages.*;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.*;
 
 @Component
-public class Localization {
-
-    public enum Messages {
-        START,
-        HELP,
-        SETTINGS,
-        DEFAULT_MESSAGE,
-        WAITING,
-        REGISTRATION,
-        ERROR_HIDDEN_ACC,
-        ERROR_DONT_EXISTS_ACC,
-        INCORRECT_STEAM_ID,
-        ENTER_STEAM_ID,
-        CHECK_STEAM_ID,
-        ACTIVE,
-        INACTIVE,
-        NOT_REGISTERED,
-        ACTIVE_MODE,
-        INACTIVE_MODE,
-        ALREADY_UNSUBSCRIBED,
-        UNSUBSCRIBE,
-        ALREADY_SUBSCRIBED,
-        SUBSCRIBE,
-        EMPTY_BLACK_LIST,
-        BLACK_LIST,
-        BLACK_LIST_CLEAR
-    }
+public class MessageLocalization {
 
     private static final Map<String, String> messages = new HashMap<>();
 
@@ -149,7 +123,7 @@ public class Localization {
 
     }
 
-    public static String getMessage(Enum<Messages> key, String locale) {
+    public static String getMessage(Enum<MessageEnum> key, String locale) {
         if (!locale.equals("ru")) {
             locale = "en";
         }

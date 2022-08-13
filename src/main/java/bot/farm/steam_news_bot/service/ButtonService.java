@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-import static bot.farm.steam_news_bot.util.ButtonLocalization.Buttons.*;
-import static bot.farm.steam_news_bot.util.ButtonLocalization.getMessage;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.*;
+import static bot.farm.steam_news_bot.localization.button.ButtonLocalization.getMessage;
 
 @Service
 public class ButtonService {

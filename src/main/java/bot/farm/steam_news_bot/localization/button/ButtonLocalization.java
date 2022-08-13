@@ -1,21 +1,11 @@
-package bot.farm.steam_news_bot.util;
+package bot.farm.steam_news_bot.localization.button;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static bot.farm.steam_news_bot.util.ButtonLocalization.Buttons.*;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.*;
 
 public class ButtonLocalization {
-    public enum Buttons {
-        SET_UPD_STEAM_ID,
-        CHECK_STEAM_ID,
-        SET_ACTIVE_MODE,
-        SET_INACTIVE_MODE,
-        CLEAR_BLACK_LIST,
-        BLACK_LIST,
-        UNSUBSCRIBE,
-        SUBSCRIBE
-    }
 
     private static final Map<String, String> buttons = new HashMap<>();
 
@@ -45,7 +35,7 @@ public class ButtonLocalization {
         buttons.put(SUBSCRIBE + "_ru", "Подписаться");
     }
 
-    public static String getMessage(Enum<Buttons> key, String locale) {
+    public static String getMessage(Enum<ButtonEnum> key, String locale) {
         if (!locale.equals("ru")) {
             locale = "en";
         }
