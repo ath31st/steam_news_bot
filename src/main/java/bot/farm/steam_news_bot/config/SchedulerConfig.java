@@ -97,19 +97,6 @@ public class SchedulerConfig {
                                         + gamesAppidName.get(newsItem.getAppid()) + "</b>"
                                         + System.lineSeparator() + newsItem, user.getLocale())));
 
-//        for (NewsItem newsItem : newsItems) {
-//            if (!userService.getUsersWithFilters(newsItem.getAppid()).isEmpty()) {
-//                userService.getUsersWithFilters(newsItem.getAppid())
-//                        .stream()
-//                        .parallel()
-//                        .peek(user -> logger.info(newsItem.getGid() + " newsItem for user " + user.getName() + " is ready!"))
-//                        .forEach(user ->
-//                                steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
-//                                        + gamesAppidName.get(newsItem.getAppid()) + "</b>"
-//                                        + System.lineSeparator() + newsItem, user.getLocale()));
-//            }
-//        }
-
         newsItems.clear();
         gamesAppidName.clear();
 

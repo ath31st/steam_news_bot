@@ -25,7 +25,7 @@ public class User {
     private String locale;
     private boolean active;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER,
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
             orphanRemoval = true)
     Set<UserGameState> states;
 
