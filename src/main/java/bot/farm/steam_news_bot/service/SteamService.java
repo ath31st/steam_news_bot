@@ -50,19 +50,16 @@ public class SteamService {
         return games;
     }
 
-    public List<NewsItem> getNewsByOwnedGames(String appid) {
+    public List<NewsItem> getNewsByOwnedGames(String appid) throws IOException {
         String newsForAppUrl = String.format(GET_NEWS_FOR_APP_URL, appid);
 
         List<NewsItem> newsItems;
-        try {
             URL url = new URL(newsForAppUrl);
             HttpURLConnection connection = getConnection(url);
             String rawJson = getRawDataFromConnection(connection);
             newsItems = convertRawJsonToListNewsItems(rawJson);
             connection.disconnect();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
         return newsItems;
     }
 

@@ -60,7 +60,6 @@ public class SchedulerConfig {
                 userService.updateUser(user.getChatId(), String.valueOf(user.getSteamId()), user.getLocale());
             } catch (IOException e) {
                 logger.error(e.getMessage() + " error in processing user: {}, with steam ID: {}", user.getChatId(), user.getSteamId());
-                throw new RuntimeException(e);
             }
         });
 
@@ -75,8 +74,12 @@ public class SchedulerConfig {
         Instant start = Instant.now();
         games.parallelStream()
                 .forEach(game -> {
-                    newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
-                    gamesAppidName.put(game.getAppid(), game.getName());
+                    try {
+                        newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
+                        gamesAppidName.put(game.getAppid(), game.getName());
+                    } catch (IOException e) {
+                        logger.error("problem with: {}, appid: {}. steam lag", game.getName(), game.getAppid());
+                    }
                 });
 
         logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
