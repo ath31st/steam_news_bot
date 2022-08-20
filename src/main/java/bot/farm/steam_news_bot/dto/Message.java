@@ -1,4 +1,4 @@
-package bot.farm.steam_news_bot.DTO;
+package bot.farm.steam_news_bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

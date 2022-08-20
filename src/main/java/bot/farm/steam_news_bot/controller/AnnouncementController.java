@@ -1,6 +1,6 @@
 package bot.farm.steam_news_bot.controller;
 
-import bot.farm.steam_news_bot.DTO.Message;
+import bot.farm.steam_news_bot.dto.Message;
 import bot.farm.steam_news_bot.service.AnnouncementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

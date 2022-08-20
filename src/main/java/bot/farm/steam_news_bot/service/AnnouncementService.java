@@ -1,6 +1,6 @@
 package bot.farm.steam_news_bot.service;
 
-import bot.farm.steam_news_bot.DTO.Message;
+import bot.farm.steam_news_bot.dto.Message;
 import bot.farm.steam_news_bot.SteamNewsBot;
 import bot.farm.steam_news_bot.entity.User;
 import org.springframework.http.ResponseEntity;

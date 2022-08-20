@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Configuration
 @EnableScheduling
@@ -31,6 +32,7 @@ public class SchedulerConfig {
     private final UserService userService;
     private final GameService gameService;
     private static final CopyOnWriteArrayList<NewsItem> newsItems = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArraySet<Game> problemGames = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
 
     public SchedulerConfig(SteamNewsBot steamNewsBot,
@@ -50,7 +52,27 @@ public class SchedulerConfig {
         updateNewsItemsList(gameService.getAllGamesByActiveUsers());
         sendNewsItems();
 
+        newsItems.clear();
+
+        if (problemGames.isEmpty()) {
+            gamesAppidName.clear();
+            logger.info("newsItems list cleared!");
+        }
+
         logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");
+    }
+
+    @Scheduled(fixedRate = 900000)
+    private void processingProblemGame() {
+        if (problemGames.isEmpty()) return;
+
+        logger.info("found {} games", problemGames.size());
+
+        updateNewsItemsList(problemGames);
+        sendNewsItems();
+
+        gamesAppidName.clear();
+        logger.info("newsItems list cleared!");
     }
 
     @Scheduled(fixedRate = 86400000)
@@ -75,15 +97,15 @@ public class SchedulerConfig {
         games.parallelStream()
                 .forEach(game -> {
                     try {
-                        newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
                         gamesAppidName.put(game.getAppid(), game.getName());
+                        newsItems.addAll(steamService.getNewsByOwnedGames(game.getAppid()));
                     } catch (IOException e) {
+                        problemGames.add(game);
                         logger.error("problem with: {}, appid: {}. steam lag", game.getName(), game.getAppid());
                     }
                 });
 
         logger.info("getting news is finished for: " + Duration.between(start, Instant.now()).toSeconds() + " seconds");
-
     }
 
     private void sendNewsItems() {
@@ -99,11 +121,6 @@ public class SchedulerConfig {
                                 steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
                                         + gamesAppidName.get(newsItem.getAppid()) + "</b>"
                                         + System.lineSeparator() + newsItem, user.getLocale())));
-
-        newsItems.clear();
-        gamesAppidName.clear();
-
-        logger.info("newsItems list cleared!");
     }
 
 }

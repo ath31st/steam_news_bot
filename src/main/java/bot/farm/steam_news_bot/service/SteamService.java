@@ -54,11 +54,11 @@ public class SteamService {
         String newsForAppUrl = String.format(GET_NEWS_FOR_APP_URL, appid);
 
         List<NewsItem> newsItems;
-            URL url = new URL(newsForAppUrl);
-            HttpURLConnection connection = getConnection(url);
-            String rawJson = getRawDataFromConnection(connection);
-            newsItems = convertRawJsonToListNewsItems(rawJson);
-            connection.disconnect();
+        URL url = new URL(newsForAppUrl);
+        HttpURLConnection connection = getConnection(url);
+        String rawJson = getRawDataFromConnection(connection);
+        newsItems = convertRawJsonToListNewsItems(rawJson);
+        connection.disconnect();
 
         return newsItems;
     }
@@ -99,16 +99,14 @@ public class SteamService {
         return connection;
     }
 
-    private String getRawDataFromConnection(HttpURLConnection connection) {
+    private String getRawDataFromConnection(HttpURLConnection connection) throws IOException {
         StringBuilder response = new StringBuilder();
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            String inputLine;
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                response.append(inputLine);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        while ((inputLine = bufferedReader.readLine()) != null) {
+            response.append(inputLine);
         }
+        bufferedReader.close();
         return response.toString();
     }
 
