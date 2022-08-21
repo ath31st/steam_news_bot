@@ -62,7 +62,7 @@ public class SchedulerConfig {
         logger.info("The cycle of updating and sending news is over for " + Duration.between(startCycle, Instant.now()) + " seconds.");
     }
 
-    @Scheduled(fixedRate = 900000)
+    @Scheduled(fixedRate = 300000)
     private void processingProblemGame() {
         if (problemGames.isEmpty()) return;
 
@@ -71,8 +71,10 @@ public class SchedulerConfig {
         updateNewsItemsList(problemGames);
         sendNewsItems();
 
+        newsItems.clear();
+        problemGames.clear();
         gamesAppidName.clear();
-        logger.info("newsItems list cleared!");
+        logger.info("newsItems and problem games lists cleared!");
     }
 
     @Scheduled(fixedRate = 86400000)
