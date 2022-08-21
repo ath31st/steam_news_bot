@@ -2,7 +2,7 @@
 
 It's no secret that the steam platform has significant drawbacks and general slowness and sluggishness. News about apps
 and games there are in disarray and without sorting by date and time. This bot allows you to receive the latest news
-from application developers in a timely manner, in a convenient application (telegram)<br/>
+from application developers in a timely manner, in a convenient application (telegram)<br/> 
 ![image info](images/image01.jpg)
 
 #### Project objectives:
