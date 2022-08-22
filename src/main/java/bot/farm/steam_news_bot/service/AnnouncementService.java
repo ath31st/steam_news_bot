@@ -23,7 +23,7 @@ public class AnnouncementService {
         this.steamNewsBot = steamNewsBot;
     }
 
-    public ResponseEntity receiveMessageAndNotificationUsers(@Validated @RequestBody Message message) {
+    public ResponseEntity<Map<String, String>> receiveMessageAndNotificationUsers(@Validated @RequestBody Message message) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         message.setDate(LocalDateTime.now().format(formatter));
 

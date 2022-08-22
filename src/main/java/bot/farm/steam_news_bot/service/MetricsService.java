@@ -1,35 +1,26 @@
-package bot.farm.steam_news_bot.controller;
+package bot.farm.steam_news_bot.service;
 
-import bot.farm.steam_news_bot.service.GameService;
-import bot.farm.steam_news_bot.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/info")
-public class InfoController {
-
+@Service
+public class MetricsService {
     private final UserService userService;
     private final GameService gameService;
 
-    public InfoController(UserService userService, GameService gameService) {
+    public MetricsService(UserService userService, GameService gameService) {
         this.userService = userService;
         this.gameService = gameService;
     }
 
-    @GetMapping("/users")
     public ResponseEntity getCountUsers() {
         return ResponseEntity.ok(Map.of("total users in database", userService.getAllUsers().size(),
                 "active users", userService.countUsersByActive(true)));
     }
-
-    @GetMapping("/games")
     public ResponseEntity getCountGames() {
         return ResponseEntity.ok(Map.of("total games in database", gameService.countAllGames(),
-                "games active users", gameService.countByUsersActive()));
+                "game states by active users", gameService.countByUsersActive()));
     }
 }

@@ -20,7 +20,7 @@ public class GameService {
         List<Game> games = gameRepository.findByStates_User_ChatIdAndStates_IsBannedTrue(chatId);
         return games.stream()
                 .map(Game::getName)
-                .collect(Collectors.joining(" ,"));
+                .collect(Collectors.joining("\n"));
     }
 
     public Set<Game> getAllGamesByActiveUsers() {

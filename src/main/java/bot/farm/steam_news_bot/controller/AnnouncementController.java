@@ -8,18 +8,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 public class AnnouncementController {
 
-   private final AnnouncementService announcementService;
+    private final AnnouncementService announcementService;
 
     public AnnouncementController(AnnouncementService announcementService) {
         this.announcementService = announcementService;
     }
 
     @PostMapping("/receive")
-    public ResponseEntity receiveMessage(@RequestBody Message message) {
+    public ResponseEntity<Map<String, String>> receiveMessage(@RequestBody Message message) {
         return announcementService.receiveMessageAndNotificationUsers(message);
     }
 }
