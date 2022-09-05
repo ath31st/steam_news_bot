@@ -1,0 +1,25 @@
+server:
+  port: 28853
+
+#steam key, bot token and name
+steamnewsbot:
+  steamwebapikey:
+  botName:
+  botToken:
+
+#datasource settings
+spring:
+  datasource:
+    url: jdbc:sqlite:./steamidusers.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin
+
+  #data settings
+  jpa:
+    database-platform: org.sqlite.hibernate.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+
+    #console settings
+    show-sql: false
