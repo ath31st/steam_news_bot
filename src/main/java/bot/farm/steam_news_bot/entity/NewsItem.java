@@ -50,7 +50,7 @@ public class NewsItem {
                 .append(System.lineSeparator())
                 .append(contents)
                 .append(System.lineSeparator())
-                .append("<a href=\"").append(url).append("\">").append("LINK").append("</a>")
+                .append("<a href=\"").append(url).append("\">").append("LINK").append("(").append(appid).append(")").append("</a>")
                 .toString();
     }
 }

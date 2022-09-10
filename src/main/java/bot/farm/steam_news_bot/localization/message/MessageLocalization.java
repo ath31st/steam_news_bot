@@ -121,6 +121,11 @@ public class MessageLocalization {
         messages.put(BLACK_LIST_CLEAR + "_en", "Your black list is cleared");
         messages.put(BLACK_LIST_CLEAR + "_ru", "Ваш черный список очищен");
 
+        //LINKS_TO_GAME_MESSAGE
+        messages.put(LINKS_TO_GAME_MESSAGE + "_en", "<b>Steam store:</b> <a href=\"https://store.steampowered.com/app/%s\">LINK</a>" + "\n"
+                + "<b>SteamDB:</b> <a href=\"https://steamdb.info/app/%s\">LINK</a>");
+        messages.put(LINKS_TO_GAME_MESSAGE + "_ru", "<b>Steam (официальный магазин):</b> <a href=\"https://store.steampowered.com/app/%s\">ССЫЛКА</a>" + "\n"
+                + "<b>SteamDB:</b> <a href=\"https://steamdb.info/app/%s\">ССЫЛКА</a>");
     }
 
     public static String getMessage(Enum<MessageEnum> key, String locale) {

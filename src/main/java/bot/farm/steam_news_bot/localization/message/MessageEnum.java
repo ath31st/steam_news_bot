@@ -23,5 +23,6 @@ public enum MessageEnum {
     SUBSCRIBE,
     EMPTY_BLACK_LIST,
     BLACK_LIST,
-    BLACK_LIST_CLEAR
+    BLACK_LIST_CLEAR,
+    LINKS_TO_GAME_MESSAGE
 }

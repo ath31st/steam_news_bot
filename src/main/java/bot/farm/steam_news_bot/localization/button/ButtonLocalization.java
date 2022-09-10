@@ -33,6 +33,9 @@ public class ButtonLocalization {
 
         buttons.put(SUBSCRIBE + "_en", "Subscribe");
         buttons.put(SUBSCRIBE + "_ru", "Подписаться");
+
+        buttons.put(LINKS_TO_GAME + "_en", "Links to the game");
+        buttons.put(LINKS_TO_GAME + "_ru", "Ссылки на игру");
     }
 
     public static String getMessage(Enum<ButtonEnum> key, String locale) {

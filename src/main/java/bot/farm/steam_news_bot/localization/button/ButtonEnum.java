@@ -8,5 +8,6 @@ public enum ButtonEnum {
     CLEAR_BLACK_LIST,
     BLACK_LIST,
     UNSUBSCRIBE,
-    SUBSCRIBE
+    SUBSCRIBE,
+    LINKS_TO_GAME
 }
