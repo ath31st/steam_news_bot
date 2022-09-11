@@ -67,7 +67,7 @@ public class ButtonService {
         inlineKeyboardButton1.setCallbackData("/unsubscribe");
 
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton2.setText("✅ " + getMessage(LINKS_TO_GAME, locale));
+        inlineKeyboardButton2.setText("\uD83D\uDD17 " + getMessage(LINKS_TO_GAME, locale));
         inlineKeyboardButton2.setCallbackData("/links_to_game");
 
         inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
