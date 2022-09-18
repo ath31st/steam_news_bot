@@ -41,7 +41,7 @@ public class SteamService {
         HttpURLConnection connection = getConnection(url);
         String rawJson = getRawDataFromConnection(connection);
 
-        if (rawJson.equals("{\"response\":{}}"))
+        if (rawJson.equals("{\"response\":{}}") | rawJson.equals("{\"success\": 2"))
             throw new NullPointerException("Account is hidden");
 
         games = convertRawJsonToListGames(rawJson);
