@@ -19,10 +19,10 @@ class GameServiceTest {
     private GameRepository gameRepository;
     @InjectMocks
     private GameService gameService;
-    String chatId = "1";
 
     @Test
     void getBanListByChatId() {
+        String chatId = "1";
         gameService.getBanListByChatId(chatId);
         verify(gameRepository, times(1)).findByStates_User_ChatIdAndStates_IsBannedTrue(chatId);
     }

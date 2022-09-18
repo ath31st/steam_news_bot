@@ -7,7 +7,6 @@ import bot.farm.steam_news_bot.repository.UserGameStateRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserGameStateService {
