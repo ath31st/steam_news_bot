@@ -26,14 +26,6 @@ class AnnouncementServiceTest {
     @InjectMocks
     private AnnouncementService announcementService;
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
     void receiveMessageAndNotificationUsers() {
         Message message = new Message();
