@@ -1,5 +1,6 @@
 package bot.farm.steam_news_bot.service;
 
+import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -123,6 +126,18 @@ class UserServiceTest {
     void checkBanForGameByChatId() {
         assertFalse(userService.checkBanForGameByChatId(chatId, name));
         verify(userRepository, times(1)).existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
+    }
+
+    @Test
+    void updateSetStates() throws IOException {
+        User user = new User();
+        user.setSteamId(Long.valueOf(streamId));
+        Optional<User> optionalUser = Optional.of(user);
+
+        doReturn(optionalUser).when(userRepository).findUserByChatId(chatId);
+
+        userService.updateUser(chatId, streamId, locale);
+
     }
 
 }
