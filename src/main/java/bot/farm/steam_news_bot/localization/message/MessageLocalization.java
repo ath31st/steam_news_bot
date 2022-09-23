@@ -45,6 +45,10 @@ public class MessageLocalization {
         messages.put(DEFAULT_MESSAGE + "_en", "Patience, my friend. There is no fresh news yet");
         messages.put(DEFAULT_MESSAGE + "_ru", "Терпение, мой друг. Свежих новостей еще нет");
 
+        //DEFAULT_NAME
+        messages.put(DEFAULT_NAME + "_en", "User");
+        messages.put(DEFAULT_NAME + "_ru", "Пользователь");
+
         //WAITING
         messages.put(WAITING + "_en", "It will take a few seconds");
         messages.put(WAITING + "_ru", "Это займет несколько секунд");

@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.DEFAULT_NAME;
+import static bot.farm.steam_news_bot.localization.message.MessageLocalization.getMessage;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -28,6 +31,7 @@ public class UserService {
                          String steamId,
                          String locale) throws IOException, NullPointerException {
         if (userRepository.findUserByChatId(chatId).isPresent()) return;
+        if (name == null) name = getMessage(DEFAULT_NAME, locale);
 
         User user = new User();
         user.setActive(true);

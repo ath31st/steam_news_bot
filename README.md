@@ -1,5 +1,8 @@
 ## Steam news bot
 
+![Steam](https://img.shields.io/badge/steam-%23000000.svg?style=for-the-badge&logo=steam&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+
 It's no secret that the steam platform has significant drawbacks and general slowness and sluggishness. News about apps
 and games there are in disarray and without sorting by date and time. This bot allows you to receive the latest news
 from application developers in a timely manner, in a convenient application (telegram)<br/> 
@@ -51,7 +54,7 @@ Make the bot multilingual.<br/>
 3. lombok - saves us from boilerplate code
 4. log4j + logback - logger
 5. sqlite (jdbc and dialect) - database
-6. junit + mockito - tests (84% coverage)
+6. junit + mockito - tests (86% coverage)
 
 You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
 

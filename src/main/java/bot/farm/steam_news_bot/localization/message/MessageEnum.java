@@ -5,6 +5,7 @@ public enum MessageEnum {
     HELP,
     SETTINGS,
     DEFAULT_MESSAGE,
+    DEFAULT_NAME,
     WAITING,
     REGISTRATION,
     ERROR_HIDDEN_ACC,
