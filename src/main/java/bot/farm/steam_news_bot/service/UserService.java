@@ -134,4 +134,8 @@ public class UserService {
         return userRepository.existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
     }
 
+    public List<String> getListUsername() {
+        return userRepository.getListUsername();
+    }
+
 }

@@ -16,9 +16,14 @@ public class MetricsController {
         this.metricsService = metricsService;
     }
 
-    @GetMapping("/users")
+    @GetMapping("/count-users")
     public ResponseEntity getCountUsers() {
         return metricsService.getCountUsers();
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity getUsernames() {
+        return metricsService.getAllUsers();
     }
 
     @GetMapping("/games")

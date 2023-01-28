@@ -34,4 +34,7 @@ public interface UserRepository extends CrudRepository<User, String> {
     @Query("update User u set u.active = ?1 where u.chatId = ?2")
     void updateActiveByChatId(boolean active, String chatId);
 
+    @Query("select u.name from User u")
+    List<String> getListUsername();
+
 }

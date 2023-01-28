@@ -19,8 +19,13 @@ public class MetricsService {
         return ResponseEntity.ok(Map.of("total users in database", userService.getAllUsers().size(),
                 "active users", userService.countUsersByActive(true)));
     }
+
     public ResponseEntity getCountGames() {
         return ResponseEntity.ok(Map.of("total games in database", gameService.countAllGames(),
                 "game states by active users", gameService.countByUsersActive()));
+    }
+
+    public ResponseEntity getAllUsers() {
+        return ResponseEntity.ok(userService.getListUsername());
     }
 }
