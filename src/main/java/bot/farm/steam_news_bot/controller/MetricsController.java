@@ -28,6 +28,11 @@ public class MetricsController {
 
     @GetMapping("/games")
     public ResponseEntity getCountGames() {
-       return metricsService.getCountGames();
+        return metricsService.getCountGames();
+    }
+
+    @GetMapping("/top-games")
+    public ResponseEntity getTopGames() {
+        return metricsService.getTopGames(10);
     }
 }

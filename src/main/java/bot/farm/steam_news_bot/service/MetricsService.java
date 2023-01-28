@@ -9,10 +9,12 @@ import java.util.Map;
 public class MetricsService {
     private final UserService userService;
     private final GameService gameService;
+    private final UserGameStateService userGameStateService;
 
-    public MetricsService(UserService userService, GameService gameService) {
+    public MetricsService(UserService userService, GameService gameService, UserGameStateService userGameStateService) {
         this.userService = userService;
         this.gameService = gameService;
+        this.userGameStateService = userGameStateService;
     }
 
     public ResponseEntity getCountUsers() {
@@ -27,5 +29,9 @@ public class MetricsService {
 
     public ResponseEntity getAllUsers() {
         return ResponseEntity.ok(userService.getListUsername());
+    }
+
+    public ResponseEntity getTopGames(int limit) {
+        return ResponseEntity.ok(userGameStateService.getTopGamesFromDb(limit));
     }
 }

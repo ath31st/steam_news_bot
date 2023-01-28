@@ -40,4 +40,8 @@ public class UserGameStateService {
     public UserGameState findByUserAndGame(User user, Game game) {
         return userGameStateRepository.findByUserAndGame(user, game);
     }
+
+    public List<String> getTopGamesFromDb(int limit) {
+        return userGameStateRepository.findTopGames(limit);
+    }
 }
