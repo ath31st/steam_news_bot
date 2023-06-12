@@ -26,10 +26,13 @@ public class SteamService {
   
   @Value("${steamnewsbot.steamwebapikey}")
   private String steamWebApiKey;
-  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
-  private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
-  private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/wishlist/profiles/%s/wishlistdata/";
-  private final static String USER_AGENT = "Mozilla/5.0";
+  private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/"
+      + "GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
+  private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/"
+      + "GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
+  private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/"
+      + "wishlist/profiles/%s/wishlistdata/";
+  private static final String USER_AGENT = "Mozilla/5.0";
   
   public List<Game> getOwnedGames(Long steamId) throws IOException, NullPointerException {
     String ownedGamesUrl = String.format(GET_OWNED_GAMES_URL, steamWebApiKey, steamId);
@@ -40,8 +43,9 @@ public class SteamService {
     HttpURLConnection connection = getConnection(url);
     String rawJson = getRawDataFromConnection(connection);
     
-    if (rawJson.equals("{\"response\":{}}") | rawJson.equals("{\"success\": 2"))
+    if (rawJson.equals("{\"response\":{}}") || rawJson.equals("{\"success\": 2")) {
       throw new NullPointerException("Account is hidden");
+    }
     
     games = convertRawJsonToListGames(rawJson);
     connection.disconnect();
@@ -100,7 +104,8 @@ public class SteamService {
   
   private String getRawDataFromConnection(HttpURLConnection connection) throws IOException {
     StringBuilder response = new StringBuilder();
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    BufferedReader bufferedReader =
+        new BufferedReader(new InputStreamReader(connection.getInputStream()));
     String inputLine;
     while ((inputLine = bufferedReader.readLine()) != null) {
       response.append(inputLine);
@@ -109,7 +114,8 @@ public class SteamService {
     return response.toString();
   }
   
-  private static List<Game> convertRawJsonToListGames(String rawJson) throws JsonProcessingException {
+  private static List<Game> convertRawJsonToListGames(String rawJson)
+      throws JsonProcessingException {
     List<Game> ownedGames = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
     
@@ -125,7 +131,8 @@ public class SteamService {
     return ownedGames;
   }
   
-  private static List<Game> convertRawJsonToWishListGames(String rawJson) throws JsonProcessingException {
+  private static List<Game> convertRawJsonToWishListGames(String rawJson)
+      throws JsonProcessingException {
     List<Game> wishListGames = new ArrayList<>();
     JsonNode jsonNode = new ObjectMapper().readTree(rawJson);
     
@@ -141,7 +148,8 @@ public class SteamService {
     return wishListGames;
   }
   
-  private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson) throws JsonProcessingException {
+  private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson)
+      throws JsonProcessingException {
     List<NewsItem> newsItems = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
     
@@ -162,8 +170,11 @@ public class SteamService {
   }
   
   private static boolean checkDateOfNews(int seconds) {
-    LocalDateTime localDateTime = LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
-    LocalDateTime localDateTimeOfNews = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
+    LocalDateTime localDateTime =
+        LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
+    LocalDateTime localDateTimeOfNews =
+        LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
+    
     // TODO CHECK THIS LINE!
     return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
     //  return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());

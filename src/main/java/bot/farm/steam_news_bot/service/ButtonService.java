@@ -20,25 +20,25 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 public class ButtonService {
   
   public List<List<InlineKeyboardButton>> createInlineButton(String locale) {
-    List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
-    List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
-    List<InlineKeyboardButton> inlineKeyboardButtonsRow2 = new ArrayList<>();
-    List<InlineKeyboardButton> inlineKeyboardButtonsRow3 = new ArrayList<>();
+    final List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
+    final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
+    final List<InlineKeyboardButton> inlineKeyboardButtonsRow2 = new ArrayList<>();
+    final List<InlineKeyboardButton> inlineKeyboardButtonsRow3 = new ArrayList<>();
     
     InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-    inlineKeyboardButton1.setText("\u03BB " + getMessage(SET_UPD_STEAM_ID, locale));
+    inlineKeyboardButton1.setText("λ " + getMessage(SET_UPD_STEAM_ID, locale));
     inlineKeyboardButton1.setCallbackData("/set_steam_id");
     
     InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-    inlineKeyboardButton2.setText("\u03A9 " + getMessage(CHECK_STEAM_ID, locale));
+    inlineKeyboardButton2.setText("Ω " + getMessage(CHECK_STEAM_ID, locale));
     inlineKeyboardButton2.setCallbackData("/check_steam_id");
     
     InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
-    inlineKeyboardButton3.setText("\u2705 " + getMessage(SET_ACTIVE_MODE, locale));
+    inlineKeyboardButton3.setText("✅ " + getMessage(SET_ACTIVE_MODE, locale));
     inlineKeyboardButton3.setCallbackData("/set_active_mode");
     
     InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-    inlineKeyboardButton4.setText("\u2611 " + getMessage(SET_INACTIVE_MODE, locale));
+    inlineKeyboardButton4.setText("☑ " + getMessage(SET_INACTIVE_MODE, locale));
     inlineKeyboardButton4.setCallbackData("/set_inactive_mode");
     
     InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
@@ -65,8 +65,8 @@ public class ButtonService {
   }
   
   public List<List<InlineKeyboardButton>> createInlineSubscribeButton(String locale) {
-    List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
-    List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
+    final List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
+    final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
     
     InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
     inlineKeyboardButton1.setText("\uD83D\uDEAB " + getMessage(UNSUBSCRIBE, locale));

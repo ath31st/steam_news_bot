@@ -35,6 +35,11 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
   
   boolean existsByUserAndGame(User user, Game game);
   
-  @Query(value = "SELECT g.name FROM user_game_state ugs JOIN games g ON ugs.game_id = g.game_id GROUP BY ugs.game_id HAVING COUNT(ugs.game_id) > 5 ORDER BY COUNT(ugs.game_id) DESC LIMIT ?1", nativeQuery = true)
+  @Query(value = "SELECT g.name FROM user_game_state ugs "
+      + "JOIN games g ON ugs.game_id = g.game_id "
+      + "GROUP BY ugs.game_id, g.name "
+      + "HAVING COUNT(ugs.game_id) > 5 "
+      + "ORDER BY COUNT(ugs.game_id) "
+      + "DESC LIMIT ?1", nativeQuery = true)
   List<String> findTopGames(int limit);
 }

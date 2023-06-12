@@ -22,14 +22,16 @@ public class AnnouncementService {
     this.steamNewsBot = steamNewsBot;
   }
   
-  public ResponseEntity<Map<String, String>> receiveMessageAndNotificationUsers(@Validated @RequestBody Message message) {
+  public ResponseEntity<Map<String, String>> receiveMessageAndNotificationUsers(
+      @Validated @RequestBody Message message) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     message.setDate(LocalDateTime.now().format(formatter));
     
     List<User> users = userService.getUsersByActive(true);
     users.forEach(user -> steamNewsBot.sendTextMessage(user.getChatId(), message.toString()));
     
-    return ResponseEntity.ok(Map.of("service", "message successfully received. " + users.size() + " users notified."));
+    return ResponseEntity.ok(Map.of(
+        "service", "message successfully received. " + users.size() + " users notified."));
   }
   
 }

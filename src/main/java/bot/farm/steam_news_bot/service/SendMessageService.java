@@ -21,14 +21,16 @@ public class SendMessageService {
   
   public SendMessage createMenuMessage(String chatId, String message, String locale) {
     SendMessage sendMessage = createMessage(chatId, message);
-    InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineButton(locale));
+    InlineKeyboardMarkup inlineKeyboardMarkup =
+        buttonService.setInlineKeyMarkup(buttonService.createInlineButton(locale));
     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
     return sendMessage;
   }
   
   public SendMessage createNewsMessage(String chatId, String message, String locale) {
     SendMessage sendMessage = createMessage(chatId, message);
-    InlineKeyboardMarkup inlineKeyboardMarkup = buttonService.setInlineKeyMarkup(buttonService.createInlineSubscribeButton(locale));
+    InlineKeyboardMarkup inlineKeyboardMarkup =
+        buttonService.setInlineKeyMarkup(buttonService.createInlineSubscribeButton(locale));
     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
     return sendMessage;
   }
