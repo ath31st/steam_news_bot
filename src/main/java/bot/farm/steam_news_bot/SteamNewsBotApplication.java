@@ -7,10 +7,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class SteamNewsBotApplication {
-
-	public static void main(String[] args) {
-
-		SpringApplication.run(SteamNewsBotApplication.class, args);
-	}
-
+  
+  public static void main(String[] args) {
+    
+    SpringApplication.run(SteamNewsBotApplication.class, args);
+  }
+  
 }
