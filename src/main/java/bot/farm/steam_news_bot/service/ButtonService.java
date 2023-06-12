@@ -16,9 +16,17 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+/**
+ * Service class for creating inline buttons and inline keyboard markup.
+ */
 @Service
 public class ButtonService {
-  
+  /**
+   * Creates a list of inline buttons for the main keyboard.
+   *
+   * @param locale The locale used for getting localized messages.
+   * @return The list of inline buttons.
+   */
   public List<List<InlineKeyboardButton>> createInlineButton(String locale) {
     final List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
@@ -64,6 +72,12 @@ public class ButtonService {
     return inlineKeyButtonList;
   }
   
+  /**
+   * Creates a list of inline buttons for the subscribe keyboard.
+   *
+   * @param locale The locale used for getting localized messages.
+   * @return The list of inline buttons.
+   */
   public List<List<InlineKeyboardButton>> createInlineSubscribeButton(String locale) {
     final List<List<InlineKeyboardButton>> inlineKeyButtonList = new ArrayList<>();
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
@@ -83,6 +97,12 @@ public class ButtonService {
     return inlineKeyButtonList;
   }
   
+  /**
+   * Creates an inline keyboard markup using the provided list of inline buttons.
+   *
+   * @param inlineList The list of inline buttons.
+   * @return The inline keyboard markup.
+   */
   public InlineKeyboardMarkup setInlineKeyMarkup(List<List<InlineKeyboardButton>> inlineList) {
     InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
     inlineKeyboardMarkup.setKeyboard(inlineList);

@@ -21,18 +21,45 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for interacting with the Steam API to retrieve information about owned games,
+ * news items, and wishlist games.
+ */
 @Service
 public class SteamService {
-  
+  /**
+   * API key for accessing the Steam Web API.
+   */
   @Value("${steamnewsbot.steamwebapikey}")
   private String steamWebApiKey;
+  /**
+   * URL pattern for retrieving owned games.
+   */
   private static final String GET_OWNED_GAMES_URL = "http://api.steampowered.com/IPlayerService/"
       + "GetOwnedGames/v1/?&skip_unvetted_apps=true&key=%s&include_appinfo=true&steamid=%s";
+  /**
+   * URL pattern for retrieving news items for a specific app.
+   */
   private static final String GET_NEWS_FOR_APP_URL = "http://api.steampowered.com/ISteamNews/"
       + "GetNewsForApp/v2/?appid=%s&count=3&maxlength=300";
+  /**
+   * URL pattern for retrieving wishlist games.
+   */
   private static final String GET_WISHLIST_GAMES_URL = "https://store.steampowered.com/"
       + "wishlist/profiles/%s/wishlistdata/";
+  /**
+   * User agent string for making HTTP requests.
+   */
   private static final String USER_AGENT = "Mozilla/5.0";
+  
+  /**
+   * Retrieves the owned games for a given Steam user ID.
+   *
+   * @param steamId the Steam user ID
+   * @return the list of owned games
+   * @throws IOException          if an I/O error occurs while making the request
+   * @throws NullPointerException if the account is hidden or does not exist
+   */
   
   public List<Game> getOwnedGames(Long steamId) throws IOException, NullPointerException {
     String ownedGamesUrl = String.format(GET_OWNED_GAMES_URL, steamWebApiKey, steamId);
@@ -53,6 +80,13 @@ public class SteamService {
     return games;
   }
   
+  /**
+   * Retrieves the news items for a specific game app.
+   *
+   * @param appid the app ID of the game
+   * @return the list of news items
+   * @throws IOException if an I/O error occurs while making the request
+   */
   public List<NewsItem> getNewsByOwnedGames(String appid) throws IOException {
     String newsForAppUrl = String.format(GET_NEWS_FOR_APP_URL, appid);
     
@@ -66,6 +100,12 @@ public class SteamService {
     return newsItems;
   }
   
+  /**
+   * Retrieves the wishlist games for a given Steam user ID.
+   *
+   * @param steamId the Steam user ID
+   * @return the list of wishlist games
+   */
   public List<Game> getWishListGames(Long steamId) {
     String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
     
@@ -82,6 +122,12 @@ public class SteamService {
     return wishListGames;
   }
   
+  /**
+   * Checks if a given Steam ID is valid.
+   *
+   * @param steamId the Steam ID to validate
+   * @return true if the Steam ID is valid, false otherwise
+   */
   public static boolean isValidSteamId(String steamId) {
     Pattern pattern = Pattern.compile("765[\\d]{14}");
     Matcher matcher = pattern.matcher(steamId);
@@ -185,8 +231,6 @@ public class SteamService {
     Matcher matcher = pattern.matcher(text);
     return matcher.replaceAll("");
   }
-  
-  
 }
 
 

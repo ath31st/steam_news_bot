@@ -12,16 +12,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Service class for managing announcements and sending notifications to active users.
+ */
 @Service
 public class AnnouncementService {
   private final UserService userService;
   private final SteamNewsBot steamNewsBot;
   
+  /**
+   * Constructs an AnnouncementService with the specified dependencies.
+   *
+   * @param userService  The UserService dependency.
+   * @param steamNewsBot The SteamNewsBot dependency.
+   */
   public AnnouncementService(UserService userService, SteamNewsBot steamNewsBot) {
     this.userService = userService;
     this.steamNewsBot = steamNewsBot;
   }
   
+  /**
+   * Receives a message and sends notifications to active users.
+   *
+   * @param message The message to be sent.
+   * @return A ResponseEntity with a success message and the number of users notified.
+   */
   public ResponseEntity<Map<String, String>> receiveMessageAndNotificationUsers(
       @Validated @RequestBody Message message) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
