@@ -4,6 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * The main entry point of the SteamNewsBot application.
+ */
 @SpringBootApplication
 @EnableScheduling
 public class SteamNewsBotApplication {
@@ -12,5 +15,4 @@ public class SteamNewsBotApplication {
     
     SpringApplication.run(SteamNewsBotApplication.class, args);
   }
-  
 }

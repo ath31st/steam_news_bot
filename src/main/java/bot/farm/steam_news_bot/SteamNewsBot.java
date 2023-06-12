@@ -43,6 +43,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * Telegram bot for sending Steam news and managing user interactions.
+ */
 @Component
 public class SteamNewsBot extends TelegramLongPollingBot {
   private final SendMessageService sendMessageService;
@@ -57,6 +60,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   private String botToken;
   private UserState state = UserState.DEFAULT;
   
+  /**
+   * Constructor for the SteamNewsBot class.
+   *
+   * @param sendMessageService   the service for sending messages.
+   * @param userService          the service for managing user data.
+   * @param gameService          the service for managing game data.
+   * @param userGameStateService the service for managing user game states.
+   */
   public SteamNewsBot(SendMessageService sendMessageService,
                       UserService userService,
                       GameService gameService,
@@ -77,6 +88,11 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     return botToken;
   }
   
+  /**
+   * Processes the received updates from Telegram.
+   *
+   * @param update the received update.
+   */
   @Override
   public void onUpdateReceived(Update update) {
     
@@ -89,6 +105,12 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
   
+  /**
+   * Sends a text message to the specified chat ID.
+   *
+   * @param chatId the ID of the chat to send the message to.
+   * @param text   the text of the message.
+   */
   public void sendTextMessage(String chatId, String text) {
     try {
       execute(sendMessageService.createMessage(chatId, text));
@@ -103,6 +125,13 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
   
+  /**
+   * Sends a news message to the specified chat ID with the given locale.
+   *
+   * @param chatId the ID of the chat to send the message to.
+   * @param text   the text of the news message to send.
+   * @param locale the locale of the user.
+   */
   public void sendNewsMessage(String chatId, String text, String locale) {
     try {
       execute(sendMessageService.createNewsMessage(chatId, text, locale));
@@ -117,6 +146,13 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
   
+  /**
+   * Sends a menu message to the specified chat ID with the given message and locale.
+   *
+   * @param chatId  the ID of the chat to send the message to.
+   * @param message the text of the menu message to send.
+   * @param locale  the locale of the user.
+   */
   private void sendMenuMessage(String chatId, String message, String locale) {
     try {
       execute(sendMessageService.createMenuMessage(chatId, message, locale));
@@ -256,5 +292,4 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       
     }
   }
-  
 }
