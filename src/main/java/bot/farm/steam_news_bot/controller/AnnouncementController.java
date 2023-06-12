@@ -9,16 +9,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller class for handling announcements API requests.
+ * Provides endpoints related to receiving messages and sending notifications to users.
+ */
 @RestController
 @RequestMapping("/api")
 public class AnnouncementController {
   
   private final AnnouncementService announcementService;
   
+  /**
+   * Constructor for AnnouncementController.
+   *
+   * @param announcementService the AnnouncementService instance
+   */
   public AnnouncementController(AnnouncementService announcementService) {
     this.announcementService = announcementService;
   }
   
+  /**
+   * Endpoint for receiving messages and triggering notifications to users.
+   * Accepts a JSON payload containing the message details.
+   *
+   * @param message the Message object received in the request body
+   * @return a ResponseEntity containing a map with response data
+   */
   @PostMapping("/receive")
   public ResponseEntity<Map<String, String>> receiveMessage(@RequestBody Message message) {
     return announcementService.receiveMessageAndNotificationUsers(message);

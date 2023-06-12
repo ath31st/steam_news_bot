@@ -12,6 +12,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Entity class representing a game.
+ * Provides properties and methods to store and manipulate game data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,8 +33,12 @@ public class Game {
   
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Game game = (Game) o;
     return Objects.equals(appid, game.appid) && Objects.equals(name, game.name);
   }

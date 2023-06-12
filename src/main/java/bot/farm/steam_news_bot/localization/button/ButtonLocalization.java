@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility class for button localization.
+ * Provides methods to retrieve localized button labels.
+ */
 @UtilityClass
 public class ButtonLocalization {
   

@@ -6,6 +6,9 @@ import java.util.Set;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Repository interface for managing Game entities.
+ */
 @Repository
 public interface GameRepository extends CrudRepository<Game, String> {
   long countByStates_User_ActiveTrue();

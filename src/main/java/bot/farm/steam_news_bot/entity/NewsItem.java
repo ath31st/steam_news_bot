@@ -10,6 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Entity class representing a news item.
+ * Provides properties and methods to store and manipulate news item data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

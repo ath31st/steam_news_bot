@@ -1,5 +1,9 @@
 package bot.farm.steam_news_bot.localization.button;
 
+/**
+ * Enumeration representing different button types.
+ * Provides values to identify different types of buttons.
+ */
 public enum ButtonEnum {
   SET_UPD_STEAM_ID,
   CHECK_STEAM_ID,

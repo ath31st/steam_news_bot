@@ -5,6 +5,10 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+/**
+ * Data class representing a message.
+ * Provides properties and methods to store and manipulate message data.
+ */
 @Data
 @Component
 public class Message {

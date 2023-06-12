@@ -14,6 +14,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Entity class representing a user.
+ * Provides properties and methods to store and manipulate user data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -36,8 +40,12 @@ public class User {
   
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     User user = (User) o;
     return Objects.equals(chatId, user.chatId) && Objects.equals(name, user.name);
   }

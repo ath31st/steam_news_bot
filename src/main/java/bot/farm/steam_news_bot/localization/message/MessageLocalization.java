@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility class for localizing messages based on the provided locale.
+ */
 @UtilityClass
 public class MessageLocalization {
   
@@ -155,5 +158,4 @@ public class MessageLocalization {
     }
     return messages.get(key + "_" + locale);
   }
-  
 }

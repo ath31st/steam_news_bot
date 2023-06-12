@@ -20,6 +20,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * Configuration class for scheduling tasks related to Steam news.
+ * Enables scheduling and specifies conditional property for activation.
+ */
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
@@ -34,6 +38,14 @@ public class SchedulerConfig {
   private static final CopyOnWriteArraySet<Game> problemGames = new CopyOnWriteArraySet<>();
   private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
   
+  /**
+   * Constructor for SchedulerConfig.
+   *
+   * @param steamNewsBot the SteamNewsBot instance
+   * @param steamService the SteamService instance
+   * @param userService  the UserService instance
+   * @param gameService  the GameService instance
+   */
   public SchedulerConfig(SteamNewsBot steamNewsBot,
                          SteamService steamService,
                          UserService userService,
@@ -44,6 +56,11 @@ public class SchedulerConfig {
     this.gameService = gameService;
   }
   
+  /**
+   * Scheduled task to update and send news items.
+   * Runs at a fixed rate of 1800000 milliseconds (30 minutes).
+   * Retrieves news items for active games and sends them to users.
+   */
   @Scheduled(fixedRate = 1800000)
   private void updateAndSendNewsItems() {
     final Instant startCycle = Instant.now();
@@ -62,6 +79,11 @@ public class SchedulerConfig {
         Duration.between(startCycle, Instant.now()));
   }
   
+  /**
+   * Scheduled task for processing problem games.
+   * Runs at a fixed rate of 300000 milliseconds (5 minutes).
+   * Retrieves news items for problem games and sends them to users.
+   */
   @Scheduled(fixedRate = 300000)
   private void processingProblemGame() {
     if (problemGames.isEmpty()) {
@@ -79,6 +101,11 @@ public class SchedulerConfig {
     logger.info("newsItems and problem games lists cleared!");
   }
   
+  /**
+   * Scheduled task to update the games' database.
+   * Runs at a fixed rate of 86400000 milliseconds (24 hours).
+   * Updates the user's game data in the database.
+   */
   @Scheduled(fixedRate = 86400000)
   private void updateGamesDb() {
     userService.getUsersByActive(true).forEach(user -> {
@@ -94,6 +121,11 @@ public class SchedulerConfig {
     logger.info("GamesDB successful updated! In base {} games.", gameService.countAllGames());
   }
   
+  /**
+   * Updates the news items list for the given set of games.
+   *
+   * @param games the set of games for which to update the news items
+   */
   private void updateNewsItemsList(Set<Game> games) {
     if (games.isEmpty()) {
       return;
@@ -118,6 +150,9 @@ public class SchedulerConfig {
         Duration.between(start, Instant.now()).toSeconds());
   }
   
+  /**
+   * Sends the news items to users who have subscribed to the corresponding games.
+   */
   private void sendNewsItems() {
     if (newsItems.isEmpty()) {
       return;
@@ -138,5 +173,4 @@ public class SchedulerConfig {
                   }
             ));
   }
-  
 }

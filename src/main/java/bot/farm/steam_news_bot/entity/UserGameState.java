@@ -13,6 +13,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Entity class representing the game state of a user.
+ * Provides properties and methods to store and manipulate user game state data.
+ */
 @Setter
 @Getter
 @NoArgsConstructor
@@ -27,7 +31,8 @@ public class UserGameState {
   @JoinColumn(name = "user_id")
   private User user;
   
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+  @ManyToOne(
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
   @JoinColumn(name = "game_id")
   private Game game;
   
@@ -37,10 +42,15 @@ public class UserGameState {
   
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     UserGameState that = (UserGameState) o;
-    return Objects.equals(id, that.id) && Objects.equals(user, that.user) && Objects.equals(game, that.game);
+    return Objects.equals(id, that.id)
+        && Objects.equals(user, that.user) && Objects.equals(game, that.game);
   }
   
   @Override

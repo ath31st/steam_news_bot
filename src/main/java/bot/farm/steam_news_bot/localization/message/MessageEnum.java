@@ -1,5 +1,9 @@
 package bot.farm.steam_news_bot.localization.message;
 
+/**
+ * Enumeration representing different message types.
+ * Provides values to identify different types of messages.
+ */
 public enum MessageEnum {
   START,
   HELP,
