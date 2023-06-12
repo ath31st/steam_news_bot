@@ -1,6 +1,8 @@
 package bot.farm.steam_news_bot.controller;
 
 import bot.farm.steam_news_bot.service.MetricsService;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,22 +19,22 @@ public class MetricsController {
   }
   
   @GetMapping("/count-users")
-  public ResponseEntity getCountUsers() {
+  public ResponseEntity<Map<String, Number>> getCountUsers() {
     return metricsService.getCountUsers();
   }
   
   @GetMapping("/users")
-  public ResponseEntity getUsernames() {
+  public ResponseEntity<List<String>> getUsernames() {
     return metricsService.getAllUsers();
   }
   
   @GetMapping("/games")
-  public ResponseEntity getCountGames() {
+  public ResponseEntity<Map<String, Long>> getCountGames() {
     return metricsService.getCountGames();
   }
   
   @GetMapping("/top-games")
-  public ResponseEntity getTopGames() {
+  public ResponseEntity<List<String>> getTopGames() {
     return metricsService.getTopGames(10);
   }
 }
