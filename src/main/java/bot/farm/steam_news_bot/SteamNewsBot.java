@@ -1,7 +1,28 @@
 package bot.farm.steam_news_bot;
 
 
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.*;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE_MODE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ALREADY_UNSUBSCRIBED;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST_CLEAR;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.CHECK_STEAM_ID;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.DEFAULT_MESSAGE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.EMPTY_BLACK_LIST;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ENTER_STEAM_ID;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_DONT_EXISTS_ACC;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_HIDDEN_ACC;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.HELP;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE_MODE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.INCORRECT_STEAM_ID;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.LINKS_TO_GAME_MESSAGE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.NOT_REGISTERED;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.REGISTRATION;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.SETTINGS;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.START;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.UNSUBSCRIBE;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.WAITING;
 import static bot.farm.steam_news_bot.localization.message.MessageLocalization.getMessage;
 
 import bot.farm.steam_news_bot.service.GameService;
@@ -11,6 +32,7 @@ import bot.farm.steam_news_bot.service.UserGameStateService;
 import bot.farm.steam_news_bot.service.UserService;
 import bot.farm.steam_news_bot.util.UserState;
 import java.io.IOException;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +52,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   
   private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
   @Value("${steamnewsbot.botName}")
-  private String BOT_NAME;
+  private String botName;
   @Value("${steamnewsbot.botToken}")
-  private String BOT_TOKEN;
+  private String botToken;
   private UserState state = UserState.DEFAULT;
   
   public SteamNewsBot(SendMessageService sendMessageService,
@@ -47,12 +69,12 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   
   @Override
   public String getBotUsername() {
-    return BOT_NAME;
+    return botName;
   }
   
   @Override
   public String getBotToken() {
-    return BOT_TOKEN;
+    return botToken;
   }
   
   @Override
@@ -74,7 +96,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
         userService.updateActiveForUser(chatId, false);
         
-        logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+        logger.info("User with chatId {} has received the \"inactive\" status", chatId);
       } else {
         logger.error(e.getMessage());
       }
@@ -88,7 +110,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
         userService.updateActiveForUser(chatId, false);
         
-        logger.info(String.format("User with chatId %s has received the \"inactive\" status", chatId));
+        logger.info("User with chatId {} has received the \"inactive\" status", chatId);
       } else {
         logger.error(e.getMessage());
       }
@@ -129,7 +151,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   }
   
   private void sendMessageAfterSetUpdateSteamId(String chatId, String inputText, String locale) {
-    if (userService.findUserByChatId(chatId).isEmpty()) return;
+    if (userService.findUserByChatId(chatId).isEmpty()) {
+      return;
+    }
     sendTextMessage(chatId, String.format(getMessage(REGISTRATION, locale),
         inputText, userService.findUserByChatId(chatId).get().getName(),
         userService.getCountOwnedGames(chatId)));
@@ -140,20 +164,17 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     String inputText = message.getText();
     String locale = message.getFrom().getLanguageCode();
     
-    switch (state) {
-      case DEFAULT -> {
-        switch (inputText) {
-          case "/start" -> sendTextMessage(chatId, getMessage(START, locale));
-          case "/help" -> sendTextMessage(chatId, getMessage(HELP, locale));
-          case "/settings" -> sendMenuMessage(chatId, getMessage(SETTINGS, locale), locale);
-          default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
-        }
+    if (Objects.requireNonNull(state) == UserState.DEFAULT) {
+      switch (inputText) {
+        case "/start" -> sendTextMessage(chatId, getMessage(START, locale));
+        case "/help" -> sendTextMessage(chatId, getMessage(HELP, locale));
+        case "/settings" -> sendMenuMessage(chatId, getMessage(SETTINGS, locale), locale);
+        default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
       }
-      case SET_STEAM_ID -> {
-        setUpdateSteamId(chatId, inputText, locale, message.getFrom().getUserName());
-        
-        state = UserState.DEFAULT;
-      }
+    } else if (state == UserState.SET_STEAM_ID) {
+      setUpdateSteamId(chatId, inputText, locale, message.getFrom().getUserName());
+      
+      state = UserState.DEFAULT;
     }
   }
   
@@ -173,8 +194,9 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       }
       case "/check_steam_id" ->
           sendTextMessage(chatId, String.format(getMessage(CHECK_STEAM_ID, locale),
-              userService.getUserByChatId(chatId).getSteamId()) +
-              (userService.getUserByChatId(chatId).isActive() ? getMessage(ACTIVE, locale) : getMessage(INACTIVE, locale)));
+              userService.getUserByChatId(chatId).getSteamId())
+              + (userService.getUserByChatId(chatId).isActive()
+              ? getMessage(ACTIVE, locale) : getMessage(INACTIVE, locale)));
       
       case "/set_active_mode" -> {
         userService.updateActiveForUser(chatId, true);
@@ -194,27 +216,30 @@ public class SteamNewsBot extends TelegramLongPollingBot {
           sendTextMessage(chatId, getMessage(UNSUBSCRIBE, locale) + gameTitle);
         }
       }
-/*            case "/subscribe" -> {
-                String gameTitle = callbackQuery.getMessage().getText();
-                gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
-                if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
-                    userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
-                    sendTextMessage(chatId, getMessage(SUBSCRIBE, locale) + gameTitle);
-                } else {
-                    sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
-                }
-            }*/
+//      case "/subscribe" -> {
+//        String gameTitle = callbackQuery.getMessage().getText();
+//        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
+//        if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
+//          userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
+//          sendTextMessage(chatId, getMessage(SUBSCRIBE, locale) + gameTitle);
+//        } else {
+//          sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
+//        }
+//      }
       case "/links_to_game" -> {
         String gameAppid = callbackQuery.getMessage().getText();
         gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
-        sendTextMessage(chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
+        
+        sendTextMessage(
+            chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
       }
       
       case "/black_list" -> {
         if (gameService.getBanListByChatId(chatId).isBlank()) {
           sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
         } else {
-          sendTextMessage(chatId, getMessage(BLACK_LIST, locale) + gameService.getBanListByChatId(chatId));
+          sendTextMessage(
+              chatId, getMessage(BLACK_LIST, locale) + gameService.getBanListByChatId(chatId));
         }
       }
       case "/clear_black_list" -> {
@@ -222,7 +247,8 @@ public class SteamNewsBot extends TelegramLongPollingBot {
           sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
         } else {
           userGameStateService.getBlackListByChatId(chatId)
-              .forEach(state -> userGameStateService.updateStateForGameById(false, state.getId()));
+              .forEach(gameState ->
+                  userGameStateService.updateStateForGameById(false, gameState.getId()));
           sendTextMessage(chatId, getMessage(BLACK_LIST_CLEAR, locale));
         }
       }

@@ -34,8 +34,12 @@ public class UserService {
                        String name,
                        String steamId,
                        String locale) throws IOException, NullPointerException {
-    if (userRepository.findUserByChatId(chatId).isPresent()) return;
-    if (name == null) name = getMessage(DEFAULT_NAME, locale);
+    if (userRepository.findUserByChatId(chatId).isPresent()) {
+      return;
+    }
+    if (name == null) {
+      name = getMessage(DEFAULT_NAME, locale);
+    }
     
     User user = new User();
     user.setActive(true);
@@ -63,7 +67,8 @@ public class UserService {
     }
   }
   
-  private Set<UserGameState> getSetStatesByUser(User user) throws IOException, NullPointerException {
+  private Set<UserGameState> getSetStatesByUser(User user)
+      throws IOException, NullPointerException {
     return steamService.getOwnedGames(user.getSteamId())
         .parallelStream()
         .map(game -> {
@@ -84,7 +89,8 @@ public class UserService {
     while (iterator.hasNext()) {
       UserGameState ugs = iterator.next();
       if (userGameStateService.existsByUserAndGame(ugs.getUser(), ugs.getGame())) {
-        UserGameState oldState = userGameStateService.findByUserAndGame(ugs.getUser(), ugs.getGame());
+        UserGameState oldState =
+            userGameStateService.findByUserAndGame(ugs.getUser(), ugs.getGame());
         tmp.add(oldState);
         iterator.remove();
       }

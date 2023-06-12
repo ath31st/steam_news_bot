@@ -20,11 +20,13 @@ public class CustomDataDeserializer extends StdDeserializer<String> {
   }
   
   @Override
-  public String deserialize(JsonParser jsonParser, DeserializationContext context) throws IOException {
+  public String deserialize(JsonParser jsonParser, DeserializationContext context)
+      throws IOException {
     String value = jsonParser.getText();
     if (value != null) {
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-      LocalDateTime ldt = LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault());
+      LocalDateTime ldt = LocalDateTime.ofInstant(
+          Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault());
       return ldt.format(formatter);
     }
     return null;

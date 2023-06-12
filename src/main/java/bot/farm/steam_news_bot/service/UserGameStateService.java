@@ -16,7 +16,8 @@ public class UserGameStateService {
   }
   
   public void updateStateForGameByChatId(String chatId, String name, boolean isBanned) {
-    UserGameState userGameState = userGameStateRepository.findByUser_ChatIdAndGame_Name(chatId, name);
+    UserGameState userGameState =
+        userGameStateRepository.findByUser_ChatIdAndGame_Name(chatId, name);
     userGameStateRepository.updateIsBannedById(isBanned, userGameState.getId());
   }
   
