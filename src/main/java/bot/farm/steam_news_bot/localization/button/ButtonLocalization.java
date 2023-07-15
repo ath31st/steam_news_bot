@@ -1,6 +1,14 @@
 package bot.farm.steam_news_bot.localization.button;
 
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.*;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.BLACK_LIST;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CHECK_STEAM_ID;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CLEAR_BLACK_LIST;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.LINKS_TO_GAME;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_ACTIVE_MODE;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_INACTIVE_MODE;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_UPD_STEAM_ID;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SUBSCRIBE;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.UNSUBSCRIBE;
 
 import java.util.HashMap;
 import java.util.Map;

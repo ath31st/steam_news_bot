@@ -152,6 +152,13 @@ public class MessageLocalization {
             + "<b>SteamDB:</b> <a href=\"https://steamdb.info/app/%s\">ССЫЛКА</a>");
   }
 
+  /**
+   * Retrieves a message from the resources based on the provided key and locale.
+   *
+   * @param key    The message key represented as an Enum of type MessageEnum.
+   * @param locale The locale indicating the language of the message (e.g., "en" for English).
+   * @return A string containing the message from the resources for the specified key and locale.
+   */
   public static String getMessage(Enum<MessageEnum> key, String locale) {
     if (!locale.equals("ru")) {
       locale = "en";

@@ -170,7 +170,7 @@ public class SchedulerConfig {
                   steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
                       + gamesAppidName.get(newsItem.getAppid()) + "</b>"
                       + System.lineSeparator() + newsItem, user.getLocale());
-                }
+                  }
             ));
   }
 }
