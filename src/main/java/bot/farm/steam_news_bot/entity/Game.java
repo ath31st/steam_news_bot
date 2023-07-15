@@ -27,10 +27,10 @@ public class Game {
   @Column(name = "game_id", unique = true, nullable = false)
   private String appid;
   private String name;
-  
+
   @OneToMany(mappedBy = "game")
   Set<UserGameState> states;
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -42,7 +42,7 @@ public class Game {
     Game game = (Game) o;
     return Objects.equals(appid, game.appid) && Objects.equals(name, game.name);
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(appid, name);

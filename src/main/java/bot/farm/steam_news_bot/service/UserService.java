@@ -24,7 +24,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserGameStateService userGameStateService;
   private final SteamService steamService;
-  
+
   /**
    * Constructs a new UserService with the provided dependencies.
    *
@@ -39,7 +39,7 @@ public class UserService {
     this.userGameStateService = userGameStateService;
     this.steamService = steamService;
   }
-  
+
   /**
    * Saves a new user with the provided information.
    *
@@ -60,7 +60,7 @@ public class UserService {
     if (name == null) {
       name = getMessage(DEFAULT_NAME, locale);
     }
-    
+
     User user = new User();
     user.setActive(true);
     user.setLocale(locale);
@@ -68,11 +68,11 @@ public class UserService {
     user.setName(name);
     user.setSteamId(Long.valueOf(steamId));
     user.setStates(getSetStatesByUser(user));
-    
+
     userRepository.save(user);
-    
+
   }
-  
+
   /**
    * Updates an existing user with the provided information.
    *
@@ -91,11 +91,11 @@ public class UserService {
       user.setLocale(locale);
       Set<UserGameState> states = updateSetStates(getSetStatesByUser(user));
       user.setStates(states);
-      
+
       userRepository.save(user);
     }
   }
-  
+
   /**
    * Retrieves the set of user game states based on the provided user.
    *
@@ -119,7 +119,7 @@ public class UserService {
         })
         .collect(Collectors.toSet());
   }
-  
+
   /**
    * Updates the set of user game states by removing duplicates and retrieving existing states.
    *
@@ -138,11 +138,11 @@ public class UserService {
         iterator.remove();
       }
     }
-    
+
     newSet.addAll(tmp);
     return newSet;
   }
-  
+
   /**
    * Retrieves the count of owned games for a specific chat ID.
    *
@@ -152,7 +152,7 @@ public class UserService {
   public long getCountOwnedGames(String chatId) {
     return userRepository.countByChatIdAndStates_IsOwnedTrue(chatId);
   }
-  
+
   /**
    * Updates the 'active' flag for a user based on the chat ID.
    *
@@ -164,7 +164,7 @@ public class UserService {
       userRepository.updateActiveByChatId(active, chatId);
     }
   }
-  
+
   /**
    * Retrieves the user with the specified chat ID, if it exists.
    *
@@ -174,7 +174,7 @@ public class UserService {
   public Optional<User> findUserByChatId(String chatId) {
     return userRepository.findUserByChatId(chatId);
   }
-  
+
   /**
    * Retrieves all users.
    *
@@ -185,7 +185,7 @@ public class UserService {
     userRepository.findAll().iterator().forEachRemaining(users::add);
     return users;
   }
-  
+
   /**
    * Retrieves a set of users with the specified app ID, who are active and not banned for the game.
    *
@@ -195,7 +195,7 @@ public class UserService {
   public Set<User> getUsersWithFilters(String appid) {
     return userRepository.findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(appid);
   }
-  
+
   /**
    * Retrieves a list of users based on their active status.
    *
@@ -205,7 +205,7 @@ public class UserService {
   public List<User> getUsersByActive(boolean isActive) {
     return userRepository.findByActive(isActive);
   }
-  
+
   /**
    * Retrieves the count of users based on their active status.
    *
@@ -215,7 +215,7 @@ public class UserService {
   public long countUsersByActive(boolean active) {
     return userRepository.countByActive(active);
   }
-  
+
   /**
    * Checks if a user with the specified chat ID exists.
    *
@@ -225,7 +225,7 @@ public class UserService {
   public boolean existsByChatId(String chatId) {
     return userRepository.existsByChatId(chatId);
   }
-  
+
   /**
    * Retrieves the user with the specified chat ID.
    *
@@ -235,7 +235,7 @@ public class UserService {
   public User getUserByChatId(String chatId) {
     return userRepository.findByChatId(chatId);
   }
-  
+
   /**
    * Checks if a game is banned for a specific user based on the chat ID and game name.
    *
@@ -246,7 +246,7 @@ public class UserService {
   public boolean checkBanForGameByChatId(String chatId, String name) {
     return userRepository.existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
   }
-  
+
   /**
    * Retrieves a list of usernames.
    *

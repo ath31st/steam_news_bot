@@ -22,7 +22,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return {@code true} if the user exists, {@code false} otherwise.
    */
   boolean existsByChatId(String chatId);
-  
+
   /**
    * Finds a user by chat ID.
    *
@@ -30,7 +30,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The User entity.
    */
   User findByChatId(String chatId);
-  
+
   /**
    * Counts the number of users with a specific chat ID and an owned game state.
    *
@@ -38,7 +38,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The count of users with the specified chat ID and owned game state.
    */
   long countByChatIdAndStates_IsOwnedTrue(String chatId);
-  
+
   /**
    * Counts the number of users with a specific active status.
    *
@@ -46,7 +46,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The count of users with the specified active status.
    */
   long countByActive(boolean active);
-  
+
   /**
    * Finds a user by chat ID (optional).
    *
@@ -54,7 +54,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The optional User entity.
    */
   Optional<User> findUserByChatId(String chatId);
-  
+
   /**
    * Finds a list of users by active status.
    *
@@ -62,7 +62,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The list of User entities.
    */
   List<User> findByActive(boolean active);
-  
+
   /**
    * Finds a set of users with active status, a specific game app ID, and no banned game state.
    *
@@ -70,7 +70,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return The set of User entities.
    */
   Set<User> findByActiveTrueAndStates_Game_AppidAndStates_IsBannedFalse(String appid);
-  
+
   /**
    * Checks if a user exists by chat ID, game name, and banned game state.
    *
@@ -79,7 +79,7 @@ public interface UserRepository extends CrudRepository<User, String> {
    * @return {@code true} if the user exists with the specified conditions, {@code false} otherwise.
    */
   boolean existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(String chatId, String name);
-  
+
   /**
    * Updates the active status of a user by chat ID.
    *
@@ -90,7 +90,7 @@ public interface UserRepository extends CrudRepository<User, String> {
   @Modifying
   @Query("update User u set u.active = ?1 where u.chatId = ?2")
   void updateActiveByChatId(boolean active, String chatId);
-  
+
   /**
    * Retrieves a list of usernames.
    *
@@ -98,5 +98,5 @@ public interface UserRepository extends CrudRepository<User, String> {
    */
   @Query("select u.name from User u")
   List<String> getListUsername();
-  
+
 }

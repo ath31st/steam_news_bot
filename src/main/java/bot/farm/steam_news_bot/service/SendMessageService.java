@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 @RequiredArgsConstructor
 public class SendMessageService {
   private final ButtonService buttonService;
-  
+
   /**
    * Creates a simple text message to be sent.
    *
@@ -28,7 +28,7 @@ public class SendMessageService {
     sendMessage.setText(message);
     return sendMessage;
   }
-  
+
   /**
    * Creates a message with an inline keyboard menu.
    *
@@ -44,7 +44,7 @@ public class SendMessageService {
     sendMessage.setReplyMarkup(inlineKeyboardMarkup);
     return sendMessage;
   }
-  
+
   /**
    * Creates a message with an inline keyboard for subscribing to news.
    *

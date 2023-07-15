@@ -13,7 +13,7 @@ public class MetricsService {
   private final UserService userService;
   private final GameService gameService;
   private final UserGameStateService userGameStateService;
-  
+
   /**
    * Constructs a new MetricsService with the given dependencies.
    *
@@ -28,7 +28,7 @@ public class MetricsService {
     this.gameService = gameService;
     this.userGameStateService = userGameStateService;
   }
-  
+
   /**
    * Retrieves the count of users in the database, including total users and active users.
    *
@@ -38,7 +38,7 @@ public class MetricsService {
     return ResponseEntity.ok(Map.of("total users in database", userService.getAllUsers().size(),
         "active users", userService.countUsersByActive(true)));
   }
-  
+
   /**
    * Retrieves the count of games in the database, including total games and game states by
    * active users.
@@ -50,7 +50,7 @@ public class MetricsService {
     return ResponseEntity.ok(Map.of("total games in database", gameService.countAllGames(),
         "game states by active users", gameService.countByUsersActive()));
   }
-  
+
   /**
    * Retrieves the list of usernames for all users in the database.
    *
@@ -59,7 +59,7 @@ public class MetricsService {
   public ResponseEntity<List<String>> getAllUsers() {
     return ResponseEntity.ok(userService.getListUsername());
   }
-  
+
   /**
    * Retrieves the top games based on the number of occurrences in the user game state database.
    *

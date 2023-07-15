@@ -1,28 +1,7 @@
 package bot.farm.steam_news_bot;
 
 
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ALREADY_UNSUBSCRIBED;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST_CLEAR;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.CHECK_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.DEFAULT_MESSAGE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.EMPTY_BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ENTER_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_DONT_EXISTS_ACC;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_HIDDEN_ACC;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.HELP;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INCORRECT_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.LINKS_TO_GAME_MESSAGE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.NOT_REGISTERED;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.REGISTRATION;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.SETTINGS;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.START;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.UNSUBSCRIBE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.WAITING;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.*;
 import static bot.farm.steam_news_bot.localization.message.MessageLocalization.getMessage;
 
 import bot.farm.steam_news_bot.service.GameService;

@@ -33,11 +33,11 @@ public class User {
   private Long steamId;
   private String locale;
   private boolean active;
-  
+
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
       orphanRemoval = true)
   Set<UserGameState> states;
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -49,7 +49,7 @@ public class User {
     User user = (User) o;
     return Objects.equals(chatId, user.chatId) && Objects.equals(name, user.name);
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(chatId, name);

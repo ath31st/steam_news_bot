@@ -26,20 +26,20 @@ public class UserGameState {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  
+
   @ManyToOne()
   @JoinColumn(name = "user_id")
   private User user;
-  
+
   @ManyToOne(
       cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
   @JoinColumn(name = "game_id")
   private Game game;
-  
+
   private boolean isWished;
   private boolean isBanned;
   private boolean isOwned;
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -52,7 +52,7 @@ public class UserGameState {
     return Objects.equals(id, that.id)
         && Objects.equals(user, that.user) && Objects.equals(game, that.game);
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(id, user, game);

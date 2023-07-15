@@ -54,7 +54,7 @@ public class SteamService {
    * User agent string for making HTTP requests.
    */
   private static final String USER_AGENT = "Mozilla/5.0";
-  
+
   /**
    * Retrieves the owned games for a given Steam user ID.
    *
@@ -63,26 +63,26 @@ public class SteamService {
    * @throws IOException          if an I/O error occurs while making the request
    * @throws NullPointerException if the account is hidden or does not exist
    */
-  
+
   public List<Game> getOwnedGames(Long steamId) throws IOException, NullPointerException {
     String ownedGamesUrl = String.format(GET_OWNED_GAMES_URL, steamWebApiKey, steamId);
-    
+
     List<Game> games;
-    
+
     URL url = new URL(ownedGamesUrl);
     HttpURLConnection connection = getConnection(url);
     String rawJson = getRawDataFromConnection(connection);
-    
+
     if (rawJson.equals("{\"response\":{}}") || rawJson.equals("{\"success\": 2")) {
       throw new NullPointerException("Account is hidden");
     }
-    
+
     games = convertRawJsonToListGames(rawJson);
     connection.disconnect();
-    
+
     return games;
   }
-  
+
   /**
    * Retrieves the news items for a specific game app.
    *
@@ -92,17 +92,17 @@ public class SteamService {
    */
   public List<NewsItem> getNewsByOwnedGames(String appid) throws IOException {
     String newsForAppUrl = String.format(GET_NEWS_FOR_APP_URL, appid);
-    
+
     List<NewsItem> newsItems;
     URL url = new URL(newsForAppUrl);
     HttpURLConnection connection = getConnection(url);
     String rawJson = getRawDataFromConnection(connection);
     newsItems = convertRawJsonToListNewsItems(rawJson);
     connection.disconnect();
-    
+
     return newsItems;
   }
-  
+
   /**
    * Retrieves the wishlist games for a given Steam user ID.
    *
@@ -111,7 +111,7 @@ public class SteamService {
    */
   public List<Game> getWishListGames(Long steamId) {
     String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
-    
+
     List<Game> wishListGames = new ArrayList<>();
     try {
       URL url = new URL(wishListGamesUrl);
@@ -124,7 +124,7 @@ public class SteamService {
     }
     return wishListGames;
   }
-  
+
   /**
    * Checks if a given Steam ID is valid.
    *
@@ -136,7 +136,7 @@ public class SteamService {
     Matcher matcher = pattern.matcher(steamId);
     return matcher.matches();
   }
-  
+
   private HttpURLConnection getConnection(URL url) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestProperty("Content-Type", "application/json");
@@ -150,7 +150,7 @@ public class SteamService {
     }
     return connection;
   }
-  
+
   private String getRawDataFromConnection(HttpURLConnection connection) throws IOException {
     StringBuilder response = new StringBuilder();
     BufferedReader bufferedReader =
@@ -162,12 +162,12 @@ public class SteamService {
     bufferedReader.close();
     return response.toString();
   }
-  
+
   private static List<Game> convertRawJsonToListGames(String rawJson)
       throws JsonProcessingException {
     List<Game> ownedGames = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
-    
+
     JsonNode arrNode = new ObjectMapper()
         .readTree(rawJson)
         .path("response")
@@ -179,12 +179,12 @@ public class SteamService {
     }
     return ownedGames;
   }
-  
+
   private static List<Game> convertRawJsonToWishListGames(String rawJson)
       throws JsonProcessingException {
     List<Game> wishListGames = new ArrayList<>();
     JsonNode jsonNode = new ObjectMapper().readTree(rawJson);
-    
+
     if (jsonNode.isObject()) {
       jsonNode.fields().forEachRemaining(node -> {
         Game game = new Game();
@@ -193,15 +193,15 @@ public class SteamService {
         wishListGames.add(game);
       });
     }
-    
+
     return wishListGames;
   }
-  
+
   private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson)
       throws JsonProcessingException {
     List<NewsItem> newsItems = new ArrayList<>();
     ObjectMapper mapper = new ObjectMapper();
-    
+
     JsonNode arrNode = new ObjectMapper()
         .readTree(rawJson)
         .path("appnews")
@@ -217,18 +217,18 @@ public class SteamService {
     }
     return newsItems;
   }
-  
+
   private static boolean checkDateOfNews(int seconds) {
     LocalDateTime localDateTime =
         LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
     LocalDateTime localDateTimeOfNews =
         LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
-    
+
     // TODO CHECK THIS LINE!
     return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
     //  return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
   }
-  
+
   private static String deleteLinksOnImagesFromText(String text) {
     Pattern pattern = Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*");
     Matcher matcher = pattern.matcher(text);

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AnnouncementController {
-  
+
   private final AnnouncementService announcementService;
-  
+
   /**
    * Constructor for AnnouncementController.
    *
@@ -27,7 +27,7 @@ public class AnnouncementController {
   public AnnouncementController(AnnouncementService announcementService) {
     this.announcementService = announcementService;
   }
-  
+
   /**
    * Endpoint for receiving messages and triggering notifications to users.
    * Accepts a JSON payload containing the message details.

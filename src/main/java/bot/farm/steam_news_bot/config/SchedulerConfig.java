@@ -28,7 +28,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 public class SchedulerConfig {
-  
+
   private static final Logger logger = LoggerFactory.getLogger(SchedulerConfig.class);
   private final SteamNewsBot steamNewsBot;
   private final SteamService steamService;
@@ -37,7 +37,7 @@ public class SchedulerConfig {
   private static final CopyOnWriteArrayList<NewsItem> newsItems = new CopyOnWriteArrayList<>();
   private static final CopyOnWriteArraySet<Game> problemGames = new CopyOnWriteArraySet<>();
   private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
-  
+
   /**
    * Constructor for SchedulerConfig.
    *
@@ -55,7 +55,7 @@ public class SchedulerConfig {
     this.userService = userService;
     this.gameService = gameService;
   }
-  
+
   /**
    * Scheduled task to update and send news items.
    * Runs at a fixed rate of 1800000 milliseconds (30 minutes).
@@ -64,21 +64,21 @@ public class SchedulerConfig {
   @Scheduled(fixedRate = 1800000)
   private void updateAndSendNewsItems() {
     final Instant startCycle = Instant.now();
-    
+
     updateNewsItemsList(gameService.getAllGamesByActiveUsers());
     sendNewsItems();
-    
+
     newsItems.clear();
-    
+
     if (problemGames.isEmpty()) {
       gamesAppidName.clear();
       logger.info("newsItems list cleared!");
     }
-    
+
     logger.info("The cycle of updating and sending news is over for {} seconds.",
         Duration.between(startCycle, Instant.now()));
   }
-  
+
   /**
    * Scheduled task for processing problem games.
    * Runs at a fixed rate of 300000 milliseconds (5 minutes).
@@ -89,18 +89,18 @@ public class SchedulerConfig {
     if (problemGames.isEmpty()) {
       return;
     }
-    
+
     logger.info("found {} games", problemGames.size());
-    
+
     updateNewsItemsList(problemGames);
     sendNewsItems();
-    
+
     newsItems.clear();
     problemGames.clear();
     gamesAppidName.clear();
     logger.info("newsItems and problem games lists cleared!");
   }
-  
+
   /**
    * Scheduled task to update the games' database.
    * Runs at a fixed rate of 86400000 milliseconds (24 hours).
@@ -117,10 +117,10 @@ public class SchedulerConfig {
             e.getMessage(), user.getChatId(), user.getSteamId());
       }
     });
-    
+
     logger.info("GamesDB successful updated! In base {} games.", gameService.countAllGames());
   }
-  
+
   /**
    * Updates the news items list for the given set of games.
    *
@@ -130,11 +130,11 @@ public class SchedulerConfig {
     if (games.isEmpty()) {
       return;
     }
-    
+
     logger.info("{} games in list.", games.size());
-    
+
     final Instant start = Instant.now();
-    
+
     games.parallelStream()
         .forEach(game -> {
           try {
@@ -145,11 +145,11 @@ public class SchedulerConfig {
             logger.error("problem with: {}, appid: {}. steam lag", game.getName(), game.getAppid());
           }
         });
-    
+
     logger.info("getting news is finished for: {} seconds",
         Duration.between(start, Instant.now()).toSeconds());
   }
-  
+
   /**
    * Sends the news items to users who have subscribed to the corresponding games.
    */
@@ -157,9 +157,9 @@ public class SchedulerConfig {
     if (newsItems.isEmpty()) {
       return;
     }
-    
+
     logger.info("found {} fresh news", newsItems.size());
-    
+
     newsItems.stream()
         .filter(newsItem -> !userService.getUsersWithFilters(newsItem.getAppid()).isEmpty())
         .forEach(newsItem -> userService.getUsersWithFilters(newsItem.getAppid())
@@ -170,7 +170,7 @@ public class SchedulerConfig {
                   steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
                       + gamesAppidName.get(newsItem.getAppid()) + "</b>"
                       + System.lineSeparator() + newsItem, user.getLocale());
-                  }
+                }
             ));
   }
 }

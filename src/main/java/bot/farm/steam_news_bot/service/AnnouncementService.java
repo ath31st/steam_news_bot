@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AnnouncementService {
   private final UserService userService;
   private final SteamNewsBot steamNewsBot;
-  
+
   /**
    * Constructs an AnnouncementService with the specified dependencies.
    *
@@ -30,7 +30,7 @@ public class AnnouncementService {
     this.userService = userService;
     this.steamNewsBot = steamNewsBot;
   }
-  
+
   /**
    * Receives a message and sends notifications to active users.
    *
@@ -41,12 +41,12 @@ public class AnnouncementService {
       @Validated @RequestBody Message message) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     message.setDate(LocalDateTime.now().format(formatter));
-    
+
     List<User> users = userService.getUsersByActive(true);
     users.forEach(user -> steamNewsBot.sendTextMessage(user.getChatId(), message.toString()));
-    
+
     return ResponseEntity.ok(Map.of(
         "service", "message successfully received. " + users.size() + " users notified."));
   }
-  
+
 }

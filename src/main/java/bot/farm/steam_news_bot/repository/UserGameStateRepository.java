@@ -23,7 +23,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
    * @return The UserGameState entity.
    */
   UserGameState findByUserAndGame(User user, Game game);
-  
+
   /**
    * Finds a UserGameState by user's chat ID and game's name.
    *
@@ -31,9 +31,9 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
    * @param name   The game's name.
    * @return The UserGameState entity.
    */
-  
+
   UserGameState findByUser_ChatIdAndGame_Name(String chatId, String name);
-  
+
   /**
    * Finds a list of UserGameStates by user's chat ID and isBanned is true.
    *
@@ -41,7 +41,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
    * @return The list of UserGameState entities.
    */
   List<UserGameState> findByUser_ChatIdAndIsBannedTrue(String chatId);
-  
+
   /**
    * Updates the isBanned field of a UserGameState by ID.
    *
@@ -52,7 +52,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
   @Modifying
   @Query("update UserGameState u set u.isBanned = ?1 where u.id = ?2")
   void updateIsBannedById(boolean isBanned, Long id);
-  
+
   /**
    * Updates the isWished and isOwned fields of a UserGameState by ID.
    *
@@ -64,7 +64,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
   @Modifying
   @Query("update UserGameState u set u.isWished = ?1, u.isOwned = ?2 where u.id = ?3")
   void updateIsWishedAndIsOwnedById(boolean isWished, boolean isOwned, Long id);
-  
+
   /**
    * Deletes UserGameStates associated with a user.
    *
@@ -74,7 +74,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
   @Modifying
   @Query("delete from UserGameState u where u.user = ?1")
   void deleteByUser(User user);
-  
+
   /**
    * Checks if a UserGameState exists for a user and game.
    *
@@ -83,7 +83,7 @@ public interface UserGameStateRepository extends JpaRepository<UserGameState, Lo
    * @return {@code true} if the UserGameState exists, {@code false} otherwise.
    */
   boolean existsByUserAndGame(User user, Game game);
-  
+
   /**
    * Finds the top games based on the count of UserGameStates.
    *

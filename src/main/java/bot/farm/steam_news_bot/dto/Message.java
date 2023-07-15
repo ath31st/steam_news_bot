@@ -18,7 +18,7 @@ public class Message {
   private String text;
   @JsonIgnore
   private String date;
-  
+
   @Override
   public String toString() {
     return new StringBuilder()

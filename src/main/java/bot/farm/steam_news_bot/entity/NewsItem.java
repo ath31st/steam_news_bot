@@ -20,33 +20,33 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 public class NewsItem {
-  
+
   @Id
   private long gid;
   private String title;
   private String url;
   private String author;
   private String contents;
-  
+
   @JsonProperty("is_external_url")
   boolean isExternalUrl;
-  
+
   @JsonProperty("feedlabel")
   private String feedLabel;
   @JsonDeserialize(using = CustomDataDeserializer.class)
   private String date;
-  
+
   @JsonProperty("feedname")
   private String feedName;
-  
+
   @JsonProperty("feed_type")
   private int feedType;
   private String appid;
-  
+
   @Override
   public String toString() {
     StringBuilder stringBuilder = new StringBuilder();
-    
+
     return stringBuilder
         .append("<b>").append(date).append("</b>") // bold it
         .append(System.lineSeparator())

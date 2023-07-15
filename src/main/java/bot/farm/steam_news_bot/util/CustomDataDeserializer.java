@@ -13,21 +13,21 @@ import java.time.format.DateTimeFormatter;
  * Custom deserializer for converting a JSON string to a formatted date and time string.
  */
 public class CustomDataDeserializer extends StdDeserializer<String> {
-  
+
   protected CustomDataDeserializer() {
     this(null);
   }
-  
+
   /**
    * Constructor with the specified value class.
    *
    * @param vc the value class for the deserializer.
    */
-  
+
   protected CustomDataDeserializer(Class<?> vc) {
     super(vc);
   }
-  
+
   /**
    * Deserializes the JSON string into a formatted date and time string.
    *

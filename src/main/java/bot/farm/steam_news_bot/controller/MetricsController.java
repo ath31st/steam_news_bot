@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/metrics")
 public class MetricsController {
-  
+
   private final MetricsService metricsService;
-  
-  
+
+
   /**
    * Constructor for MetricsController.
    *
@@ -27,7 +27,7 @@ public class MetricsController {
   public MetricsController(MetricsService metricsService) {
     this.metricsService = metricsService;
   }
-  
+
   /**
    * Endpoint for retrieving the count of users.
    * Returns the count of users as a map with a single key-value pair.
@@ -38,7 +38,7 @@ public class MetricsController {
   public ResponseEntity<Map<String, Number>> getCountUsers() {
     return metricsService.getCountUsers();
   }
-  
+
   /**
    * Endpoint for retrieving the usernames of all users.
    * Returns a list of usernames.
@@ -49,7 +49,7 @@ public class MetricsController {
   public ResponseEntity<List<String>> getUsernames() {
     return metricsService.getAllUsers();
   }
-  
+
   /**
    * Endpoint for retrieving the count of games.
    * Returns the count of games as a map with game names and corresponding counts.
@@ -60,7 +60,7 @@ public class MetricsController {
   public ResponseEntity<Map<String, Long>> getCountGames() {
     return metricsService.getCountGames();
   }
-  
+
   /**
    * Endpoint for retrieving the top N games.
    * Returns a list of the top N games based on certain criteria.

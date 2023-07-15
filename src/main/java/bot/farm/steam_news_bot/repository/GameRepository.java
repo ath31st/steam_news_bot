@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GameRepository extends CrudRepository<Game, String> {
   long countByStates_User_ActiveTrue();
-  
+
   List<Game> findByStates_User_ChatIdAndStates_IsBannedTrue(String chatId);
-  
+
   List<Game> findByStates_User_ActiveTrue();
-  
+
   Set<Game> findByStates_User_ActiveTrueAndStates_IsBannedFalse();
-  
+
   boolean existsByAppid(String appid);
-  
+
 }

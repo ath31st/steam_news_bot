@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameService {
   private final GameRepository gameRepository;
-  
+
   /**
    * Constructs a new GameService with the given GameRepository.
    *
@@ -22,7 +22,7 @@ public class GameService {
   public GameService(GameRepository gameRepository) {
     this.gameRepository = gameRepository;
   }
-  
+
   /**
    * Retrieves the list of banned games for a specific chat ID.
    *
@@ -35,7 +35,7 @@ public class GameService {
         .map(Game::getName)
         .collect(Collectors.joining("\n"));
   }
-  
+
   /**
    * Retrieves all games associated with active users, excluding banned games.
    *
@@ -44,7 +44,7 @@ public class GameService {
   public Set<Game> getAllGamesByActiveUsers() {
     return gameRepository.findByStates_User_ActiveTrueAndStates_IsBannedFalse();
   }
-  
+
   /**
    * Counts the total number of games.
    *
@@ -53,7 +53,7 @@ public class GameService {
   public long countAllGames() {
     return gameRepository.count();
   }
-  
+
   /**
    * Counts the number of games associated with active users.
    *
