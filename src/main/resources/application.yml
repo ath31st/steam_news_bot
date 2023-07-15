@@ -3,9 +3,9 @@ server:
 
 #steam key, bot token and name
 steamnewsbot:
-  steamwebapikey:
-  botName:
-  botToken:
+  steamwebapikey: your_api_from_steam
+  botName: your_bot_name_from_bot_father
+  botToken: your_bot_token_from_bot_father
 
 #datasource settings
 spring:
