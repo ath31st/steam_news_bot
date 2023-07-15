@@ -52,14 +52,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   private final UserService userService;
   private final GameService gameService;
   private final UserGameStateService userGameStateService;
-  
+
   private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
   @Value("${steamnewsbot.botName}")
   private String botName;
   @Value("${steamnewsbot.botToken}")
   private String botToken;
   private UserState state = UserState.DEFAULT;
-  
+
   /**
    * Constructor for the SteamNewsBot class.
    *
@@ -77,17 +77,17 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     this.gameService = gameService;
     this.userGameStateService = userGameStateService;
   }
-  
+
   @Override
   public String getBotUsername() {
     return botName;
   }
-  
+
   @Override
   public String getBotToken() {
     return botToken;
   }
-  
+
   /**
    * Processes the received updates from Telegram.
    *
@@ -95,16 +95,16 @@ public class SteamNewsBot extends TelegramLongPollingBot {
    */
   @Override
   public void onUpdateReceived(Update update) {
-    
+
     if (update.hasMessage() && update.getMessage().hasText()) {
       messageProcessing(update.getMessage());
     }
-    
+
     if (update.hasCallbackQuery()) {
       callBackQueryProcessing(update.getCallbackQuery());
     }
   }
-  
+
   /**
    * Sends a text message to the specified chat ID.
    *
@@ -117,14 +117,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     } catch (TelegramApiException e) {
       if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
         userService.updateActiveForUser(chatId, false);
-        
+
         logger.info("User with chatId {} has received the \"inactive\" status", chatId);
       } else {
         logger.error(e.getMessage());
       }
     }
   }
-  
+
   /**
    * Sends a news message to the specified chat ID with the given locale.
    *
@@ -138,14 +138,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     } catch (TelegramApiException e) {
       if (e.getMessage().endsWith("[403] Forbidden: bot was blocked by the user")) {
         userService.updateActiveForUser(chatId, false);
-        
+
         logger.info("User with chatId {} has received the \"inactive\" status", chatId);
       } else {
         logger.error(e.getMessage());
       }
     }
   }
-  
+
   /**
    * Sends a menu message to the specified chat ID with the given message and locale.
    *
@@ -157,25 +157,25 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     try {
       execute(sendMessageService.createMenuMessage(chatId, message, locale));
     } catch (TelegramApiException e) {
-      throw new RuntimeException(e);
+      logger.error(e.getMessage());
     }
   }
-  
+
   private void setUpdateSteamId(String chatId, String inputText, String locale, String username) {
     if (!SteamService.isValidSteamId(inputText)) {
       sendTextMessage(chatId, getMessage(INCORRECT_STEAM_ID, locale));
       return;
     }
-    
+
     sendTextMessage(chatId, getMessage(WAITING, locale));
-    
+
     try {
       if (userService.existsByChatId(chatId)) {
         userService.updateUser(chatId, inputText, locale);
       } else {
         userService.saveUser(chatId, username, inputText, locale);
       }
-      
+
       sendMessageAfterSetUpdateSteamId(chatId, inputText, locale);
     } catch (NullPointerException e) {
       logger.error("User {} entered id {} - this is hidden account", chatId, inputText);
@@ -185,21 +185,21 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       sendTextMessage(chatId, String.format(getMessage(ERROR_DONT_EXISTS_ACC, locale), inputText));
     }
   }
-  
+
   private void sendMessageAfterSetUpdateSteamId(String chatId, String inputText, String locale) {
     if (userService.findUserByChatId(chatId).isEmpty()) {
       return;
     }
     sendTextMessage(chatId, String.format(getMessage(REGISTRATION, locale),
-        inputText, userService.findUserByChatId(chatId).get().getName(),
+        inputText, userService.findUserByChatId(chatId).orElseThrow().getName(),
         userService.getCountOwnedGames(chatId)));
   }
-  
+
   private void messageProcessing(Message message) {
     String chatId = String.valueOf(message.getChatId());
     String inputText = message.getText();
     String locale = message.getFrom().getLanguageCode();
-    
+
     if (Objects.requireNonNull(state) == UserState.DEFAULT) {
       switch (inputText) {
         case "/start" -> sendTextMessage(chatId, getMessage(START, locale));
@@ -209,20 +209,20 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       }
     } else if (state == UserState.SET_STEAM_ID) {
       setUpdateSteamId(chatId, inputText, locale, message.getFrom().getUserName());
-      
+
       state = UserState.DEFAULT;
     }
   }
-  
+
   private void callBackQueryProcessing(CallbackQuery callbackQuery) {
     String chatId = String.valueOf(callbackQuery.getMessage().getChatId());
     String locale = callbackQuery.getFrom().getLanguageCode();
-    
-    if (!userService.existsByChatId(chatId) & !callbackQuery.getData().equals("/set_steam_id")) {
+
+    if (!userService.existsByChatId(chatId) && !callbackQuery.getData().equals("/set_steam_id")) {
       sendTextMessage(chatId, getMessage(NOT_REGISTERED, locale));
       return;
     }
-    
+
     switch (callbackQuery.getData()) {
       case "/set_steam_id" -> {
         sendTextMessage(chatId, getMessage(ENTER_STEAM_ID, locale));
@@ -233,7 +233,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
               userService.getUserByChatId(chatId).getSteamId())
               + (userService.getUserByChatId(chatId).isActive()
               ? getMessage(ACTIVE, locale) : getMessage(INACTIVE, locale)));
-      
+
       case "/set_active_mode" -> {
         userService.updateActiveForUser(chatId, true);
         sendTextMessage(chatId, getMessage(ACTIVE_MODE, locale));
@@ -265,11 +265,11 @@ public class SteamNewsBot extends TelegramLongPollingBot {
       case "/links_to_game" -> {
         String gameAppid = callbackQuery.getMessage().getText();
         gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
-        
+
         sendTextMessage(
             chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
       }
-      
+
       case "/black_list" -> {
         if (gameService.getBanListByChatId(chatId).isBlank()) {
           sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
@@ -289,7 +289,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
       }
       default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
-      
+
     }
   }
 }

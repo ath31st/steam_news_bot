@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class SteamService {
    */
   @Value("${steamnewsbot.steamwebapikey}")
   private String steamWebApiKey;
+  private static final Logger logger = LoggerFactory.getLogger(SteamService.class);
   /**
    * URL pattern for retrieving owned games.
    */
@@ -109,15 +112,15 @@ public class SteamService {
   public List<Game> getWishListGames(Long steamId) {
     String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
     
-    List<Game> wishListGames;
+    List<Game> wishListGames = new ArrayList<>();
     try {
       URL url = new URL(wishListGamesUrl);
       HttpURLConnection connection = getConnection(url);
       String rawJson = getRawDataFromConnection(connection);
-      wishListGames = convertRawJsonToWishListGames(rawJson);
+      wishListGames.addAll(convertRawJsonToWishListGames(rawJson));
       connection.disconnect();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      logger.error(e.getMessage());
     }
     return wishListGames;
   }
@@ -142,7 +145,7 @@ public class SteamService {
     connection.setReadTimeout(5000);
     connection.setRequestMethod("GET");
     int responseCode = connection.getResponseCode();
-    if (responseCode == 404 | responseCode == 500) {
+    if (responseCode == 404 || responseCode == 500) {
       throw new IllegalArgumentException();
     }
     return connection;

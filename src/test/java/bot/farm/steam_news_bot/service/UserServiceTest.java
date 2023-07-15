@@ -137,7 +137,7 @@ class UserServiceTest {
         doReturn(optionalUser).when(userRepository).findUserByChatId(chatId);
 
         userService.updateUser(chatId, streamId, locale);
-
+        verify(userRepository, times(2)).findUserByChatId(chatId);
     }
 
 }

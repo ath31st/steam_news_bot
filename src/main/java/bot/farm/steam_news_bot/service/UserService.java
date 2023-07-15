@@ -86,7 +86,7 @@ public class UserService {
                          String steamId,
                          String locale) throws IOException, NullPointerException {
     if (userRepository.findUserByChatId(chatId).isPresent()) {
-      User user = userRepository.findUserByChatId(chatId).get();
+      User user = userRepository.findUserByChatId(chatId).orElseThrow();
       user.setSteamId(Long.valueOf(steamId));
       user.setLocale(locale);
       Set<UserGameState> states = updateSetStates(getSetStatesByUser(user));
