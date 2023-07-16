@@ -1,7 +1,11 @@
 ## Steam news bot
 
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Steam](https://img.shields.io/badge/steam-%23000000.svg?style=for-the-badge&logo=steam&logoColor=white)
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white)
+![SonarLint](https://img.shields.io/badge/SonarLint-CB2029?style=for-the-badge&logo=sonarlint&logoColor=white)
 
 It's no secret that the steam platform has significant drawbacks and general slowness and sluggishness. News about apps
 and games there are in disarray and without sorting by date and time. This bot allows you to receive the latest news
@@ -55,6 +59,16 @@ Make the bot multilingual.<br/>
 4. log4j + logback - logger
 5. sqlite (jdbc and dialect) - database
 6. junit + mockito - tests (86% coverage)
+
+####
+Versions:
+- Java: 17</br>
+- Spring Boot: 2.7.2</br>
+- SQLite: 3.36.0.3</br>
+- Telegrambots: 6.1.0</br>
+- Maven: 3.2.0</br>
+- JUnit5: 5.8.2</br>
+- Mockito: 4.5.1</br>
 
 You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
 
