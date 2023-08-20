@@ -105,6 +105,13 @@ public class UserService {
       if (userGameStateService.existsByUserAndGame(ugs.getUser(), ugs.getGame())) {
         UserGameState oldState =
             userGameStateService.findByUserAndGame(ugs.getUser(), ugs.getGame());
+
+        // here update state if game is owned after wishlist
+        if (ugs.isOwned() && oldState.isWished()) {
+          oldState.setOwned(true);
+          oldState.setWished(false);
+        }
+
         tmp.add(oldState);
         iterator.remove();
       }

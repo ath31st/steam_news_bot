@@ -68,7 +68,8 @@ public class MessageLocalization {
     messages.put(MessageEnum.REGISTRATION + "_ru", """
         Ваш Steam ID: %s
         Привет, %s!
-        Отличная библиотека! У вас %d купленных игр на аккаунте и %d в списке желаемых""");
+        Отличная библиотека!
+        У вас %d купленных игр на аккаунте и %d в списке желаемых""");
 
     //ERROR_HIDDEN_ACC
     messages.put(MessageEnum.ERROR_HIDDEN_ACC + "_en", "Steam account with id %s is hidden");

@@ -145,6 +145,7 @@ public class SteamService {
     connection.setRequestMethod("GET");
     int responseCode = connection.getResponseCode();
     if (responseCode == 404 || responseCode == 500) {
+      connection.disconnect();
       throw new IllegalArgumentException();
     }
     return connection;
