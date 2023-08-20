@@ -90,7 +90,6 @@ public class UserService {
     }
   }
 
-
   /**
    * Updates the set of user game states by removing duplicates and retrieving existing states.
    *
@@ -110,6 +109,9 @@ public class UserService {
         if (ugs.isOwned() && oldState.isWished()) {
           oldState.setOwned(true);
           oldState.setWished(false);
+        } else if (ugs.isWished() && oldState.isOwned()) {
+          oldState.setOwned(false);
+          oldState.setWished(true);
         }
 
         tmp.add(oldState);
