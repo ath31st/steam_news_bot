@@ -60,10 +60,15 @@ public class MessageLocalization {
     messages.put(MessageEnum.WAITING + "_ru", "Это займет несколько секунд");
 
     //REGISTRATION
-    messages.put(MessageEnum.REGISTRATION + "_en",
-        "Your steam ID: %s\nHi %s!\nNice library! You have %d owned games on your account");
-    messages.put(MessageEnum.REGISTRATION + "_ru",
-        "Ваш Steam ID: %s\nПривет, %s!\nОтличная библиотека! У вас %d купленных игр на аккаунте");
+    messages.put(MessageEnum.REGISTRATION + "_en", """
+        Your steam ID: %s
+        Hi %s!
+        Nice library!
+        You have %d owned games on your account and %d in wishlist""");
+    messages.put(MessageEnum.REGISTRATION + "_ru", """
+        Ваш Steam ID: %s
+        Привет, %s!
+        Отличная библиотека! У вас %d купленных игр на аккаунте и %d в списке желаемых""");
 
     //ERROR_HIDDEN_ACC
     messages.put(MessageEnum.ERROR_HIDDEN_ACC + "_en", "Steam account with id %s is hidden");

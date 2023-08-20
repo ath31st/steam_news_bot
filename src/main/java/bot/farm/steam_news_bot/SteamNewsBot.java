@@ -192,7 +192,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
     sendTextMessage(chatId, String.format(getMessage(REGISTRATION, locale),
         inputText, userService.findUserByChatId(chatId).orElseThrow().getName(),
-        userService.getCountOwnedGames(chatId)));
+        userService.getCountOwnedGames(chatId), userService.getCountWishedGames(chatId)));
   }
 
   private void messageProcessing(Message message) {

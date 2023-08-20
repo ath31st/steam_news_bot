@@ -40,6 +40,14 @@ public interface UserRepository extends CrudRepository<User, String> {
   long countByChatIdAndStates_IsOwnedTrue(String chatId);
 
   /**
+   * Counts the number of users with a specific chat ID and wished game state.
+   *
+   * @param chatId The user's chat ID.
+   * @return The count of users with the specified chat ID and wished game state.
+   */
+  long countByChatIdAndStates_IsWishedTrue(String chatId);
+
+  /**
    * Counts the number of users with a specific active status.
    *
    * @param active The active status.

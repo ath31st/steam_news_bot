@@ -117,17 +117,33 @@ public class UserGameStateService {
    */
   public Set<UserGameState> getSetStatesByUser(User user)
       throws IOException, NullPointerException {
-    return steamService.getOwnedGames(user.getSteamId())
+    final Set<UserGameState> ownedGames = steamService.getOwnedGames(user.getSteamId())
         .parallelStream()
         .map(game -> {
-          UserGameState userGameState = new UserGameState();
-          userGameState.setUser(user);
-          userGameState.setGame(game);
-          userGameState.setBanned(false);
-          userGameState.setWished(false);
-          userGameState.setOwned(true);
-          return userGameState;
+          UserGameState ugs = new UserGameState();
+          ugs.setUser(user);
+          ugs.setGame(game);
+          ugs.setBanned(false);
+          ugs.setWished(false);
+          ugs.setOwned(true);
+          return ugs;
         })
         .collect(Collectors.toSet());
+
+    final Set<UserGameState> wishedGames = steamService.getWishListGames(user.getSteamId())
+        .parallelStream()
+        .map(game -> {
+          UserGameState ugs = new UserGameState();
+          ugs.setUser(user);
+          ugs.setGame(game);
+          ugs.setBanned(false);
+          ugs.setWished(true);
+          ugs.setOwned(false);
+          return ugs;
+        })
+        .collect(Collectors.toSet());
+
+    ownedGames.addAll(wishedGames);
+    return ownedGames;
   }
 }

@@ -125,6 +125,16 @@ public class UserService {
   }
 
   /**
+   * Retrieves the count of wished games for a specific chat ID.
+   *
+   * @param chatId the chat ID
+   * @return the count of wished games
+   */
+  public long getCountWishedGames(String chatId) {
+    return userRepository.countByChatIdAndStates_IsWishedTrue(chatId);
+  }
+
+  /**
    * Updates the 'active' flag for a user based on the chat ID.
    *
    * @param chatId the chat ID
