@@ -4,7 +4,10 @@ import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserGameStateRepository;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,15 +17,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserGameStateService {
   private final UserGameStateRepository userGameStateRepository;
+  private final SteamService steamService;
 
   /**
    * Constructs a new UserGameStateService with the provided UserGameStateRepository.
    *
    * @param userGameStateRepository the UserGameStateRepository to be used
+   * @param steamService            the Steam service
    */
 
-  public UserGameStateService(UserGameStateRepository userGameStateRepository) {
+  public UserGameStateService(UserGameStateRepository userGameStateRepository, SteamService steamService) {
     this.userGameStateRepository = userGameStateRepository;
+    this.steamService = steamService;
   }
 
   /**
@@ -99,5 +105,29 @@ public class UserGameStateService {
    */
   public List<String> getTopGamesFromDb(int limit) {
     return userGameStateRepository.findTopGames(limit);
+  }
+
+  /**
+   * Retrieves the set of user game states based on the provided user.
+   *
+   * @param user the User object
+   * @return the set of UserGameState objects
+   * @throws IOException          if there is an error during the operation
+   * @throws NullPointerException if the user parameter is null
+   */
+  public Set<UserGameState> getSetStatesByUser(User user)
+      throws IOException, NullPointerException {
+    return steamService.getOwnedGames(user.getSteamId())
+        .parallelStream()
+        .map(game -> {
+          UserGameState userGameState = new UserGameState();
+          userGameState.setUser(user);
+          userGameState.setGame(game);
+          userGameState.setBanned(false);
+          userGameState.setWished(false);
+          userGameState.setOwned(true);
+          return userGameState;
+        })
+        .collect(Collectors.toSet());
   }
 }

@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,21 +22,17 @@ import org.springframework.stereotype.Service;
 public class UserService {
   private final UserRepository userRepository;
   private final UserGameStateService userGameStateService;
-  private final SteamService steamService;
 
   /**
    * Constructs a new UserService with the provided dependencies.
    *
    * @param userRepository       the UserRepository to be used
    * @param userGameStateService the UserGameStateService to be used
-   * @param steamService         the SteamService to be used
    */
   public UserService(UserRepository userRepository,
-                     UserGameStateService userGameStateService,
-                     SteamService steamService) {
+                     UserGameStateService userGameStateService) {
     this.userRepository = userRepository;
     this.userGameStateService = userGameStateService;
-    this.steamService = steamService;
   }
 
   /**
@@ -67,10 +62,9 @@ public class UserService {
     user.setChatId(chatId);
     user.setName(name);
     user.setSteamId(Long.valueOf(steamId));
-    user.setStates(getSetStatesByUser(user));
+    user.setStates(userGameStateService.getSetStatesByUser(user));
 
     userRepository.save(user);
-
   }
 
   /**
@@ -89,36 +83,13 @@ public class UserService {
       User user = userRepository.findUserByChatId(chatId).orElseThrow();
       user.setSteamId(Long.valueOf(steamId));
       user.setLocale(locale);
-      Set<UserGameState> states = updateSetStates(getSetStatesByUser(user));
+      Set<UserGameState> states = updateSetStates(userGameStateService.getSetStatesByUser(user));
       user.setStates(states);
 
       userRepository.save(user);
     }
   }
 
-  /**
-   * Retrieves the set of user game states based on the provided user.
-   *
-   * @param user the User object
-   * @return the set of UserGameState objects
-   * @throws IOException          if there is an error during the operation
-   * @throws NullPointerException if the user parameter is null
-   */
-  private Set<UserGameState> getSetStatesByUser(User user)
-      throws IOException, NullPointerException {
-    return steamService.getOwnedGames(user.getSteamId())
-        .parallelStream()
-        .map(game -> {
-          UserGameState userGameState = new UserGameState();
-          userGameState.setUser(user);
-          userGameState.setGame(game);
-          userGameState.setBanned(false);
-          userGameState.setWished(false);
-          userGameState.setOwned(true);
-          return userGameState;
-        })
-        .collect(Collectors.toSet());
-  }
 
   /**
    * Updates the set of user game states by removing duplicates and retrieving existing states.
