@@ -31,14 +31,14 @@ public class MessageLocalization {
     messages.put(MessageEnum.HELP + "_en", """
         1. News about your games is updated every half hour
         2. The status of your library is updated once a day
-        3. If you don't know where to find the Steam ID, then follow the\s
-        link https://store.steampowered.com/account/
+        3. If your wishlist has not been added, then check the privacy settings in Steam by following the link https://steamcommunity.com/id/{YOUR_ID}/edit/settings. They should be like this: "My profile: Public" and "Game details: Public"
+        4. If you don't know where to find the Steam ID, then follow the link https://store.steampowered.com/account/
         Steam ID looks like 765XXXXXXXXXX""");
     messages.put(MessageEnum.HELP + "_ru", """
         1. Новости о ваших играх обновляются каждые полчаса
         2. Состояние вашей библиотеки обновляется раз в сутки
-        3. Если вы не знаете где найти Steam ID, перейдите по\s
-        ссылке https://store.steampowered.com/account/
+        3. Если ваш список желаемого не добавился, то проверьте настройки приватности в Steam по ссылке https://steamcommunity.com/id/{YOUR_ID}/edit/settings. Они должны быть такими: "Мой профиль: Открытый" и "Доступ к игровой информации: Открытый"
+        4. Если вы не знаете где найти Steam ID, перейдите по ссылке https://store.steampowered.com/account/
         Steam ID выглядит так: 765XXXXXXXXXX""");
 
     //SETTINGS
@@ -69,7 +69,7 @@ public class MessageLocalization {
         Ваш Steam ID: %s
         Привет, %s!
         Отличная библиотека!
-        У вас %d купленных игр на аккаунте и %d в списке желаемых""");
+        У вас %d купленных игр на аккаунте и %d в списке желаемого""");
 
     //ERROR_HIDDEN_ACC
     messages.put(MessageEnum.ERROR_HIDDEN_ACC + "_en", "Steam account with id %s is hidden");
