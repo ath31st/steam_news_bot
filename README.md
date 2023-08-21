@@ -46,6 +46,8 @@ Make the bot multilingual.<br/>
    ![image info](images/image02.jpg)
     - _"Set/Update Steam ID"_ - This is necessary for registration.
     - _"Check your steam ID"_ - Here you can see the installed steam ID and activity mode.
+    - _"Check available wishlist"_ - Checking that the wishlist is available and news on games from
+      the list will be received.
     - _"Set \"active\" mode"_ - Set the active mode. Only in this mode the bot will send you news.
     - _"Set \"inactive\" mode"_ - Set inactive mode if you are tired of the news in general.
     - _"Clear black list"_ - Clearing the blacklist.
