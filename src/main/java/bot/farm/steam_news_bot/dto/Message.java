@@ -22,13 +22,13 @@ public class Message {
   @Override
   public String toString() {
     return new StringBuilder()
-        .append("From ").append(author)
+        .append("From/От ").append(author)
         .append(System.lineSeparator())
         .append("<b>").append(date).append("</b>")
         .append(System.lineSeparator())
-        .append("Announcement! ").append(text)
+        .append("Announcement!/Объявление! ").append(text)
         .append(System.lineSeparator())
-        .append("Thank you for your attention my friend!")
+        .append("Thank for your attention!/Благодарю за внимание!")
         .toString();
   }
 }
