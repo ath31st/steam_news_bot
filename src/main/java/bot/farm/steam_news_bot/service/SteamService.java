@@ -13,6 +13,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -241,8 +242,8 @@ public class SteamService {
         LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault());
 
     // TODO CHECK THIS LINE!
-    //return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
-    return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
+    return localDateTimeOfNews.plus(1800000, ChronoUnit.MILLIS).isAfter(localDateTime);
+    //return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
   }
 
   private static String deleteLinksOnImagesFromText(String text) {
