@@ -1,28 +1,7 @@
 package bot.farm.steam_news_bot;
 
 
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ALREADY_UNSUBSCRIBED;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.BLACK_LIST_CLEAR;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.CHECK_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.DEFAULT_MESSAGE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.EMPTY_BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ENTER_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_DONT_EXISTS_ACC;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.ERROR_HIDDEN_ACC;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.HELP;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.INCORRECT_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.LINKS_TO_GAME_MESSAGE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.NOT_REGISTERED;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.REGISTRATION;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.SETTINGS;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.START;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.UNSUBSCRIBE;
-import static bot.farm.steam_news_bot.localization.message.MessageEnum.WAITING;
+import static bot.farm.steam_news_bot.localization.message.MessageEnum.*;
 import static bot.farm.steam_news_bot.localization.message.MessageLocalization.getMessage;
 
 import bot.farm.steam_news_bot.service.GameService;
@@ -52,6 +31,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   private final UserService userService;
   private final GameService gameService;
   private final UserGameStateService userGameStateService;
+  private final SteamService steamService;
 
   private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
   @Value("${steamnewsbot.botName}")
@@ -67,15 +47,17 @@ public class SteamNewsBot extends TelegramLongPollingBot {
    * @param userService          the service for managing user data.
    * @param gameService          the service for managing game data.
    * @param userGameStateService the service for managing user game states.
+   * @param steamService         the service for fetching data from Steam.
    */
   public SteamNewsBot(SendMessageService sendMessageService,
                       UserService userService,
                       GameService gameService,
-                      UserGameStateService userGameStateService) {
+                      UserGameStateService userGameStateService, SteamService steamService) {
     this.sendMessageService = sendMessageService;
     this.userService = userService;
     this.gameService = gameService;
     this.userGameStateService = userGameStateService;
+    this.steamService = steamService;
   }
 
   @Override
@@ -228,20 +210,36 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         sendTextMessage(chatId, getMessage(ENTER_STEAM_ID, locale));
         state = UserState.SET_STEAM_ID;
       }
+
       case "/check_steam_id" ->
           sendTextMessage(chatId, String.format(getMessage(CHECK_STEAM_ID, locale),
               userService.getUserByChatId(chatId).getSteamId())
               + (userService.getUserByChatId(chatId).isActive()
               ? getMessage(ACTIVE, locale) : getMessage(INACTIVE, locale)));
 
+      case "/check_wishlist" -> {
+        long steamId = userService.getUserByChatId(chatId).getSteamId();
+        int responseCode = steamService.checkAvailableWishlistBySteamId(steamId);
+        String response;
+        switch (responseCode) {
+          case 200 -> response = String.format(getMessage(WISHLIST_AVAILABLE, locale));
+          case 500 -> response = String.format(getMessage(WISHLIST_NOT_AVAILABLE, locale));
+          default ->
+              response = String.format(getMessage(PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE, locale));
+        }
+        sendTextMessage(chatId, response);
+      }
+
       case "/set_active_mode" -> {
         userService.updateActiveForUser(chatId, true);
         sendTextMessage(chatId, getMessage(ACTIVE_MODE, locale));
       }
+
       case "/set_inactive_mode" -> {
         userService.updateActiveForUser(chatId, false);
         sendTextMessage(chatId, getMessage(INACTIVE_MODE, locale));
       }
+
       case "/unsubscribe" -> {
         String gameTitle = callbackQuery.getMessage().getText();
         gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
@@ -252,6 +250,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
           sendTextMessage(chatId, getMessage(UNSUBSCRIBE, locale) + gameTitle);
         }
       }
+
 //      case "/subscribe" -> {
 //        String gameTitle = callbackQuery.getMessage().getText();
 //        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
@@ -262,6 +261,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
 //          sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
 //        }
 //      }
+
       case "/links_to_game" -> {
         String gameAppid = callbackQuery.getMessage().getText();
         gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
@@ -278,6 +278,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
               chatId, getMessage(BLACK_LIST, locale) + gameService.getBanListByChatId(chatId));
         }
       }
+
       case "/clear_black_list" -> {
         if (gameService.getBanListByChatId(chatId).isBlank()) {
           sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
@@ -289,7 +290,6 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         }
       }
       default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
-
     }
   }
 }

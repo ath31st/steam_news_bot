@@ -148,6 +148,22 @@ public class MessageLocalization {
     messages.put(MessageEnum.BLACK_LIST_CLEAR + "_en", "Your black list is cleared");
     messages.put(MessageEnum.BLACK_LIST_CLEAR + "_ru", "Ваш черный список очищен");
 
+    //WISHLIST_AVAILABLE
+    messages.put(MessageEnum.WISHLIST_AVAILABLE + "_en", "Your wishlist is available");
+    messages.put(MessageEnum.WISHLIST_AVAILABLE + "_ru", "Ваш список желаемого доступен");
+
+    //WISHLIST_NOT_AVAILABLE
+    messages.put(MessageEnum.WISHLIST_NOT_AVAILABLE + "_en",
+        "Your wishlist is unavailable. Refer to /help to solve the problem");
+    messages.put(MessageEnum.WISHLIST_NOT_AVAILABLE + "_ru",
+        "Ваш список желаемого недоступен. Обратитесь к /help для решения проблемы");
+
+    //PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE
+    messages.put(MessageEnum.PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE + "_en",
+        "There is a problem with the network or the Steam service. Try again later");
+    messages.put(MessageEnum.PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE + "_ru",
+        "Возникла проблема с сетью или сервисом Steam. Повторите попытку позже");
+
     //LINKS_TO_GAME_MESSAGE
     messages.put(MessageEnum.LINKS_TO_GAME_MESSAGE + "_en",
         "<b>Steam store:</b> <a href=\"https://store.steampowered.com/app/%s\">LINK</a>" + "\n"
