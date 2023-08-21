@@ -1,14 +1,6 @@
 package bot.farm.steam_news_bot.localization.button;
 
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CHECK_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CLEAR_BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.LINKS_TO_GAME;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_ACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_INACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_UPD_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SUBSCRIBE;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.UNSUBSCRIBE;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +42,9 @@ public class ButtonLocalization {
 
     buttons.put(LINKS_TO_GAME + "_en", "Links to the game");
     buttons.put(LINKS_TO_GAME + "_ru", "Ссылки на игру");
+
+    buttons.put(CHECK_WISHLIST + "_en", "Check available wishlist");
+    buttons.put(CHECK_WISHLIST + "_ru", "Проверить доступность списка желаемого");
   }
 
   public static String getMessage(Enum<ButtonEnum> key, String locale) {

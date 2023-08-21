@@ -13,5 +13,6 @@ public enum ButtonEnum {
   BLACK_LIST,
   UNSUBSCRIBE,
   SUBSCRIBE,
-  LINKS_TO_GAME
+  LINKS_TO_GAME,
+  CHECK_WISHLIST
 }

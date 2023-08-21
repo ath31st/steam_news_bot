@@ -1,13 +1,6 @@
 package bot.farm.steam_news_bot.service;
 
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CHECK_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.CLEAR_BLACK_LIST;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.LINKS_TO_GAME;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_ACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_INACTIVE_MODE;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.SET_UPD_STEAM_ID;
-import static bot.farm.steam_news_bot.localization.button.ButtonEnum.UNSUBSCRIBE;
+import static bot.farm.steam_news_bot.localization.button.ButtonEnum.*;
 import static bot.farm.steam_news_bot.localization.button.ButtonLocalization.getMessage;
 
 import java.util.ArrayList;
@@ -32,6 +25,7 @@ public class ButtonService {
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow2 = new ArrayList<>();
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow3 = new ArrayList<>();
+    final List<InlineKeyboardButton> inlineKeyboardButtonsRow4 = new ArrayList<>();
 
     InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
     inlineKeyboardButton1.setText("λ " + getMessage(SET_UPD_STEAM_ID, locale));
@@ -57,6 +51,10 @@ public class ButtonService {
     inlineKeyboardButton6.setText("\uD83D\uDDD1 " + getMessage(BLACK_LIST, locale));
     inlineKeyboardButton6.setCallbackData("/black_list");
 
+    InlineKeyboardButton inlineKeyboardButton7 = new InlineKeyboardButton();
+    inlineKeyboardButton7.setText("♥ " + getMessage(CHECK_WISHLIST, locale));
+    inlineKeyboardButton7.setCallbackData("/check_wishlist");
+
     inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
     inlineKeyboardButtonsRow1.add(inlineKeyboardButton2);
 
@@ -66,7 +64,10 @@ public class ButtonService {
     inlineKeyboardButtonsRow3.add(inlineKeyboardButton5);
     inlineKeyboardButtonsRow3.add(inlineKeyboardButton6);
 
+    inlineKeyboardButtonsRow4.add(inlineKeyboardButton7);
+
     inlineKeyButtonList.add(inlineKeyboardButtonsRow1);
+    inlineKeyButtonList.add(inlineKeyboardButtonsRow4);
     inlineKeyButtonList.add(inlineKeyboardButtonsRow2);
     inlineKeyButtonList.add(inlineKeyboardButtonsRow3);
     return inlineKeyButtonList;

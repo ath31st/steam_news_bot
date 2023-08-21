@@ -136,6 +136,22 @@ public class SteamService {
     return matcher.matches();
   }
 
+  public int checkAvailableWishlistBySteamId(Long steamId) {
+    String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
+    int responseCode;
+    try {
+      URL url = new URL(wishListGamesUrl);
+      HttpURLConnection connection = getConnection(url);
+      responseCode = connection.getResponseCode();
+      connection.disconnect();
+    } catch (IllegalArgumentException e) {
+      responseCode = 500;
+    } catch (IOException e) {
+      responseCode = 100;
+    }
+    return responseCode;
+  }
+
   private HttpURLConnection getConnection(URL url) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestProperty("Content-Type", "application/json");
