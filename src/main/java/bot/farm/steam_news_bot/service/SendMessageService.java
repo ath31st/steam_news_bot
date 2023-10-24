@@ -22,6 +22,7 @@ public class SendMessageService {
    */
   public SendMessage createMessage(String chatId, String message) {
     SendMessage sendMessage = new SendMessage();
+    sendMessage.disableNotification();
     sendMessage.enableMarkdownV2(true);
     sendMessage.enableHtml(true);
     sendMessage.setChatId(chatId);
