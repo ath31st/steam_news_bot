@@ -210,86 +210,89 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         sendTextMessage(chatId, getMessage(ENTER_STEAM_ID, locale));
         state = UserState.SET_STEAM_ID;
       }
-
       case "/check_steam_id" ->
           sendTextMessage(chatId, String.format(getMessage(CHECK_STEAM_ID, locale),
               userService.getUserByChatId(chatId).getSteamId())
               + (userService.getUserByChatId(chatId).isActive()
               ? getMessage(ACTIVE, locale) : getMessage(INACTIVE, locale)));
-
-      case "/check_wishlist" -> {
-        long steamId = userService.getUserByChatId(chatId).getSteamId();
-        int responseCode = steamService.checkAvailableWishlistBySteamId(steamId);
-        String response;
-        switch (responseCode) {
-          case 200 -> response = String.format(getMessage(WISHLIST_AVAILABLE, locale));
-          case 500 -> response = String.format(getMessage(WISHLIST_NOT_AVAILABLE, locale));
-          default ->
-              response = String.format(getMessage(PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE, locale));
-        }
-        sendTextMessage(chatId, response);
-      }
-
+      case "/check_wishlist" -> checkWishlist(chatId, locale);
       case "/set_active_mode" -> {
         userService.updateActiveForUser(chatId, true);
         sendTextMessage(chatId, getMessage(ACTIVE_MODE, locale));
       }
-
       case "/set_inactive_mode" -> {
         userService.updateActiveForUser(chatId, false);
         sendTextMessage(chatId, getMessage(INACTIVE_MODE, locale));
       }
-
-      case "/unsubscribe" -> {
-        String gameTitle = callbackQuery.getMessage().getText();
-        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
-        if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
-          sendTextMessage(chatId, getMessage(ALREADY_UNSUBSCRIBED, locale) + gameTitle);
-        } else {
-          userGameStateService.updateStateForGameByChatId(chatId, gameTitle, true);
-          sendTextMessage(chatId, getMessage(UNSUBSCRIBE, locale) + gameTitle);
-        }
-      }
-
-//      case "/subscribe" -> {
-//        String gameTitle = callbackQuery.getMessage().getText();
-//        gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
-//        if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
-//          userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
-//          sendTextMessage(chatId, getMessage(SUBSCRIBE, locale) + gameTitle);
-//        } else {
-//          sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
-//        }
-//      }
-
-      case "/links_to_game" -> {
-        String gameAppid = callbackQuery.getMessage().getText();
-        gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
-
-        sendTextMessage(
-            chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
-      }
-
-      case "/black_list" -> {
-        if (gameService.getBanListByChatId(chatId).isBlank()) {
-          sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
-        } else {
-          sendTextMessage(
-              chatId, getMessage(BLACK_LIST, locale) + gameService.getBanListByChatId(chatId));
-        }
-      }
-
-      case "/clear_black_list" -> {
-        if (gameService.getBanListByChatId(chatId).isBlank()) {
-          sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
-        } else {
-          userGameStateService.getBlackListByChatId(chatId)
-              .forEach(gameState ->
-                  userGameStateService.updateStateForGameById(false, gameState.getId()));
-          sendTextMessage(chatId, getMessage(BLACK_LIST_CLEAR, locale));
-        }
-      }
+      case "/unsubscribe" -> unsubscribe(callbackQuery, chatId, locale);
+      case "/subscribe" -> subscribe(callbackQuery, chatId, locale);
+      case "/links_to_game" -> linksToGame(callbackQuery, chatId, locale);
+      case "/black_list" -> blackList(chatId, locale);
+      case "/clear_black_list" -> clearBlackList(chatId, locale);
       default -> sendTextMessage(chatId, getMessage(DEFAULT_MESSAGE, locale));
+    }
+  }
+
+  private void subscribe(CallbackQuery callbackQuery, String chatId, String locale) {
+    String gameTitle = callbackQuery.getMessage().getText();
+    gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
+    if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
+      userGameStateService.updateStateForGameByChatId(chatId, gameTitle, false);
+      sendTextMessage(chatId, getMessage(SUBSCRIBE, locale) + gameTitle);
+    } else {
+      sendTextMessage(chatId, getMessage(ALREADY_SUBSCRIBED, locale) + gameTitle);
+    }
+  }
+
+  private void checkWishlist(String chatId, String locale) {
+    long steamId = userService.getUserByChatId(chatId).getSteamId();
+    int responseCode = steamService.checkAvailableWishlistBySteamId(steamId);
+    String response;
+    switch (responseCode) {
+      case 200 -> response = String.format(getMessage(WISHLIST_AVAILABLE, locale));
+      case 500 -> response = String.format(getMessage(WISHLIST_NOT_AVAILABLE, locale));
+      default ->
+          response = String.format(getMessage(PROBLEM_WITH_NETWORK_OR_STEAM_SERVICE, locale));
+    }
+    sendTextMessage(chatId, response);
+  }
+
+  private void unsubscribe(CallbackQuery callbackQuery, String chatId, String locale) {
+    String gameTitle = callbackQuery.getMessage().getText();
+    gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
+    if (userService.checkBanForGameByChatId(chatId, gameTitle)) {
+      sendTextMessage(chatId, getMessage(ALREADY_UNSUBSCRIBED, locale) + gameTitle);
+    } else {
+      userGameStateService.updateStateForGameByChatId(chatId, gameTitle, true);
+      sendTextMessage(chatId, getMessage(UNSUBSCRIBE, locale) + gameTitle);
+    }
+  }
+
+  private void linksToGame(CallbackQuery callbackQuery, String chatId, String locale) {
+    String gameAppid = callbackQuery.getMessage().getText();
+    gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
+
+    sendTextMessage(
+        chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
+  }
+
+  private void blackList(String chatId, String locale) {
+    if (gameService.getBanListByChatId(chatId).isBlank()) {
+      sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
+    } else {
+      sendTextMessage(
+          chatId, getMessage(BLACK_LIST, locale) + gameService.getBanListByChatId(chatId));
+    }
+  }
+
+  private void clearBlackList(String chatId, String locale) {
+    if (gameService.getBanListByChatId(chatId).isBlank()) {
+      sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
+    } else {
+      userGameStateService.getBlackListByChatId(chatId)
+          .forEach(gameState ->
+              userGameStateService.updateStateForGameById(false, gameState.getId()));
+      sendTextMessage(chatId, getMessage(BLACK_LIST_CLEAR, locale));
     }
   }
 }
