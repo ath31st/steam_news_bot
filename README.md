@@ -72,7 +72,8 @@ Make the bot multilingual.<br/>
 3. lombok - saves us from boilerplate code
 4. log4j + logback - logger
 5. sqlite (jdbc and dialect) - database
-6. junit + mockito - tests (86% coverage)
+6. junit + mockito - tests
+7. jacoco - code coverage (70%)
 
 ####
 
@@ -85,6 +86,7 @@ Versions:
 - Maven: 3.2.0</br>
 - JUnit5: 5.8.2</br>
 - Mockito: 4.5.1</br>
+- Jacoco: 0.8.11</br>
 
 You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
 
