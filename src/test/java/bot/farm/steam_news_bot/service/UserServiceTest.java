@@ -2,14 +2,15 @@ package bot.farm.steam_news_bot.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import bot.farm.steam_news_bot.entity.User;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import java.io.IOException;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class UserServiceTest {
 
   private String chatId;
   private String name;
-  private String streamId;
+  private String steamId;
   private String locale;
   private boolean active;
 
@@ -38,22 +39,26 @@ class UserServiceTest {
   void setUp() {
     chatId = "1";
     name = "Test";
-    streamId = "76561198131767661";
+    steamId = "76561198131767661";
     locale = "ru";
     active = true;
   }
 
   @Test
   void saveUser() throws IOException {
-    doReturn(Optional.empty()).when(userRepository).findUserByChatId(chatId);
-    userService.saveUser(chatId, name, streamId, locale);
-    verify(userRepository, times(1)).findUserByChatId(chatId);
+    userService.saveUser(chatId, name, steamId, locale);
+    verify(userRepository, times(1)).save(any());
   }
 
   @Test
   void updateUser() throws IOException {
-    userService.updateUser(chatId, streamId, locale);
-    verify(userRepository, times(1)).findUserByChatId(chatId);
+    User user = new User();
+    user.setChatId(chatId);
+
+    when(userRepository.findByChatId(chatId)).thenReturn(user);
+
+    userService.updateUser(chatId, steamId, locale);
+    verify(userRepository, times(1)).save(any());
   }
 
   @Test
@@ -64,9 +69,9 @@ class UserServiceTest {
 
   @Test
   void updateActiveForUser() {
-    doReturn(Optional.of(new User())).when(userRepository).findUserByChatId(chatId);
+    when(userRepository.existsByChatId(chatId)).thenReturn(true);
+
     userService.updateActiveForUser(chatId, active);
-    verify(userRepository, times(1)).findUserByChatId(chatId);
     verify(userRepository, times(1)).updateActiveByChatId(active, chatId);
   }
 
@@ -113,7 +118,7 @@ class UserServiceTest {
     user.setChatId(chatId);
     user.setActive(active);
     user.setName(name);
-    user.setSteamId(Long.valueOf(streamId));
+    user.setSteamId(Long.valueOf(steamId));
 
     doReturn(user).when(userRepository).findByChatId(chatId);
     userService.getUserByChatId(chatId);
@@ -125,17 +130,4 @@ class UserServiceTest {
     assertFalse(userService.checkBanForGameByChatId(chatId, name));
     verify(userRepository, times(1)).existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
   }
-
-  @Test
-  void updateSetStates() throws IOException {
-    User user = new User();
-    user.setSteamId(Long.valueOf(streamId));
-    Optional<User> optionalUser = Optional.of(user);
-
-    doReturn(optionalUser).when(userRepository).findUserByChatId(chatId);
-
-    userService.updateUser(chatId, streamId, locale);
-    verify(userRepository, times(2)).findUserByChatId(chatId);
-  }
-
 }
