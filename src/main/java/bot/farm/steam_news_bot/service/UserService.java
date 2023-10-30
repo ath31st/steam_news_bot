@@ -49,18 +49,11 @@ public class UserService {
                        String name,
                        String steamId,
                        String locale) throws IOException, NullPointerException {
-    if (userRepository.findUserByChatId(chatId).isPresent()) {
-      return;
-    }
-    if (name == null) {
-      name = getMessage(DEFAULT_NAME, locale);
-    }
-
     User user = new User();
     user.setActive(true);
     user.setLocale(locale);
     user.setChatId(chatId);
-    user.setName(name);
+    user.setName(name == null ? getMessage(DEFAULT_NAME, locale) : name);
     user.setSteamId(Long.valueOf(steamId));
     user.setStates(userGameStateService.getSetStatesByUser(user));
 
@@ -79,15 +72,13 @@ public class UserService {
   public void updateUser(String chatId,
                          String steamId,
                          String locale) throws IOException, NullPointerException {
-    if (userRepository.findUserByChatId(chatId).isPresent()) {
-      User user = userRepository.findUserByChatId(chatId).orElseThrow();
-      user.setSteamId(Long.valueOf(steamId));
-      user.setLocale(locale);
-      Set<UserGameState> states = updateSetStates(userGameStateService.getSetStatesByUser(user));
-      user.setStates(states);
+    User user = getUserByChatId(chatId);
+    user.setSteamId(Long.valueOf(steamId));
+    user.setLocale(locale);
+    Set<UserGameState> states = updateSetStates(userGameStateService.getSetStatesByUser(user));
+    user.setStates(states);
 
-      userRepository.save(user);
-    }
+    userRepository.save(user);
   }
 
   /**
@@ -150,7 +141,7 @@ public class UserService {
    * @param active true to set the user as active, false otherwise
    */
   public void updateActiveForUser(String chatId, boolean active) {
-    if (userRepository.findUserByChatId(chatId).isPresent()) {
+    if (existsByChatId(chatId)) {
       userRepository.updateActiveByChatId(active, chatId);
     }
   }
@@ -172,7 +163,9 @@ public class UserService {
    */
   public List<User> getAllUsers() {
     List<User> users = new ArrayList<>();
-    userRepository.findAll().iterator().forEachRemaining(users::add);
+    userRepository.findAll()
+        .iterator()
+        .forEachRemaining(users::add);
     return users;
   }
 
