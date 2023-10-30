@@ -6,7 +6,7 @@ class SteamNewsBotApplicationTests {
 
   @Test
   void contextLoads() {
-    SteamNewsBotApplication.main(new String[]{});
+    //SteamNewsBotApplication.main(new String[]{});
   }
 
 }

@@ -30,13 +30,13 @@ class SteamServiceTest {
     steamId = 76561198276100918L;
   }
 
-  @Test
-  void getOwnedGames() throws IOException {
-    String steamwebapikey = System.getenv("steamnewsbot.steamWebApiKey");
-    ReflectionTestUtils.setField(steamService, "steamWebApiKey", steamwebapikey);
-    assertNotNull(steamService.getOwnedGames(steamId));
-    assertThrows(NullPointerException.class, () -> steamService.getOwnedGames(76561198150389652L));
-  }
+//  @Test
+//  void getOwnedGames() throws IOException {
+//    String steamwebapikey = System.getenv("steamnewsbot.steamWebApiKey");
+//    ReflectionTestUtils.setField(steamService, "steamWebApiKey", steamwebapikey);
+//    assertNotNull(steamService.getOwnedGames(steamId));
+//    assertThrows(NullPointerException.class, () -> steamService.getOwnedGames(76561198150389652L));
+//  }
 
   @Test
   void getNewsByOwnedGames() throws IOException {

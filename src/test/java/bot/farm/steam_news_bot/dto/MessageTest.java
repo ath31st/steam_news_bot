@@ -36,9 +36,9 @@ class MessageTest {
 
   @Test
   void testToString() {
-    assertEquals("From author" + System.lineSeparator() +
+    assertEquals("From/От author" + System.lineSeparator() +
         "<b>12.12.2022</b>" + System.lineSeparator() +
-        "Announcement! test" + System.lineSeparator() +
-        "Thank you for your attention my friend!", message.toString());
+        "Announcement!/Объявление! test" + System.lineSeparator() +
+        "Thank for your attention!/Благодарю за внимание!", message.toString());
   }
 }
