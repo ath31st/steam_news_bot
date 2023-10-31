@@ -2,15 +2,20 @@ package bot.farm.steam_news_bot.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import bot.farm.steam_news_bot.entity.Game;
 import bot.farm.steam_news_bot.entity.User;
+import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +52,12 @@ class UserServiceTest {
   @Test
   void saveUser() throws IOException {
     userService.saveUser(chatId, name, steamId, locale);
+    verify(userRepository, times(1)).save(any());
+  }
+
+  @Test
+  void saveUser_withNullName() throws IOException {
+    userService.saveUser(chatId, null, steamId, locale);
     verify(userRepository, times(1)).save(any());
   }
 
@@ -129,5 +140,113 @@ class UserServiceTest {
   void checkBanForGameByChatId() {
     assertFalse(userService.checkBanForGameByChatId(chatId, name));
     verify(userRepository, times(1)).existsByChatIdAndStates_Game_NameAndStates_IsBannedTrue(chatId, name);
+  }
+
+  @Test
+  void updateSetState_whenGameIsOwnedAndWished() throws IOException {
+    Game game = new Game();
+    UserGameState newUgs = new UserGameState();
+    newUgs.setGame(game);
+    newUgs.setOwned(true);
+    newUgs.setWished(true);
+    UserGameState oldUgs = new UserGameState();
+    oldUgs.setGame(game);
+    oldUgs.setOwned(false);
+    oldUgs.setWished(true);
+
+    User user = new User();
+    user.setChatId(chatId);
+    user.setStates(new HashSet<>(Set.of(oldUgs)));
+
+    when(userGameStateService.getSetStatesByUser(user)).thenReturn(new HashSet<>(Set.of(newUgs)));
+    when(userGameStateService.existsByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(true);
+    when(userGameStateService.findByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(newUgs);
+    when(userRepository.findByChatId(chatId)).thenReturn(user);
+
+    userService.updateUser(chatId, steamId, locale);
+    verify(userRepository, times(1)).save(any());
+    assertTrue(newUgs.isOwned());
+    assertFalse(newUgs.isWished());
+  }
+
+  @Test
+  void updateSetState_whenGameIsNotOwnedButWished() throws IOException {
+    Game game = new Game();
+    UserGameState newUgs = new UserGameState();
+    newUgs.setGame(game);
+    newUgs.setOwned(false);
+    newUgs.setWished(true);
+    UserGameState oldUgs = new UserGameState();
+    oldUgs.setGame(game);
+    oldUgs.setOwned(false);
+    oldUgs.setWished(false);
+
+    User user = new User();
+    user.setChatId(chatId);
+    user.setStates(new HashSet<>(Set.of(oldUgs)));
+
+    when(userGameStateService.getSetStatesByUser(user)).thenReturn(new HashSet<>(Set.of(newUgs)));
+    when(userGameStateService.existsByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(true);
+    when(userGameStateService.findByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(newUgs);
+    when(userRepository.findByChatId(chatId)).thenReturn(user);
+
+    userService.updateUser(chatId, steamId, locale);
+    verify(userRepository, times(1)).save(any());
+    assertFalse(newUgs.isOwned());
+    assertTrue(newUgs.isWished());
+  }
+
+  @Test
+  void updateSetState_whenGameOwnedButNotWished() throws IOException {
+    Game game = new Game();
+    UserGameState newUgs = new UserGameState();
+    newUgs.setGame(game);
+    newUgs.setOwned(true);
+    newUgs.setWished(false);
+    UserGameState oldUgs = new UserGameState();
+    oldUgs.setGame(game);
+    oldUgs.setOwned(false);
+    oldUgs.setWished(false);
+
+    User user = new User();
+    user.setChatId(chatId);
+    user.setStates(new HashSet<>(Set.of(oldUgs)));
+
+    when(userGameStateService.getSetStatesByUser(user)).thenReturn(new HashSet<>(Set.of(newUgs)));
+    when(userGameStateService.existsByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(true);
+    when(userGameStateService.findByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(newUgs);
+    when(userRepository.findByChatId(chatId)).thenReturn(user);
+
+    userService.updateUser(chatId, steamId, locale);
+    verify(userRepository, times(1)).save(any());
+    assertTrue(newUgs.isOwned());
+    assertFalse(newUgs.isWished());
+  }
+
+  @Test
+  void updateSetState_whenGameIsNotOwnedAndNotWished() throws IOException {
+    Game game = new Game();
+    UserGameState newUgs = new UserGameState();
+    newUgs.setGame(game);
+    newUgs.setOwned(false);
+    newUgs.setWished(false);
+    UserGameState oldUgs = new UserGameState();
+    oldUgs.setGame(game);
+    oldUgs.setOwned(false);
+    oldUgs.setWished(false);
+
+    User user = new User();
+    user.setChatId(chatId);
+    user.setStates(new HashSet<>(Set.of(oldUgs)));
+
+    when(userGameStateService.getSetStatesByUser(user)).thenReturn(new HashSet<>(Set.of(newUgs)));
+    when(userGameStateService.existsByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(true);
+    when(userGameStateService.findByUserAndGame(newUgs.getUser(), newUgs.getGame())).thenReturn(newUgs);
+    when(userRepository.findByChatId(chatId)).thenReturn(user);
+
+    userService.updateUser(chatId, steamId, locale);
+    verify(userRepository, times(1)).save(any());
+    assertFalse(newUgs.isOwned());
+    assertFalse(newUgs.isWished());
   }
 }

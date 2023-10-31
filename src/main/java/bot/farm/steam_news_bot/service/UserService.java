@@ -100,7 +100,7 @@ public class UserService {
         if (ugs.isOwned() && oldState.isWished()) {
           oldState.setOwned(true);
           oldState.setWished(false);
-        } else if (ugs.isWished() && oldState.isOwned()) {
+        } else if (ugs.isWished() && !oldState.isOwned()) {
           oldState.setOwned(false);
           oldState.setWished(true);
         }
