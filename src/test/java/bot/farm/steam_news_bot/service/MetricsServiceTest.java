@@ -20,6 +20,8 @@ class MetricsServiceTest {
   @Mock
   private UserService userService;
   @Mock
+  private UserGameStateService userGameStateService;
+  @Mock
   private GameService gameService;
   @InjectMocks
   private MetricsService metricsService;
@@ -40,5 +42,22 @@ class MetricsServiceTest {
     doReturn(5L).when(gameService).countByUsersActive();
     assertEquals(ResponseEntity.ok(Map.of("total games in database", 10,
         "game states by active users", 5)).toString(), metricsService.getCountGames().toString());
+  }
+
+  @Test
+  void getAllUsers() {
+    List<String> expectedList = List.of("name1", "name2", "name3");
+    when(userService.getListUsername()).thenReturn(expectedList);
+
+    assertEquals(metricsService.getAllUsers(), ResponseEntity.ok(expectedList));
+  }
+
+  @Test
+  void getTopGames() {
+    int limit = 3;
+    List<String> expectedList = List.of("game1", "game2", "game3");
+    when(userGameStateService.getTopGamesFromDb(limit)).thenReturn(expectedList);
+
+    assertEquals(metricsService.getTopGames(limit), ResponseEntity.ok(expectedList));
   }
 }
