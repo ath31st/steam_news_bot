@@ -73,7 +73,7 @@ Make the bot multilingual.<br/>
 4. log4j + logback - logger
 5. sqlite (jdbc and dialect) - database
 6. junit + mockito - tests
-7. jacoco - code coverage (70%)
+7. jacoco - code coverage (75%)
 
 ####
 
