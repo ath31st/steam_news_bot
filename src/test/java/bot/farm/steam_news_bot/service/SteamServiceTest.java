@@ -1,7 +1,7 @@
 package bot.farm.steam_news_bot.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SteamServiceTest {
@@ -53,5 +52,14 @@ class SteamServiceTest {
   @Test
   void isValidSteamId() {
     assertTrue(SteamService.isValidSteamId(String.valueOf(steamId)));
+  }
+
+  @Test
+  void checkAvailableWishlistBySteamId_throwingException() {
+    long steamId = 123456789L;
+
+    int responseCode = steamService.checkAvailableWishlistBySteamId(steamId);
+
+    assertEquals(HttpURLConnection.HTTP_INTERNAL_ERROR, responseCode);
   }
 }
