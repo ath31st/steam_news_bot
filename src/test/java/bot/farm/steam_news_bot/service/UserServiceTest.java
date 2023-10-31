@@ -15,6 +15,7 @@ import bot.farm.steam_news_bot.entity.UserGameState;
 import bot.farm.steam_news_bot.repository.UserRepository;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,14 @@ class UserServiceTest {
 
     userService.updateActiveForUser(chatId, active);
     verify(userRepository, times(1)).updateActiveByChatId(active, chatId);
+  }
+
+  @Test
+  void updateActiveForUser_whenUserNotExists() {
+    when(userRepository.existsByChatId(chatId)).thenReturn(false);
+
+    userService.updateActiveForUser(chatId, active);
+    verify(userRepository, times(0)).updateActiveByChatId(active, chatId);
   }
 
   @Test
@@ -248,5 +257,23 @@ class UserServiceTest {
     verify(userRepository, times(1)).save(any());
     assertFalse(newUgs.isOwned());
     assertFalse(newUgs.isWished());
+  }
+
+  @Test
+  void getCountWishedGames() {
+    long expectedCount = 10L;
+    when(userRepository.countByChatIdAndStates_IsWishedTrue(chatId)).thenReturn(expectedCount);
+
+    assertEquals(expectedCount, userService.getCountWishedGames(chatId));
+  }
+
+  @Test
+  void getListUsername() {
+    List<String> expectedUsernames = List.of("name_1", "name_2");
+    when(userRepository.getListUsername()).thenReturn(expectedUsernames);
+
+    List<String> actualList = userService.getListUsername();
+
+    assertEquals(expectedUsernames.size(), actualList.size());
   }
 }
