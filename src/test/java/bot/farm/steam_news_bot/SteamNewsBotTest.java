@@ -84,13 +84,13 @@ class SteamNewsBotTest {
     verify(update, times(1)).hasCallbackQuery();
   }
 
-  static Stream<Object[]> messageTestData() {
+  static Stream<String> messageTestData() {
     return Stream.of(
-        new Object[]{"start"},
-        new Object[]{"/start"},
-        new Object[]{"/settings"},
-        new Object[]{"/help"},
-        new Object[]{"/no_command"}
+        "start",
+        "/start",
+        "/settings",
+        "/help",
+        "/no_command"
     );
   }
 
