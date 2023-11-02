@@ -1,7 +1,7 @@
 package bot.farm.steam_news_bot;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,10 +10,13 @@ import bot.farm.steam_news_bot.service.GameService;
 import bot.farm.steam_news_bot.service.SendMessageService;
 import bot.farm.steam_news_bot.service.UserGameStateService;
 import bot.farm.steam_news_bot.service.UserService;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -79,6 +82,34 @@ class SteamNewsBotTest {
     steamNewsBot.onUpdateReceived(update);
     verify(update, times(1)).hasMessage();
     verify(update, times(1)).hasCallbackQuery();
+  }
+
+  static Stream<Object[]> messageTestData() {
+    return Stream.of(
+        new Object[]{"start"},
+        new Object[]{"/start"},
+        new Object[]{"/settings"},
+        new Object[]{"/help"},
+        new Object[]{"/no_command"}
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("messageTestData")
+  void onUpdateReceived_message(String messageText) {
+    Message message = mock(Message.class);
+    User userTlg = mock(User.class);
+
+    when(update.hasMessage()).thenReturn(true);
+    when(update.getMessage()).thenReturn(message);
+    when(message.hasText()).thenReturn(true);
+    when(message.getFrom()).thenReturn(userTlg);
+    when(message.getText()).thenReturn(messageText);
+    when(message.getFrom().getLanguageCode()).thenReturn("ru");
+
+    steamNewsBot.onUpdateReceived(update);
+
+    verify(update, times(1)).hasMessage();
   }
 
 //  @Test
