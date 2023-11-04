@@ -1,6 +1,7 @@
 package bot.farm.steam_news_bot;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import bot.farm.steam_news_bot.service.GameService;
 import bot.farm.steam_news_bot.service.SendMessageService;
+import bot.farm.steam_news_bot.service.SteamService;
 import bot.farm.steam_news_bot.service.UserGameStateService;
 import bot.farm.steam_news_bot.service.UserService;
 import java.util.stream.Stream;
@@ -37,6 +39,8 @@ class SteamNewsBotTest {
   private GameService gameService;
   @Mock
   private UserGameStateService userGameStateService;
+  @Mock
+  private SteamService steamService;
   @InjectMocks
   private SteamNewsBot steamNewsBot;
   @Mock
@@ -112,52 +116,59 @@ class SteamNewsBotTest {
     verify(update, times(1)).hasMessage();
   }
 
-//  @Test
-//  void onUpdateReceived() {
-//    doReturn(callbackQuery).when(update).getCallbackQuery();
-//    doReturn(user).when(callbackQuery).getFrom();
-//    doReturn(message).when(callbackQuery).getMessage();
-//    doReturn("title\n").when(message).getText();
-//    doReturn(true).when(update).hasCallbackQuery();
-//    when(callbackQuery.getMessage().getChatId()).thenReturn(Long.valueOf(chatId));
-//    when(callbackQuery.getFrom().getLanguageCode()).thenReturn(locale);
-//    doReturn(true).when(userService).existsByChatId(chatId);
-//    doReturn(user1).when(userService).getUserByChatId(chatId);
-//    when(userService.getUserByChatId(chatId).getSteamId()).thenReturn(756L);
-//
-//    doReturn("/set_active_mode").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/set_inactive_mode").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/check_steam_id").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/unsubscribe").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/links_to_game").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("game1").when(gameService).getBanListByChatId(chatId);
-//    doReturn("/black_list").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("").when(gameService).getBanListByChatId(chatId);
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/clear_black_list").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("game1").when(gameService).getBanListByChatId(chatId);
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    doReturn("/set_steam_id").when(callbackQuery).getData();
-//    steamNewsBot.onUpdateReceived(update);
-//
-//    verify(callbackQuery, times(20)).getData();
-//  }
+  @Test
+  void onUpdateReceived() {
+    doReturn(callbackQuery).when(update).getCallbackQuery();
+    doReturn(user).when(callbackQuery).getFrom();
+    doReturn(message).when(callbackQuery).getMessage();
+    doReturn("title\n").when(message).getText();
+    doReturn(true).when(update).hasCallbackQuery();
+    when(callbackQuery.getMessage().getChatId()).thenReturn(Long.valueOf(chatId));
+    when(callbackQuery.getFrom().getLanguageCode()).thenReturn(locale);
+    when(steamService.checkAvailableWishlistBySteamId(756L)).thenReturn(200);
+    doReturn(true).when(userService).existsByChatId(chatId);
+    doReturn(user1).when(userService).getUserByChatId(chatId);
+    when(userService.getUserByChatId(chatId).getSteamId()).thenReturn(756L);
+
+    doReturn("/check_wishlist").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/set_active_mode").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/set_inactive_mode").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/check_steam_id").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/unsubscribe").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/subscribe").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/links_to_game").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("game1").when(gameService).getBanListByChatId(chatId);
+    doReturn("/black_list").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("").when(gameService).getBanListByChatId(chatId);
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/clear_black_list").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("game1").when(gameService).getBanListByChatId(chatId);
+    steamNewsBot.onUpdateReceived(update);
+
+    doReturn("/set_steam_id").when(callbackQuery).getData();
+    steamNewsBot.onUpdateReceived(update);
+
+    verify(callbackQuery, times(12)).getData();
+  }
 
   @Test
   void sendTextMessage() {
