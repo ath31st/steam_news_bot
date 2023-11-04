@@ -12,6 +12,8 @@ import bot.farm.steam_news_bot.service.SendMessageService;
 import bot.farm.steam_news_bot.service.SteamService;
 import bot.farm.steam_news_bot.service.UserGameStateService;
 import bot.farm.steam_news_bot.service.UserService;
+import bot.farm.steam_news_bot.util.UserState;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,6 +112,43 @@ class SteamNewsBotTest {
     when(message.getFrom()).thenReturn(userTlg);
     when(message.getText()).thenReturn(messageText);
     when(message.getFrom().getLanguageCode()).thenReturn("ru");
+
+    steamNewsBot.onUpdateReceived(update);
+
+    verify(update, times(1)).hasMessage();
+  }
+
+  @Test
+  void onUpdateReceived_setUpdateSteamId() {
+    Message message = mock(Message.class);
+    User userTlg = mock(User.class);
+    ReflectionTestUtils.setField(steamNewsBot, "state", UserState.SET_STEAM_ID);
+
+    when(update.hasMessage()).thenReturn(true);
+    when(update.getMessage()).thenReturn(message);
+    when(message.hasText()).thenReturn(true);
+    when(message.getText()).thenReturn("76561198005070000");
+    when(message.getFrom()).thenReturn(userTlg);
+    when(message.getFrom().getLanguageCode()).thenReturn("ru");
+    when(userService.findUserByChatId("0")).thenReturn(Optional.of(user1));
+
+    steamNewsBot.onUpdateReceived(update);
+
+    verify(update, times(1)).hasMessage();
+  }
+
+  @Test
+  void onUpdateReceived_setUpdateInvalidSteamId() {
+    Message message = mock(Message.class);
+    User userTlg = mock(User.class);
+    ReflectionTestUtils.setField(steamNewsBot, "state", UserState.SET_STEAM_ID);
+
+    when(update.hasMessage()).thenReturn(true);
+    when(update.getMessage()).thenReturn(message);
+    when(message.hasText()).thenReturn(true);
+    when(message.getText()).thenReturn("99961198005070000");
+    when(message.getFrom()).thenReturn(userTlg);
+    when(message.getFrom().getLanguageCode()).thenReturn("en");
 
     steamNewsBot.onUpdateReceived(update);
 
