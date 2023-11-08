@@ -1,6 +1,7 @@
 package bot.farm.steam_news_bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.stereotype.Component;
@@ -30,5 +31,22 @@ public class Message {
         .append(System.lineSeparator())
         .append("Thank for your attention!/Благодарю за внимание!")
         .toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Message message = (Message) o;
+    return Objects.equals(author, message.author) && Objects.equals(text, message.text);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(author, text);
   }
 }
