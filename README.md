@@ -81,9 +81,9 @@ Make the bot multilingual.<br/>
 Versions:
 
 - Java: 17</br>
-- Spring Boot: 2.7.2</br>
-- SQLite: 3.36.0.3</br>
-- Telegrambots: 6.1.0</br>
+- Spring Boot: 2.7.12</br>
+- SQLite: 3.44.0.0</br>
+- Telegrambots: 6.7.0</br>
 - Maven: 3.2.0</br>
 - JUnit5: 5.8.2</br>
 - Mockito: 4.5.1</br>
