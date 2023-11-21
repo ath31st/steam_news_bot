@@ -12,6 +12,8 @@ import bot.farm.steam_news_bot.service.UserService;
 import bot.farm.steam_news_bot.util.UserState;
 import java.io.IOException;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * Telegram bot for sending Steam news and managing user interactions.
  */
 @Component
+@RequiredArgsConstructor
 public class SteamNewsBot extends TelegramLongPollingBot {
   private final SendMessageService sendMessageService;
   private final UserService userService;
@@ -36,38 +39,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   private static final Logger logger = LoggerFactory.getLogger(SteamNewsBot.class);
   @Value("${steamnewsbot.botName}")
   private String botName;
+  @Getter
   @Value("${steamnewsbot.botToken}")
   private String botToken;
   private UserState state = UserState.DEFAULT;
 
-  /**
-   * Constructor for the SteamNewsBot class.
-   *
-   * @param sendMessageService   the service for sending messages.
-   * @param userService          the service for managing user data.
-   * @param gameService          the service for managing game data.
-   * @param userGameStateService the service for managing user game states.
-   * @param steamService         the service for fetching data from Steam.
-   */
-  public SteamNewsBot(SendMessageService sendMessageService,
-                      UserService userService,
-                      GameService gameService,
-                      UserGameStateService userGameStateService, SteamService steamService) {
-    this.sendMessageService = sendMessageService;
-    this.userService = userService;
-    this.gameService = gameService;
-    this.userGameStateService = userGameStateService;
-    this.steamService = steamService;
-  }
-
   @Override
   public String getBotUsername() {
     return botName;
-  }
-
-  @Override
-  public String getBotToken() {
-    return botToken;
   }
 
   /**
