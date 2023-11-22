@@ -147,6 +147,19 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Sends a text message after updating the Steam ID for a user and checks if the user is
+   * registered.
+   * This method first checks if the user with the specified chat ID is registered.
+   * If not registered,
+   * the method does nothing. If registered, it sends a text message containing information
+   * about the user's registration, including their name, count of owned games, and count of
+   * wished games.
+   *
+   * @param chatId    The unique identifier for the chat or user.
+   * @param inputText The input text for the message.
+   * @param locale    The locale to use for message localization.
+   */
   private void sendMessageAfterSetUpdateSteamId(String chatId, String inputText, String locale) {
     if (userService.findUserByChatId(chatId).isEmpty()) {
       return;
@@ -156,6 +169,17 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         userService.getCountOwnedGames(chatId), userService.getCountWishedGames(chatId)));
   }
 
+  /**
+   * Processes incoming messages and takes actions based on the user's state.
+   * This method takes a Message object, extracts relevant info such as chat ID,
+   * input text, and user locale, and processes the message based on the user's
+   * current state. If the user is in the default state, it handles commands like
+   * "/start", "/help", "/settings", and default messages. If the user is in the
+   * SET_STEAM_ID state, it calls setUpdateSteamId to handle setting or updating
+   * the user's Steam ID.
+   *
+   * @param message The incoming message to be processed.
+   */
   private void messageProcessing(Message message) {
     String chatId = String.valueOf(message.getChatId());
     String inputText = message.getText();
