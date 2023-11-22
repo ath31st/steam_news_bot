@@ -3,6 +3,7 @@ package bot.farm.steam_news_bot.controller;
 import bot.farm.steam_news_bot.dto.Message;
 import bot.farm.steam_news_bot.service.AnnouncementService;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,18 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AnnouncementController {
 
   private final AnnouncementService announcementService;
-
-  /**
-   * Constructor for AnnouncementController.
-   *
-   * @param announcementService the AnnouncementService instance
-   */
-  public AnnouncementController(AnnouncementService announcementService) {
-    this.announcementService = announcementService;
-  }
 
   /**
    * Endpoint for receiving messages and triggering notifications to users.

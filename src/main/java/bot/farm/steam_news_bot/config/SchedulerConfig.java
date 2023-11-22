@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,6 +28,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
+@RequiredArgsConstructor
 public class SchedulerConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(SchedulerConfig.class);
@@ -37,24 +39,6 @@ public class SchedulerConfig {
   private static final CopyOnWriteArrayList<NewsItem> newsItems = new CopyOnWriteArrayList<>();
   private static final CopyOnWriteArraySet<Game> problemGames = new CopyOnWriteArraySet<>();
   private static final ConcurrentHashMap<String, String> gamesAppidName = new ConcurrentHashMap<>();
-
-  /**
-   * Constructor for SchedulerConfig.
-   *
-   * @param steamNewsBot the SteamNewsBot instance
-   * @param steamService the SteamService instance
-   * @param userService  the UserService instance
-   * @param gameService  the GameService instance
-   */
-  public SchedulerConfig(SteamNewsBot steamNewsBot,
-                         SteamService steamService,
-                         UserService userService,
-                         GameService gameService) {
-    this.steamNewsBot = steamNewsBot;
-    this.steamService = steamService;
-    this.userService = userService;
-    this.gameService = gameService;
-  }
 
   /**
    * Scheduled task to update and send news items.
@@ -170,7 +154,7 @@ public class SchedulerConfig {
                   steamNewsBot.sendNewsMessage(user.getChatId(), "<b>"
                       + gamesAppidName.get(newsItem.getAppid()) + "</b>"
                       + System.lineSeparator() + newsItem, user.getLocale());
-                  }
+                }
             ));
   }
 }
