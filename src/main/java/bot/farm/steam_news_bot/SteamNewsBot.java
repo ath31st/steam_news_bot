@@ -122,6 +122,16 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Sets/updates the user's Steam ID and processes outcomes.
+   * Validates input, notifies processing, updates/saves user,
+   * and handles errors with appropriate messages.
+   *
+   * @param chatId    Unique chat/user identifier.
+   * @param inputText Entered Steam ID.
+   * @param locale    Message localization.
+   * @param username  User's username.
+   */
   private void setUpdateSteamId(String chatId, String inputText, String locale, String username) {
     if (!SteamService.isValidSteamId(inputText)) {
       sendTextMessage(chatId, getMessage(INCORRECT_STEAM_ID, locale));
@@ -199,6 +209,16 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Processes callback queries and performs actions based on the received data.
+   * This method extracts chat ID and user locale from the callback query. If the user is
+   * not registered and the query is not "/set_steam_id," it sends a notification. Otherwise,
+   * it handles various callback data, such as setting/updating Steam ID, checking Steam ID,
+   * wishlist, toggling active mode, subscribing/unsubscribing, managing blacklists, or sending
+   * links to a game. The method updates the user's state accordingly.
+   *
+   * @param callbackQuery The callback query to be processed.
+   */
   private void callBackQueryProcessing(CallbackQuery callbackQuery) {
     String chatId = String.valueOf(callbackQuery.getMessage().getChatId());
     String locale = callbackQuery.getFrom().getLanguageCode();
@@ -236,6 +256,16 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Subscribes the user to receive notifications for a specific game.
+   * This method extracts the game title from the callback query, checks if the user is
+   * banned from receiving notifications for the game, and updates the subscription state
+   * accordingly. It sends a notification about the subscription status.
+   *
+   * @param callbackQuery The callback query containing information about the game.
+   * @param chatId        The unique identifier for the chat or user.
+   * @param locale        The locale to use for message localization.
+   */
   private void subscribe(CallbackQuery callbackQuery, String chatId, String locale) {
     String gameTitle = callbackQuery.getMessage().getText();
     gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
@@ -247,6 +277,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Checks the availability of the user's Steam wishlist and sends a notification.
+   * This method retrieves the user's Steam ID, checks the availability of their wishlist
+   * through the Steam service, and sends a notification to the user based on the response code.
+   *
+   * @param chatId The unique identifier for the chat or user.
+   * @param locale The locale to use for message localization.
+   */
   private void checkWishlist(String chatId, String locale) {
     long steamId = userService.getUserByChatId(chatId).getSteamId();
     int responseCode = steamService.checkAvailableWishlistBySteamId(steamId);
