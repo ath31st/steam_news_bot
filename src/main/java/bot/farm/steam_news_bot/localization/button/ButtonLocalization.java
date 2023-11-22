@@ -56,6 +56,15 @@ public class ButtonLocalization {
     buttons.put(CHECK_WISHLIST + "_ru", "Проверить доступность списка желаемого");
   }
 
+  /**
+   * Retrieves a message from the button collection based on the provided key and locale.
+   * This method checks if the provided locale is "ru"; if not, it defaults to "en". It then
+   * retrieves the corresponding message from the button collection based on the key and locale.
+   *
+   * @param key    The enumeration key for the desired message.
+   * @param locale The locale to use for message retrieval.
+   * @return The retrieved message.
+   */
   public static String getMessage(Enum<ButtonEnum> key, String locale) {
     if (!locale.equals("ru")) {
       locale = "en";

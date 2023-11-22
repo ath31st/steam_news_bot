@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,21 +16,10 @@ import org.springframework.stereotype.Service;
  * states.
  */
 @Service
+@RequiredArgsConstructor
 public class UserGameStateService {
   private final UserGameStateRepository userGameStateRepository;
   private final SteamService steamService;
-
-  /**
-   * Constructs a new UserGameStateService with the provided UserGameStateRepository.
-   *
-   * @param userGameStateRepository the UserGameStateRepository to be used
-   * @param steamService            the Steam service
-   */
-
-  public UserGameStateService(UserGameStateRepository userGameStateRepository, SteamService steamService) {
-    this.userGameStateRepository = userGameStateRepository;
-    this.steamService = steamService;
-  }
 
   /**
    * Updates the state (banned or not) for a game based on the chat ID and game name.

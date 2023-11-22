@@ -137,6 +137,15 @@ public class SteamService {
     return matcher.matches();
   }
 
+  /**
+   * Checks the availability of a user's Steam wishlist by Steam ID.
+   * This method constructs the wishlist games URL using the provided Steam ID, sends a
+   * request to the Steam API, and retrieves the response code. It handles potential
+   * exceptions such as an invalid argument or an IO error.
+   *
+   * @param steamId The Steam ID of the user.
+   * @return The response code indicating the availability of the wishlist.
+   */
   public int checkAvailableWishlistBySteamId(Long steamId) {
     String wishListGamesUrl = String.format(GET_WISHLIST_GAMES_URL, steamId);
     int responseCode;
