@@ -298,6 +298,16 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     sendTextMessage(chatId, response);
   }
 
+  /**
+   * Unsubscribes the user from receiving notifications for a specific game.
+   * This method extracts the game title from the callback query, checks if the user is
+   * already unsubscribed from notifications for the game, and updates the subscription state
+   * accordingly. It sends a notification about the unsubscription status.
+   *
+   * @param callbackQuery The callback query containing information about the game.
+   * @param chatId        The unique identifier for the chat or user.
+   * @param locale        The locale to use for message localization.
+   */
   private void unsubscribe(CallbackQuery callbackQuery, String chatId, String locale) {
     String gameTitle = callbackQuery.getMessage().getText();
     gameTitle = gameTitle.substring(0, gameTitle.indexOf("\n"));
@@ -309,6 +319,15 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Prepare links to the specified game based on its app ID.
+   * This method extracts the app ID from the callback query and sends a message with links
+   * to the specified game to the user.
+   *
+   * @param callbackQuery The callback query containing information about the game.
+   * @param chatId        The unique identifier for the chat or user.
+   * @param locale        The locale to use for message localization.
+   */
   private void linksToGame(CallbackQuery callbackQuery, String chatId, String locale) {
     String gameAppid = callbackQuery.getMessage().getText();
     gameAppid = gameAppid.substring(gameAppid.indexOf("LINK(") + 5, gameAppid.length() - 1);
@@ -317,6 +336,14 @@ public class SteamNewsBot extends TelegramLongPollingBot {
         chatId, String.format(getMessage(LINKS_TO_GAME_MESSAGE, locale), gameAppid, gameAppid));
   }
 
+  /**
+   * Displays the user's game blacklist.
+   * This method checks if the user's game blacklist is empty and sends a message either
+   * indicating that the blacklist is empty or providing the list of blacklisted games.
+   *
+   * @param chatId The unique identifier for the chat or user.
+   * @param locale The locale to use for message localization.
+   */
   private void blackList(String chatId, String locale) {
     if (gameService.getBanListByChatId(chatId).isBlank()) {
       sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
@@ -326,6 +353,15 @@ public class SteamNewsBot extends TelegramLongPollingBot {
     }
   }
 
+  /**
+   * Clears the user's game blacklist.
+   * This method checks if the user's game blacklist is empty. If not, it clears the blacklist
+   * by updating the subscription state for each blacklisted game. It then sends a message
+   * indicating that the blacklist has been cleared.
+   *
+   * @param chatId The unique identifier for the chat or user.
+   * @param locale The locale to use for message localization.
+   */
   private void clearBlackList(String chatId, String locale) {
     if (gameService.getBanListByChatId(chatId).isBlank()) {
       sendTextMessage(chatId, getMessage(EMPTY_BLACK_LIST, locale));
