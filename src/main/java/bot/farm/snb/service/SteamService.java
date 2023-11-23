@@ -210,7 +210,6 @@ public class SteamService {
 
   /**
    * Converts raw JSON data to a list of Game objects.
-   *
    * This method uses the Jackson ObjectMapper to convert the raw JSON data into a list
    * of Game objects. It specifically extracts the "games" array from the "response" field
    * in the JSON structure.
@@ -236,7 +235,16 @@ public class SteamService {
     return ownedGames;
   }
 
-
+  /**
+   * Converts raw JSON data to a list of Game objects representing a wishlist.
+   * This method uses the Jackson ObjectMapper to convert the raw JSON data into a list
+   * of Game objects. It specifically processes an object where each field represents a
+   * game in the wishlist, extracting appid and name information.
+   *
+   * @param rawJson The raw JSON data to be converted.
+   * @return A list of Game objects representing games in the wishlist.
+   * @throws JsonProcessingException If an error occurs during JSON processing.
+   */
   private static List<Game> convertRawJsonToWishListGames(String rawJson)
       throws JsonProcessingException {
     List<Game> wishListGames = new ArrayList<>();
@@ -254,6 +262,16 @@ public class SteamService {
     return wishListGames;
   }
 
+  /**
+   * Converts raw JSON data to a list of NewsItem objects.
+   * This method uses the Jackson ObjectMapper to convert the raw JSON data into a list
+   * of NewsItem objects. It specifically extracts the "newsitems" array from the "appnews"
+   * field in the JSON structure and filters items based on the date.
+   *
+   * @param rawJson The raw JSON data to be converted.
+   * @return A list of filtered NewsItem objects parsed from the JSON data.
+   * @throws JsonProcessingException If an error occurs during JSON processing.
+   */
   private static List<NewsItem> convertRawJsonToListNewsItems(String rawJson)
       throws JsonProcessingException {
     List<NewsItem> newsItems = new ArrayList<>();
@@ -275,6 +293,14 @@ public class SteamService {
     return newsItems;
   }
 
+  /**
+   * Checks if the news date is within the last 30 minutes.
+   * This method compares the date of the news, given in seconds since the epoch, with
+   * the current date and time. It returns true if the news is within the last 30 minutes.
+   *
+   * @param seconds The news date in seconds since the epoch.
+   * @return True if the news is within the last 30 minutes, false otherwise.
+   */
   private static boolean checkDateOfNews(int seconds) {
     LocalDateTime localDateTime =
         LocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()));
@@ -286,6 +312,14 @@ public class SteamService {
     //return localDateTimeOfNews.toLocalDate().isEqual(localDateTime.toLocalDate());
   }
 
+  /**
+   * Deletes links to images from the given text.
+   * This method uses a regular expression to find and remove links to images
+   * (e.g., {STEAM_IMAGE_URL.jpg}) from the provided text.
+   *
+   * @param text The text from which to delete image links.
+   * @return The text with image links removed.
+   */
   private static String deleteLinksOnImagesFromText(String text) {
     Pattern pattern = Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*");
     Matcher matcher = pattern.matcher(text);
