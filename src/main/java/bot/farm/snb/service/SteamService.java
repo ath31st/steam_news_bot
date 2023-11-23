@@ -162,6 +162,16 @@ public class SteamService {
     return responseCode;
   }
 
+  /**
+   * Establishes and configures an HTTP connection for the given URL.
+   * This method creates an HttpURLConnection for the provided URL, sets headers,
+   * timeouts, and request method. It also checks the initial response code and throws
+   * an IllegalArgumentException if it's 404 or 500.
+   *
+   * @param url The URL for which the connection is established.
+   * @return The configured HttpURLConnection.
+   * @throws IOException If an I/O error occurs while opening the connection.
+   */
   private HttpURLConnection getConnection(URL url) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestProperty("Content-Type", "application/json");
@@ -177,6 +187,15 @@ public class SteamService {
     return connection;
   }
 
+  /**
+   * Reads and retrieves raw data from the provided HTTP connection.
+   * This method reads the input stream from the connection and constructs a string
+   * containing the raw data. It then closes the BufferedReader and returns the raw data.
+   *
+   * @param connection The HttpURLConnection from which to read raw data.
+   * @return The raw data retrieved from the connection.
+   * @throws IOException If an I/O error occurs while reading the input stream.
+   */
   private String getRawDataFromConnection(HttpURLConnection connection) throws IOException {
     StringBuilder response = new StringBuilder();
     BufferedReader bufferedReader =
@@ -189,6 +208,17 @@ public class SteamService {
     return response.toString();
   }
 
+  /**
+   * Converts raw JSON data to a list of Game objects.
+   *
+   * This method uses the Jackson ObjectMapper to convert the raw JSON data into a list
+   * of Game objects. It specifically extracts the "games" array from the "response" field
+   * in the JSON structure.
+   *
+   * @param rawJson The raw JSON data to be converted.
+   * @return A list of Game objects parsed from the JSON data.
+   * @throws JsonProcessingException If an error occurs during JSON processing.
+   */
   private static List<Game> convertRawJsonToListGames(String rawJson)
       throws JsonProcessingException {
     List<Game> ownedGames = new ArrayList<>();
@@ -205,6 +235,7 @@ public class SteamService {
     }
     return ownedGames;
   }
+
 
   private static List<Game> convertRawJsonToWishListGames(String rawJson)
       throws JsonProcessingException {
