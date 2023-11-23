@@ -52,11 +52,11 @@ public class ButtonService {
     inlineKeyboardButton4.setCallbackData("/set_inactive_mode");
 
     InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
-    inlineKeyboardButton5.setText("\uD83E\uDDF9 " + getMessage(CLEAR_BLACK_LIST, locale));
+    inlineKeyboardButton5.setText("🧹 " + getMessage(CLEAR_BLACK_LIST, locale));
     inlineKeyboardButton5.setCallbackData("/clear_black_list");
 
     InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
-    inlineKeyboardButton6.setText("\uD83D\uDDD1 " + getMessage(BLACK_LIST, locale));
+    inlineKeyboardButton6.setText("🗑 " + getMessage(BLACK_LIST, locale));
     inlineKeyboardButton6.setCallbackData("/black_list");
 
     InlineKeyboardButton inlineKeyboardButton7 = new InlineKeyboardButton();
@@ -92,11 +92,11 @@ public class ButtonService {
     final List<InlineKeyboardButton> inlineKeyboardButtonsRow1 = new ArrayList<>();
 
     InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-    inlineKeyboardButton1.setText("\uD83D\uDEAB " + getMessage(UNSUBSCRIBE, locale));
+    inlineKeyboardButton1.setText("🚫 " + getMessage(UNSUBSCRIBE, locale));
     inlineKeyboardButton1.setCallbackData("/unsubscribe");
 
     InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-    inlineKeyboardButton2.setText("\uD83D\uDD17 " + getMessage(LINKS_TO_GAME, locale));
+    inlineKeyboardButton2.setText("🔗 " + getMessage(LINKS_TO_GAME, locale));
     inlineKeyboardButton2.setCallbackData("/links_to_game");
 
     inlineKeyboardButtonsRow1.add(inlineKeyboardButton1);
