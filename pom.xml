@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>bot.farm</groupId>
 	<artifactId>steam_news_bot</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>steam_news_bot</name>
 	<description>steam_news_bot</description>
 	<properties>
