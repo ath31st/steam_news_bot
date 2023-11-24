@@ -5,23 +5,16 @@ import bot.farm.snb.repository.GameRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
  * Service class for handling game-related operations.
  */
 @Service
+@RequiredArgsConstructor
 public class GameService {
   private final GameRepository gameRepository;
-
-  /**
-   * Constructs a new GameService with the given GameRepository.
-   *
-   * @param gameRepository The GameRepository used for accessing game data.
-   */
-  public GameService(GameRepository gameRepository) {
-    this.gameRepository = gameRepository;
-  }
 
   /**
    * Retrieves the list of banned games for a specific chat ID.

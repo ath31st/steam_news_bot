@@ -2,6 +2,7 @@ package bot.farm.snb.service;
 
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -9,25 +10,11 @@ import org.springframework.stereotype.Service;
  * Service class for providing metrics related to users and games.
  */
 @Service
+@RequiredArgsConstructor
 public class MetricsService {
   private final UserService userService;
   private final GameService gameService;
   private final UserGameStateService userGameStateService;
-
-  /**
-   * Constructs a new MetricsService with the given dependencies.
-   *
-   * @param userService          The UserService used for user-related operations.
-   * @param gameService          The GameService used for game-related operations.
-   * @param userGameStateService The UserGameStateService used for user game state-related
-   *                             operations.
-   */
-  public MetricsService(UserService userService, GameService gameService,
-                        UserGameStateService userGameStateService) {
-    this.userService = userService;
-    this.gameService = gameService;
-    this.userGameStateService = userGameStateService;
-  }
 
   /**
    * Retrieves the count of users in the database, including total users and active users.

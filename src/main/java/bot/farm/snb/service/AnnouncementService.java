@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -16,20 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
  * Service class for managing announcements and sending notifications to active users.
  */
 @Service
+@RequiredArgsConstructor
 public class AnnouncementService {
   private final UserService userService;
   private final SteamNewsBot steamNewsBot;
-
-  /**
-   * Constructs an AnnouncementService with the specified dependencies.
-   *
-   * @param userService  The UserService dependency.
-   * @param steamNewsBot The SteamNewsBot dependency.
-   */
-  public AnnouncementService(UserService userService, SteamNewsBot steamNewsBot) {
-    this.userService = userService;
-    this.steamNewsBot = steamNewsBot;
-  }
 
   /**
    * Receives a message and sends notifications to active users.
@@ -48,5 +39,4 @@ public class AnnouncementService {
     return ResponseEntity.ok(Map.of(
         "service", "message successfully received. " + users.size() + " users notified."));
   }
-
 }

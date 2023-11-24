@@ -13,27 +13,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
  * Service class for managing user-related operations and interactions.
  */
 @Service
+@RequiredArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
   private final UserGameStateService userGameStateService;
-
-  /**
-   * Constructs a new UserService with the provided dependencies.
-   *
-   * @param userRepository       the UserRepository to be used
-   * @param userGameStateService the UserGameStateService to be used
-   */
-  public UserService(UserRepository userRepository,
-                     UserGameStateService userGameStateService) {
-    this.userRepository = userRepository;
-    this.userGameStateService = userGameStateService;
-  }
 
   /**
    * Saves a new user with the provided information.
