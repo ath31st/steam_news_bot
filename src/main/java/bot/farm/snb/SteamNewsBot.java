@@ -75,7 +75,7 @@ public class SteamNewsBot extends TelegramLongPollingBot {
   }
 
   /**
-   * Processes the received updates from Telegram.
+   * The Processes received updates from Telegram.
    *
    * @param update the received update.
    */

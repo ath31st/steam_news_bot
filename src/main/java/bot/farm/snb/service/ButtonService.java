@@ -82,7 +82,7 @@ public class ButtonService {
   }
 
   /**
-   * Creates a list of inline buttons for the subscribe keyboard.
+   * Creates a list of inline buttons for the "subscribe" keyboard.
    *
    * @param locale The locale used for getting localized messages.
    * @return The list of inline buttons.

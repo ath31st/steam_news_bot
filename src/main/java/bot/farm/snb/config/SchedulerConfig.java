@@ -42,7 +42,7 @@ public class SchedulerConfig {
 
   /**
    * Scheduled task to update and send news items.
-   * Runs at a fixed rate of 1800000 milliseconds (30 minutes).
+   * Runs at a fixed rate of 1.8 million milliseconds (30 minutes).
    * Retrieves news items for active games and sends them to users.
    */
   @Scheduled(fixedRate = 1800000)
@@ -65,7 +65,7 @@ public class SchedulerConfig {
 
   /**
    * Scheduled task for processing problem games.
-   * Runs at a fixed rate of 300000 milliseconds (5 minutes).
+   * Runs at a fixed rate of 300 thousand milliseconds (5 minutes).
    * Retrieves news items for problem games and sends them to users.
    */
   @Scheduled(fixedRate = 300000)
@@ -87,7 +87,7 @@ public class SchedulerConfig {
 
   /**
    * Scheduled task to update the games' database.
-   * Runs at a fixed rate of 86400000 milliseconds (24 hours).
+   * Runs at a fixed rate of 86.4 million milliseconds (24 hours).
    * Updates the user's game data in the database.
    */
   @Scheduled(fixedRate = 86400000)
