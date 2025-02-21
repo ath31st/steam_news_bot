@@ -8,7 +8,6 @@ import sidim.doma.entity.UserGameStates
 import sidim.doma.entity.Users
 
 class UserRepository {
-
     fun existsByChatId(chatId: String): Boolean {
         return transaction {
             Users.selectAll()
@@ -71,13 +70,12 @@ class UserRepository {
         }
     }
 
-    fun update(user: User) {
+    fun update(chatId: String, name: String?, steamId: Long, locale: String) {
         transaction {
-            Users.update({ Users.chatId eq user.chatId }) {
-                it[name] = user.name
-                it[steamId] = user.steamId
-                it[locale] = user.locale
-                it[active] = user.active
+            Users.update({ Users.chatId eq chatId }) {
+                if (name != null) it[Users.name] = name
+                it[Users.steamId] = steamId
+                it[Users.locale] = locale
             }
         }
     }
