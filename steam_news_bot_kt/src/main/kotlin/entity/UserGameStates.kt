@@ -3,8 +3,8 @@ package sidim.doma.entity
 import org.jetbrains.exposed.sql.Table
 
 data class UserGameState(
-    val user: User,
-    val game: Game,
+    val userId: String,
+    val gameId: String,
     val isWished: Boolean,
     val isBanned: Boolean,
     val isOwned: Boolean
