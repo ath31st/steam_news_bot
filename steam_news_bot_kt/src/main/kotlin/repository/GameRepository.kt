@@ -61,6 +61,25 @@ class GameRepository {
         }
     }
 
+    fun countAllGames(): Long {
+        return transaction {
+            Games.selectAll().count()
+        }
+    }
+
+    fun countGamesByUsersIsActive(isActive: Boolean): Long {
+        return transaction {
+            (Games innerJoin UserGameStates innerJoin Users)
+                .selectAll()
+                .where {
+                    (Users.active eq isActive)
+                }
+                .distinct()
+                .count()
+                .toLong()
+        }
+    }
+
     private fun rowToGame(it: ResultRow) = Game(
         appid = it[Games.appid],
         name = it[Games.name]
