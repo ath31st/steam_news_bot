@@ -47,6 +47,20 @@ class GameRepository {
         }
     }
 
+    fun existsByUserIdAndGameNameAndNotBanned(userId: String, gameName: String): Boolean {
+        return transaction {
+            (Games innerJoin UserGameStates)
+                .selectAll()
+                .where {
+                    (UserGameStates.userId eq userId) and
+                            (Games.name eq gameName) and
+                            (UserGameStates.isBanned eq false)
+                }
+                .singleOrNull()
+                ?.let { true } ?: false
+        }
+    }
+
     private fun rowToGame(it: ResultRow) = Game(
         appid = it[Games.appid],
         name = it[Games.name]

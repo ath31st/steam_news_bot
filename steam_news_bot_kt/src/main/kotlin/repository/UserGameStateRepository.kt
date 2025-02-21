@@ -79,6 +79,30 @@ class UserGameStateRepository {
         }
     }
 
+    fun countByUserIdAndIsOwned(userId: String, isOwned: Boolean): Long {
+        return transaction {
+            UserGameStates
+                .selectAll()
+                .where {
+                    (UserGameStates.userId eq userId) and
+                            (UserGameStates.isOwned eq isOwned)
+                }
+                .count()
+        }
+    }
+
+    fun countByUserIdAndIsWished(userId: String, isWished: Boolean): Long {
+        return transaction {
+            UserGameStates
+                .selectAll()
+                .where {
+                    (UserGameStates.userId eq userId) and
+                            (UserGameStates.isWished eq isWished)
+                }
+                .count()
+        }
+    }
+
     private fun rowToUserGameState(it: ResultRow) = UserGameState(
         userId = it[UserGameStates.userId],
         gameId = it[UserGameStates.gameId],
