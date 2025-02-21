@@ -13,4 +13,5 @@ fun Application.module() {
     configureDatabases()
     configureFrameworks()
     configureRouting()
+    configureTelegramBot()
 }
