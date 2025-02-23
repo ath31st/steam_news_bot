@@ -15,7 +15,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.regex.Pattern
 
-class SteamService(
+class SteamApiClient(
     private val apiKey: String,
     private val client: HttpClient,
     private val objectMapper: ObjectMapper
@@ -137,7 +137,6 @@ class SteamService(
                 }
             } else emptyList()
         }
-
 
     private fun isRecentNews(seconds: Int): Boolean {
         val now = LocalDateTime.now(ZoneId.systemDefault())
