@@ -57,6 +57,15 @@ class UserGameStateRepository {
         }
     }
 
+    fun updateIsBannedByGameNameAndUserId(banned: Boolean, gameName: String, userId: String) {
+        transaction {
+            (UserGameStates innerJoin Games)
+                .update({ (UserGameStates.userId eq userId) and (Games.name eq gameName) }) {
+                    it[UserGameStates.isBanned] = banned
+                }
+        }
+    }
+
     fun updateIsWishedAndIsOwnedById(isWished: Boolean, isOwned: Boolean, id: Long) {
         transaction {
             UserGameStates.update({ UserGameStates.id eq id }) {
