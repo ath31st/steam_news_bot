@@ -11,7 +11,7 @@ fun Application.module() {
     configureHTTP()
     configureSerialization()
     configureDatabases()
-    configureFrameworks()
+    configureDependencyInjection()
     configureRouting()
     configureTelegramBot()
 }
