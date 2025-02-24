@@ -128,7 +128,7 @@ class SteamApiClient(
         .let { newsNode ->
             if (newsNode.isArray) {
                 newsNode.mapNotNull { node ->
-                    val dateSeconds = node["date"].asInt()
+                    val dateSeconds = node["date"].asLong()
                     if (isRecentNews(dateSeconds)) {
                         objectMapper.convertValue<NewsItem>(node).apply {
                             contents = removeImageLinks(contents)
@@ -138,10 +138,10 @@ class SteamApiClient(
             } else emptyList()
         }
 
-    private fun isRecentNews(seconds: Int): Boolean {
+    private fun isRecentNews(seconds: Long): Boolean {
         val now = LocalDateTime.now(ZoneId.systemDefault())
         val newsTime =
-            LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds.toLong()), ZoneId.systemDefault())
+            LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.systemDefault())
         // TODO CHECK THIS LINE!
         return newsTime.plus(30, ChronoUnit.MINUTES).isAfter(now)
         //return newsTime == now
