@@ -1,24 +1,24 @@
 package sidim.doma.plugin
 
-import dev.inmo.tgbotapi.extensions.api.send.reply
-import dev.inmo.tgbotapi.extensions.api.telegramBot
+import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.extensions.behaviour_builder.buildBehaviourWithLongPolling
-import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onCommand
 import io.ktor.server.application.*
 import kotlinx.coroutines.launch
+import org.koin.core.context.GlobalContext
+import org.slf4j.LoggerFactory
 
 fun Application.configureTelegramBot() {
-    val botToken = environment.config.propertyOrNull("telegram.bot_token")?.getString()
-        ?: System.getenv("TELEGRAM_BOT_TOKEN")
-        ?: throw IllegalStateException("Telegram bot token not provided in config or environment")
+    val logger = LoggerFactory.getLogger("TelegramBot")
 
-    val bot = telegramBot(botToken)
+    val bot = GlobalContext.get().get<TelegramBot>()
+    val controller = GlobalContext.get().get<BotController>()
 
     launch {
         bot.buildBehaviourWithLongPolling {
-            onCommand("start") {
-                reply(it, "Hello, user!")
-            }
+            controller.registerHandlers(this)
         }.join()
+    }.invokeOnCompletion { throwable ->
+        if (throwable != null) logger.error("Bot stopped with error: ${throwable.message}")
+        else logger.info("Bot stopped")
     }
 }
