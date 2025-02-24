@@ -6,6 +6,8 @@ import sidim.doma.repository.UserRepository
 class UserService(private val userRepository: UserRepository) {
     fun getUserByChatId(chatId: String): User? = userRepository.findByChatId(chatId)
 
+    fun getUserByChatId(chatId: Long): User? = userRepository.findByChatId(chatId.toString())
+
     fun getAllUsers(): List<User> = userRepository.findAll()
 
     fun getAllActiveUsers(): List<User> = userRepository.findAllByActive(true)
@@ -27,5 +29,5 @@ class UserService(private val userRepository: UserRepository) {
     fun updateActiveByChatId(isActive: Boolean, chatId: String) =
         userRepository.updateActiveByChatId(isActive, chatId)
 
-    private fun existsByChatId(chatId: String) = userRepository.existsByChatId(chatId)
+    fun existsByChatId(chatId: String) = userRepository.existsByChatId(chatId)
 }
