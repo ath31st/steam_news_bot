@@ -21,10 +21,10 @@ object Localization {
     }
 
     fun getButton(key: String, locale: String): String {
-        return getMessage("button.$key", locale)
+        return getMessage(key, locale)
     }
 
     fun getText(key: String, locale: String, vararg args: Any): String {
-        return getMessage("message.$key", locale, *args)
+        return getMessage(key, locale, *args)
     }
 }
