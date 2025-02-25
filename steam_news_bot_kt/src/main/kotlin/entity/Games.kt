@@ -1,10 +1,12 @@
 package sidim.doma.entity
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.jetbrains.exposed.sql.Table
 
-data class Game(
-    val appid: String,
-    val name: String
+data class Game @JsonCreator constructor(
+    @JsonProperty("appid") val appid: String,
+    @JsonProperty("name") val name: String
 )
 
 object Games : Table("Games") {
