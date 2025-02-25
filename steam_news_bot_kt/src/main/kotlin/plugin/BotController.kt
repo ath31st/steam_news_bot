@@ -84,8 +84,10 @@ class BotController(
 
             onText(initialFilter = { it.text?.startsWith("/") != true }) { message ->
                 val chatId = message.chat.id
-                val locale = (message.from as CommonUser).languageCode ?: "en"
-                interactionService.handleTextInput(chatId, message.text ?: "", locale)
+                val user = message.from as CommonUser
+                val locale = user.languageCode ?: "en"
+                val name = user.username?.username
+                interactionService.handleTextInput(chatId, name, message.text ?: "", locale)
             }
         }
     }
