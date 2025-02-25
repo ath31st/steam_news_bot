@@ -1,6 +1,8 @@
 package sidim.doma.plugin
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import dev.inmo.tgbotapi.bot.ktor.telegramBot
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -28,7 +30,12 @@ fun Application.configureDependencyInjection() {
                     }
                 }
             }
-            single { ObjectMapper() }
+            single {
+                ObjectMapper().apply {
+                    enable(SerializationFeature.INDENT_OUTPUT)
+                    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                }
+            }
             single {
                 SteamApiClient(
                     apiKey = System.getenv("STEAM_WEB_API_KEY")
