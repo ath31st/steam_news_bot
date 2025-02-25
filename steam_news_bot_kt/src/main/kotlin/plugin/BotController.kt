@@ -82,7 +82,7 @@ class BotController(
                 bot.answerCallbackQuery(callback)
             }
 
-            onText { message ->
+            onText(initialFilter = { it.text?.startsWith("/") != true }) { message ->
                 val chatId = message.chat.id
                 val locale = (message.from as CommonUser).languageCode ?: "en"
                 interactionService.handleTextInput(chatId, message.text ?: "", locale)
