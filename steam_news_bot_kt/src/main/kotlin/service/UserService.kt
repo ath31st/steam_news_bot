@@ -15,14 +15,16 @@ class UserService(private val userRepository: UserRepository) {
     fun getActiveUsersByAppId(appId: String): List<User> =
         userRepository.findByActiveAndAppidAndBanned(true, appId, false)
 
-    fun createUser(chatId: String, name: String?, steamId: String, locale: String) {
+    fun createUser(chatId: String, name: String?, steamId: String, locale: String): User? {
         val user = User(chatId, name ?: "", steamId.toLong(), locale, true)
-        userRepository.create(user)
+        return userRepository.create(user)
     }
 
-    fun updateUser(chatId: String, name: String?, steamId: String, locale: String) {
-        if (existsByChatId(chatId)) {
+    fun updateUser(chatId: String, name: String?, steamId: String, locale: String): User? {
+        return if (existsByChatId(chatId)) {
             userRepository.update(chatId, name, steamId.toLong(), locale)
+        } else {
+            null
         }
     }
 

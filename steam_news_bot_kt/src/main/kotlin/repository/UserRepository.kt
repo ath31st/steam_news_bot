@@ -58,8 +58,8 @@ class UserRepository {
         }
     }
 
-    fun create(user: User): String {
-        return transaction {
+    fun create(user: User): User? {
+        transaction {
             Users.insert {
                 it[chatId] = user.chatId
                 it[name] = user.name
@@ -68,9 +68,10 @@ class UserRepository {
                 it[active] = user.active
             }[Users.chatId]
         }
+        return findByChatId(user.chatId)
     }
 
-    fun update(chatId: String, name: String?, steamId: Long, locale: String) {
+    fun update(chatId: String, name: String?, steamId: Long, locale: String): User? {
         transaction {
             Users.update({ Users.chatId eq chatId }) {
                 if (name != null) it[Users.name] = name
@@ -78,6 +79,7 @@ class UserRepository {
                 it[Users.locale] = locale
             }
         }
+        return findByChatId(chatId)
     }
 
     fun updateActiveByChatId(isActive: Boolean, chatId: String) {
