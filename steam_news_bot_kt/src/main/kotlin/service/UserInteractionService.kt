@@ -4,7 +4,10 @@ import dev.inmo.tgbotapi.extensions.utils.fromUserOrNull
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.utils.PreviewFeature
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import sidim.doma.plugin.Localization
+import sidim.doma.util.UserState
 import java.io.IOException
 
 class UserInteractionService(
@@ -14,14 +17,21 @@ class UserInteractionService(
     private val messageService: MessageService,
     private val userGameStateService: UserGameStateService
 ) {
-    private val userStates = mutableMapOf<Long, String>()
+    private val maxSize = 50
+    private val userStates = linkedMapOf<Long, UserState>()
+    private val mutex = Mutex()
 
     suspend fun handleSetSteamId(chatId: ChatId, locale: String) {
         messageService.sendTextMessage(
             chatId,
             Localization.getText("message.enter_steam_id", locale)
         )
-        userStates[chatId.chatId.long] = "SET_STEAM_ID"
+        mutex.withLock {
+            if (userStates.size >= maxSize) {
+                userStates.remove(userStates.keys.first())
+            }
+            userStates[chatId.chatId.long] = UserState.SET_STEAM_ID
+        }
     }
 
     suspend fun handleCheckSteamId(chatId: ChatId, locale: String) {
@@ -132,63 +142,103 @@ class UserInteractionService(
         }
     }
 
-    @OptIn(PreviewFeature::class)
     suspend fun handleTextInput(chatId: IdChatIdentifier, text: String, locale: String) {
-        val state = userStates[chatId.chatId.long]
-        if (state == "SET_STEAM_ID") {
-            if (!steamApiClient.isValidSteamId(text)) {
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText("message.incorrect_steam_id", locale)
-                )
-                return
-            }
-
-            messageService.sendTextMessage(chatId, Localization.getText("message.waiting", locale))
-
-            try {
-                val chatIdStr = chatId.chatId.toString()
-                val name = chatId.fromUserOrNull()?.user?.firstName
-                if (userService.existsByChatId(chatIdStr)) {
-                    userService.updateUser(chatIdStr, name, text, locale)
-                } else {
-                    userService.createUser(
-                        chatIdStr,
-                        name,
-                        text,
-                        locale
-                    )
-                }
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText(
-                        "message.registration",
-                        locale,
-                        text,
-                        name ?: Localization.getText("message.default_name", locale),
-                        userGameStateService.countByUserIdAndIsOwned(chatIdStr, true),
-                        userGameStateService.countByUserIdAndIsWished(chatIdStr, true)
-                    )
-                )
-            } catch (e: NullPointerException) {
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText("message.error_hidden_acc", locale, text)
-                )
-            } catch (e: IOException) {
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText("message.error_dont_exists_acc", locale, text)
-                )
-            } finally {
-                userStates.remove(chatId.chatId.long)
-            }
+        val state = getUserState(chatId)
+        if (state == UserState.SET_STEAM_ID) {
+            handleSteamIdInput(chatId, text, locale)
         } else {
             messageService.sendTextMessage(
                 chatId,
                 Localization.getText("message.default_message", locale)
             )
         }
+    }
+
+    private suspend fun handleSteamIdInput(
+        chatId: IdChatIdentifier,
+        steamId: String,
+        locale: String
+    ) {
+        if (!isValidSteamId(steamId, chatId, locale)) {
+            clearUserState(chatId)
+            return
+        }
+
+        messageService.sendTextMessage(chatId, Localization.getText("message.waiting", locale))
+        registerOrUpdateUser(chatId, steamId, locale)
+        clearUserState(chatId)
+    }
+
+    private suspend fun isValidSteamId(
+        steamId: String,
+        chatId: IdChatIdentifier,
+        locale: String
+    ): Boolean {
+        return if (steamApiClient.isValidSteamId(steamId)) {
+            true
+        } else {
+            messageService.sendTextMessage(
+                chatId,
+                Localization.getText("message.incorrect_steam_id", locale)
+            )
+            false
+        }
+    }
+
+    @OptIn(PreviewFeature::class)
+    private suspend fun registerOrUpdateUser(
+        chatId: IdChatIdentifier,
+        steamId: String,
+        locale: String
+    ) {
+        val chatIdStr = chatId.chatId.toString()
+        val name = chatId.fromUserOrNull()?.user?.firstName
+        try {
+            if (userService.existsByChatId(chatIdStr)) {
+                userService.updateUser(chatIdStr, name, steamId, locale)
+            } else {
+                userService.createUser(chatIdStr, name, steamId, locale)
+            }
+            sendRegistrationSuccessMessage(chatId, steamId, name, chatIdStr, locale)
+        } catch (e: NullPointerException) {
+            messageService.sendTextMessage(
+                chatId,
+                Localization.getText("message.error_hidden_acc", locale, steamId)
+            )
+        } catch (e: IOException) {
+            messageService.sendTextMessage(
+                chatId,
+                Localization.getText("message.error_dont_exists_acc", locale, steamId)
+            )
+        }
+    }
+
+    private suspend fun sendRegistrationSuccessMessage(
+        chatId: IdChatIdentifier,
+        steamId: String,
+        name: String?,
+        chatIdStr: String,
+        locale: String
+    ) {
+        messageService.sendTextMessage(
+            chatId,
+            Localization.getText(
+                "message.registration",
+                locale,
+                steamId,
+                name ?: Localization.getText("message.default_name", locale),
+                userGameStateService.countByUserIdAndIsOwned(chatIdStr, true),
+                userGameStateService.countByUserIdAndIsWished(chatIdStr, true)
+            )
+        )
+    }
+
+    private suspend fun getUserState(chatId: IdChatIdentifier): UserState? {
+        return mutex.withLock { userStates[chatId.chatId.long] }
+    }
+
+    private suspend fun clearUserState(chatId: IdChatIdentifier) {
+        mutex.withLock { userStates.remove(chatId.chatId.long) }
     }
 
     private suspend fun sendNotRegistered(chatId: ChatId, locale: String) {
