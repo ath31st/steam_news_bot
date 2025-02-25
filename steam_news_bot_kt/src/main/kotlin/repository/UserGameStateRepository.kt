@@ -1,8 +1,10 @@
 package sidim.doma.repository
 
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import sidim.doma.entity.Games
 import sidim.doma.entity.UserGameState
 import sidim.doma.entity.UserGameStates
@@ -120,8 +122,10 @@ class UserGameStateRepository {
 
     fun clearBlackListByUserId(userId: String) {
         return transaction {
-            UserGameStates.deleteWhere {
-                (UserGameStates.userId eq userId) and (isBanned eq true)
+            UserGameStates.update({
+                (UserGameStates.userId eq userId) and (UserGameStates.isBanned eq true)
+            }) {
+                it[isBanned] = false
             }
         }
     }
