@@ -6,7 +6,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import org.koin.core.parameter.parametersOf
 import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem
 import java.time.Instant
@@ -35,17 +34,13 @@ class SteamApiClient(
             Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*")
     }
 
-    suspend fun getOwnedGames(steamId: Long): List<Game> {
-        val url = buildUrl(BASE_API_URL, OWNED_GAMES_PATH) {
-            parametersOf(
-                "skip_unvetted_apps" to "true",
-                "key" to apiKey,
-                "include_appinfo" to "true",
-                "steamid" to steamId.toString()
-            )
+    suspend fun getOwnedGames(steamId: String): List<Game> {
+        val response = fetch("$BASE_API_URL$OWNED_GAMES_PATH") {
+            parameter("skip_unvetted_apps", "true")
+            parameter("key", apiKey)
+            parameter("include_appinfo", "true")
+            parameter("steamid", steamId)
         }
-        val response = fetch(url)
-
         return when {
             response == """{"response":{}}""" || response == """{"success": 2}""" ->
                 throw IllegalStateException("Account is hidden or does not exist")
@@ -59,20 +54,18 @@ class SteamApiClient(
         newsCount: Int = 3,
         maxLength: Int = 300
     ): List<NewsItem> {
-        val url = buildUrl(BASE_API_URL, NEWS_PATH) {
-            parametersOf(
-                "appid" to appId,
-                "count" to newsCount,
-                "maxlength" to maxLength
-            )
+        val response = fetch("$BASE_API_URL$NEWS_PATH") {
+            parameter("appid", appId)
+            parameter("count", newsCount)
+            parameter("maxlength", maxLength)
         }
-        return parseNewsItems(fetch(url))
+        return parseNewsItems(response)
     }
 
     suspend fun getWishlistGames(steamId: Long): List<Game> {
-        val url = buildUrl(STORE_URL, "$WISHLIST_PATH$steamId/wishlistdata/")
+        val response = fetch("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/")
         return try {
-            parseWishlistGames(fetch(url))
+            parseWishlistGames(response)
         } catch (e: Exception) {
             emptyList()
         }
@@ -81,9 +74,11 @@ class SteamApiClient(
     fun isValidSteamId(steamId: String): Boolean = STEAM_ID_PATTERN.matcher(steamId).matches()
 
     suspend fun checkWishlistAvailability(steamId: Long): Int {
-        val url = buildUrl(STORE_URL, "$WISHLIST_PATH$steamId/wishlistdata/")
         return try {
-            client.get(url).status.value
+            client.get("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/") {
+                header(HttpHeaders.UserAgent, USER_AGENT)
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+            }.status.value
         } catch (e: Exception) {
             when (e) {
                 is IllegalArgumentException -> 500
@@ -92,20 +87,16 @@ class SteamApiClient(
         }
     }
 
-    private suspend fun fetch(url: String): String = client.get(url) {
-        header(HttpHeaders.UserAgent, USER_AGENT)
-        header(HttpHeaders.ContentType, ContentType.Application.Json)
-    }.bodyAsText()
-
-    private fun buildUrl(
-        base: String,
-        path: String,
-        params: ParametersBuilder.() -> Unit = {}
-    ): String =
-        URLBuilder(base).apply {
-            path(path)
-            parameters.appendAll(ParametersBuilder().apply(params).build())
-        }.buildString()
+    private suspend fun fetch(
+        url: String,
+        params: (HttpRequestBuilder.() -> Unit)? = null
+    ): String {
+        return client.get(url) {
+            header(HttpHeaders.UserAgent, USER_AGENT)
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+            params?.invoke(this)
+        }.bodyAsText()
+    }
 
     private fun parseGames(json: String): List<Game> = objectMapper.readTree(json)
         .path("response")["games"]
