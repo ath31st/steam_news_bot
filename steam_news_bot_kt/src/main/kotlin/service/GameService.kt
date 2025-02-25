@@ -4,6 +4,8 @@ import sidim.doma.entity.Game
 import sidim.doma.repository.GameRepository
 
 class GameService(private val gameRepository: GameRepository) {
+    fun createGames(games: List<Game>) = gameRepository.createGames(games)
+
     fun getBanListByChatId(chatId: String): String {
         val games = gameRepository.findBannedByChatId(chatId)
         return games.joinToString(System.lineSeparator()) { it.name }

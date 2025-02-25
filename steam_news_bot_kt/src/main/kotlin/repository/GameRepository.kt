@@ -84,4 +84,21 @@ class GameRepository {
         appid = it[Games.appid],
         name = it[Games.name]
     )
+
+    fun createGames(games: List<Game>) {
+        transaction {
+            val existingAppIds =
+                Games.selectAll()
+                    .where { Games.appid inList games.map { it.appid } }
+                    .map { it[Games.appid] }
+                    .toSet()
+
+            val newGames = games.filter { it.appid !in existingAppIds }
+
+            Games.batchInsert(newGames) { game ->
+                this[Games.appid] = game.appid
+                this[Games.name] = game.name
+            }
+        }
+    }
 }
