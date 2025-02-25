@@ -49,6 +49,15 @@ class SteamApiClient(
         }
     }
 
+    suspend fun getWishlistGames(steamId: String): List<Game> {
+        val response = fetch("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/")
+        return try {
+            parseWishlistGames(response)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     suspend fun getNewsByOwnedGames(
         appId: String,
         newsCount: Int = 3,
@@ -60,15 +69,6 @@ class SteamApiClient(
             parameter("maxlength", maxLength)
         }
         return parseNewsItems(response)
-    }
-
-    suspend fun getWishlistGames(steamId: Long): List<Game> {
-        val response = fetch("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/")
-        return try {
-            parseWishlistGames(response)
-        } catch (e: Exception) {
-            emptyList()
-        }
     }
 
     fun isValidSteamId(steamId: String): Boolean = STEAM_ID_PATTERN.matcher(steamId).matches()
