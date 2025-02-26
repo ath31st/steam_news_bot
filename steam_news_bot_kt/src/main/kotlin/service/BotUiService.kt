@@ -47,16 +47,17 @@ class BotUiService {
         }
     }
 
-    fun subscribeMenuKeyboard(locale: String): InlineKeyboardMarkup = inlineKeyboard {
-        row {
-            dataButton(
-                text = "🚫 ${Localization.getButton("button.unsubscribe", locale)}",
-                data = "/unsubscribe"
-            )
-            dataButton(
-                text = "🔗 ${Localization.getButton("button.links_to_game", locale)}",
-                data = "/links_to_game"
-            )
+    fun subscribeMenuKeyboard(appid: String, locale: String): InlineKeyboardMarkup =
+        inlineKeyboard {
+            row {
+                dataButton(
+                    text = "🚫 ${Localization.getButton("button.unsubscribe", locale)}",
+                    data = "/unsubscribe_$appid"
+                )
+                dataButton(
+                    text = "🔗 ${Localization.getButton("button.links_to_game", locale)}",
+                    data = "/links_to_game_$appid"
+                )
+            }
         }
-    }
 }

@@ -26,9 +26,10 @@ class MessageService(private val bot: TelegramBot, private val userService: User
     suspend fun sendNewsMessage(
         chatId: ChatId,
         text: String,
+        appid: String,
         locale: String,
         uiService: BotUiService
     ) {
-        sendTextMessage(chatId, text, uiService.subscribeMenuKeyboard(locale))
+        sendTextMessage(chatId, text, uiService.subscribeMenuKeyboard(appid, locale))
     }
 }
