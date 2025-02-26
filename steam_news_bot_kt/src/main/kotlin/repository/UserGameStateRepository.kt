@@ -3,7 +3,6 @@ package sidim.doma.repository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import sidim.doma.entity.Games
 import sidim.doma.entity.UserGameState
 import sidim.doma.entity.UserGameStates
 
@@ -40,19 +39,6 @@ class UserGameStateRepository {
         }
     }
 
-    fun findByUserIdAndGameName(userId: String, gameName: String): UserGameState? {
-        return transaction {
-            (UserGameStates innerJoin Games)
-                .selectAll()
-                .where {
-                    (UserGameStates.userId eq userId) and
-                            (Games.name eq gameName)
-                }
-                .singleOrNull()
-                ?.let { rowToUserGameState(it) }
-        }
-    }
-
     fun findByUserIdAndBanned(userId: String, isBanned: Boolean): UserGameState? {
         return transaction {
             UserGameStates
@@ -74,12 +60,13 @@ class UserGameStateRepository {
         }
     }
 
-    fun updateIsBannedByGameNameAndUserId(banned: Boolean, gameName: String, userId: String) {
+    fun updateIsBannedByGameIdAndUserId(banned: Boolean, gameId: String, userId: String) {
         transaction {
-            (UserGameStates innerJoin Games)
-                .update({ (UserGameStates.userId eq userId) and (Games.name eq gameName) }) {
-                    it[UserGameStates.isBanned] = banned
-                }
+            UserGameStates.update({
+                (UserGameStates.userId eq userId) and (UserGameStates.gameId eq gameId)
+            }) {
+                it[isBanned] = banned
+            }
         }
     }
 
