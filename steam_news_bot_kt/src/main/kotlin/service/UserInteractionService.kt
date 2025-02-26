@@ -80,34 +80,34 @@ class UserInteractionService(
     suspend fun handleUnsubscribe(chatId: ChatId, messageText: String, locale: String) {
         if (!ensureUserRegistered(chatId, locale)) return
 
-        val gameTitle = messageText.substringBefore(System.lineSeparator())
-        if (userGameStateService.checkIsBannedByGameNameAndUserId(
-                gameTitle,
+        val appid = messageText.removePrefix("/unsubscribe_")
+        if (userGameStateService.checkIsBannedByGameIdAndUserId(
+                appid,
                 chatId.chatId.toString()
             )
         ) {
             messageService.sendTextMessage(
                 chatId,
-                Localization.getText("message.already_unsubscribed", locale) + gameTitle
+                Localization.getText("message.already_unsubscribed", locale) + appid
             )
         } else {
-            userGameStateService.updateIsBannedByGameNameAndUserId(
+            userGameStateService.updateIsBannedByGameIdAndUserId(
                 isBanned = true,
-                gameTitle,
+                appid,
                 chatId.chatId.toString(),
             )
             messageService.sendTextMessage(
                 chatId,
-                Localization.getText("message.unsubscribe", locale) + gameTitle
+                Localization.getText("message.unsubscribe", locale) + appid
             )
         }
     }
 
     suspend fun handleLinksToGame(chatId: ChatId, messageText: String, locale: String) {
-        val gameAppId = messageText.substringAfter("LINK(").substringBefore(")")
+        val appid = messageText.removePrefix("/links_to_game_")
         messageService.sendTextMessage(
             chatId,
-            Localization.getText("message.links_to_game_message", locale, gameAppId, gameAppId)
+            Localization.getText("message.links_to_game_message", locale, appid, appid)
         )
     }
 
