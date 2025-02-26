@@ -11,9 +11,6 @@ class GameService(private val gameRepository: GameRepository) {
         return games.joinToString(System.lineSeparator()) { it.name }
     }
 
-    fun existsByUserIdAndGameNameAndNotBanned(userId: String, gameName: String): Boolean =
-        gameRepository.existsByUserIdAndGameNameAndNotBanned(userId, gameName)
-
     fun getAllGamesByActiveUsers(): List<Game> = gameRepository.findByActiveUsersAndNotBanned()
 
     fun getTopGames(limit: Long): List<Game> = gameRepository.findTopGames(limit)
