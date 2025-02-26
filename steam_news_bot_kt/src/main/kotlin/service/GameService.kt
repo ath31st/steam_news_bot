@@ -8,7 +8,7 @@ class GameService(private val gameRepository: GameRepository) {
 
     fun getBanListByChatId(chatId: String): String {
         val games = gameRepository.findBannedByChatId(chatId)
-        return games.joinToString(System.lineSeparator()) { it.name }
+        return games.joinToString(System.lineSeparator()) { it.name ?: it.appid }
     }
 
     fun getAllGamesByActiveUsers(): List<Game> = gameRepository.findByActiveUsersAndNotBanned()
