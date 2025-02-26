@@ -21,13 +21,10 @@ class SteamApiClient(
 ) {
     companion object {
         private const val USER_AGENT = "Mozilla/5.0"
-
         private const val BASE_API_URL = "http://api.steampowered.com"
-        private const val STORE_URL = "https://store.steampowered.com"
-
         private const val OWNED_GAMES_PATH = "/IPlayerService/GetOwnedGames/v1/"
         private const val NEWS_PATH = "/ISteamNews/GetNewsForApp/v2/"
-        private const val WISHLIST_PATH = "/wishlist/profiles/"
+        private const val WISHLIST_PATH = "/IWishlistService/GetWishlist/v1/"
 
         private val STEAM_ID_PATTERN = Pattern.compile("765\\d{14}")
         private val IMAGE_LINK_PATTERN =
@@ -50,11 +47,13 @@ class SteamApiClient(
     }
 
     suspend fun getWishlistGames(steamId: String): List<Game> {
-        val response = fetch("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/")
-        return try {
-            parseWishlistGames(response)
-        } catch (e: Exception) {
-            emptyList()
+        val response = fetch("$BASE_API_URL$WISHLIST_PATH") {
+            parameter("steamid", steamId)
+        }
+        return when {
+            response == """{"response":{}}""" || response == """{"success": 2}""" -> emptyList()
+
+            else -> parseWishlistGames(response)
         }
     }
 
@@ -74,16 +73,13 @@ class SteamApiClient(
     fun isValidSteamId(steamId: String): Boolean = STEAM_ID_PATTERN.matcher(steamId).matches()
 
     suspend fun checkWishlistAvailability(steamId: Long): Int {
-        return try {
-            client.get("$STORE_URL$WISHLIST_PATH$steamId/wishlistdata/") {
-                header(HttpHeaders.UserAgent, USER_AGENT)
-                header(HttpHeaders.ContentType, ContentType.Application.Json)
-            }.status.value
-        } catch (e: Exception) {
-            when (e) {
-                is IllegalArgumentException -> 500
-                else -> 100
-            }
+        val response = fetch("$BASE_API_URL$WISHLIST_PATH") {
+            parameter("steamid", steamId)
+        }
+        return when {
+            response == """{"response":{}}""" || response == """{"success": 2}""" -> 500
+
+            else -> 200
         }
     }
 
@@ -106,12 +102,10 @@ class SteamApiClient(
         }
 
     private fun parseWishlistGames(json: String): List<Game> = objectMapper.readTree(json)
-        .let { rootNode ->
-            if (rootNode.isObject) {
-                rootNode.fields().asSequence().map { entry ->
-                    Game(appid = entry.key, name = entry.value["name"].asText())
-                }.toList()
-            } else emptyList()
+        .path("response")["items"]
+        .let { itemsNode ->
+            if (itemsNode.isArray) itemsNode.map { objectMapper.convertValue(it, Game::class.java) }
+            else emptyList()
         }
 
     private fun parseNewsItems(json: String): List<NewsItem> = objectMapper.readTree(json)
