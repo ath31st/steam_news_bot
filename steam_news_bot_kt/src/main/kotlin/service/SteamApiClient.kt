@@ -29,6 +29,11 @@ class SteamApiClient(
         private val STEAM_ID_PATTERN = Pattern.compile("765\\d{14}")
         private val IMAGE_LINK_PATTERN =
             Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*")
+
+        private val INVALID_RESPONSES = listOf(
+            """{"response":{}}""",
+            """{"success": 2}"""
+        )
     }
 
     suspend fun getOwnedGames(steamId: String): List<Game> {
@@ -39,7 +44,7 @@ class SteamApiClient(
             parameter("steamid", steamId)
         }
         return when {
-            response == """{"response":{}}""" || response == """{"success": 2}""" ->
+            response in INVALID_RESPONSES ->
                 throw IllegalStateException("Account is hidden or does not exist")
 
             else -> parseGames(response)
@@ -51,7 +56,7 @@ class SteamApiClient(
             parameter("steamid", steamId)
         }
         return when {
-            response == """{"response":{}}""" || response == """{"success": 2}""" -> emptyList()
+            response in INVALID_RESPONSES -> emptyList()
 
             else -> parseWishlistGames(response)
         }
@@ -77,7 +82,7 @@ class SteamApiClient(
             parameter("steamid", steamId)
         }
         return when {
-            response == """{"response":{}}""" || response == """{"success": 2}""" -> 500
+            response in INVALID_RESPONSES -> 500
 
             else -> 200
         }
