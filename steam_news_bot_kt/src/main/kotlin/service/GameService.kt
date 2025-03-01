@@ -11,7 +11,8 @@ class GameService(private val gameRepository: GameRepository) {
         return games.joinToString(System.lineSeparator()) { it.name ?: it.appid }
     }
 
-    fun getAllGamesByActiveUsers(): List<Game> = gameRepository.findByActiveUsersAndNotBanned()
+    fun getAllGamesByActiveUsersAndNotBanned(): List<Game> =
+        gameRepository.findByActiveUsersAndNotBanned()
 
     fun getTopGames(limit: Long): List<Game> = gameRepository.findTopGames(limit)
 
