@@ -15,4 +15,5 @@ fun Application.module() {
     configureDependencyInjection()
     configureRouting()
     configureTelegramBot()
+    configureScheduler()
 }
