@@ -8,7 +8,11 @@ import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.types.message.HTMLParseMode
 
-class MessageService(private val bot: TelegramBot, private val userService: UserService) {
+class MessageService(
+    private val bot: TelegramBot,
+    private val userService: UserService,
+    private val uiService: BotUiService
+) {
     suspend fun sendTextMessage(
         chatId: IdChatIdentifier,
         text: String,
@@ -28,7 +32,6 @@ class MessageService(private val bot: TelegramBot, private val userService: User
         text: String,
         appid: String,
         locale: String,
-        uiService: BotUiService
     ) {
         sendTextMessage(chatId, text, uiService.subscribeMenuKeyboard(appid, locale))
     }

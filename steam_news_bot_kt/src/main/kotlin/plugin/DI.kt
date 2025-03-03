@@ -53,7 +53,7 @@ fun Application.configureDependencyInjection() {
             single { UserGameStateService(get()) }
             single { UserService(get()) }
             single { BotUiService() }
-            single { MessageService(get(), get()) }
+            single { MessageService(get(), get(), get()) }
             single { UserInteractionService(get(), get(), get(), get(), get()) }
             single { BotController(get(), get(), get()) }
         })
