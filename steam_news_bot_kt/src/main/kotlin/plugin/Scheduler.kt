@@ -11,10 +11,7 @@ import org.koin.core.context.GlobalContext
 import org.slf4j.LoggerFactory
 import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem
-import sidim.doma.service.GameService
-import sidim.doma.service.MessageService
-import sidim.doma.service.SteamApiClient
-import sidim.doma.service.UserService
+import sidim.doma.service.*
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
@@ -25,6 +22,7 @@ fun Application.configureScheduler() = launch {
     val messageService = GlobalContext.get().get<MessageService>()
     val steamApiClient = GlobalContext.get().get<SteamApiClient>()
     val userService = GlobalContext.get().get<UserService>()
+    val newsItemService = GlobalContext.get().get<NewsItemService>()
 
     val logger = LoggerFactory.getLogger("Scheduler")
     val newsItems = CopyOnWriteArrayList<NewsItem>()
@@ -66,9 +64,12 @@ fun Application.configureScheduler() = launch {
                     userService.getActiveUsersByAppId(news.appid).map { user -> news to user }
                 }.map { (news, user) ->
                     launch {
+                        val chatId = ChatId(RawChatId(user.chatId.toLong()))
+                        val newsText = newsItemService.formatNewsForTelegram(news, user.locale)
+
                         messageService.sendNewsMessage(
-                            chatId = ChatId(RawChatId(user.chatId.toLong())),
-                            text = news.contents,
+                            chatId = chatId,
+                            text = newsText,
                             appid = news.appid,
                             locale = user.locale
                         )
