@@ -12,7 +12,6 @@ class NewsItemService {
 
     fun formatNewsForTelegram(newsItem: NewsItem, locale: String): String {
         val title = "<b>${newsItem.title}</b>\n\n"
-        val formattedContent = formatContent(newsItem.contents)
         val url =
             "\n<a href=\"${newsItem.url}\">${Localization.getText("news.read_more", locale)}</a>"
         val date = "\n<i>${
@@ -22,11 +21,18 @@ class NewsItemService {
             )
         }: ${convertUnixToDate(newsItem.date.toLong(), locale)}</i>"
 
-        val fullMessage = title + formattedContent + url + date
-        return if (fullMessage.length <= MAX_MESSAGE_LENGTH) fullMessage else truncateMessage(
-            fullMessage,
-            locale
-        )
+        val fixedLength = title.length + date.length + url.length + 2
+        val maxContentLength = MAX_MESSAGE_LENGTH - fixedLength
+
+        val formattedContent = formatContent(newsItem.contents)
+        val truncatedContent = if (formattedContent.length <= maxContentLength) {
+            formattedContent
+        } else {
+            val truncated = formattedContent.substring(0, maxContentLength - 50)
+            "$truncated...\n<i>${Localization.getText("news.truncated", locale)}</i>"
+        }
+
+        return title + truncatedContent + date + url
     }
 
     private fun formatContent(content: String): String {
@@ -40,12 +46,17 @@ class NewsItemService {
             .replace(Regex("</?p>"), "\n")
             .replace(Regex("<strong>"), "<b>").replace(Regex("</strong>"), "</b>")
 
-        result = result.replace("[h2]", "<b>").replace("[/h2]", "</b>\n")
+        result = result.replace("[h1]", "<b>").replace("[/h1]", "</b>\n")
+            .replace("[h2]", "<b>").replace("[/h2]", "</b>\n")
             .replace("[h3]", "<b>").replace("[/h3]", "</b>\n")
-            .replace(Regex("\\[url=(.*?)](.*?)\\[/url]"), "<a href=\"$1\">$2</a>")
+            .replace("[b]", "<b>").replace("[/b]", "</b>")
+            .replace("[i]", "<i>").replace("[/i]", "</i>")
 
-        result =
-            result.replace(Regex("<a\\s+href=\"([^\"]+)\"[^>]*>(.*?)</a>"), "<a href=\"$1\">$2</a>")
+        result = result.replace("[list]", "").replace("[/list]", "")
+            .replace(Regex("\\[\\*]"), "• ")
+
+        result = result.replace(Regex("\\[url=(.*?)](.*?)\\[/url]"), "<a href=\"$1\">$2</a>")
+            .replace(Regex("<a\\s+href=\"([^\"]+)\"[^>]*>(.*?)</a>"), "<a href=\"$1\">$2</a>")
 
         result = result.replace(Regex("\n{2,}"), "\n\n")
             .replace(Regex("\\s{2,}"), " ")
@@ -58,16 +69,8 @@ class NewsItemService {
 
     private fun convertUnixToDate(unixSeconds: Long, locale: String): String {
         val date = Date(unixSeconds * 1000)
+
         val formatter = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.forLanguageTag(locale))
         return formatter.format(date)
-    }
-
-    private fun truncateMessage(message: String, locale: String): String {
-        return message.substring(0, MAX_MESSAGE_LENGTH) + "...\n<i>${
-            Localization.getText(
-                "news.truncated",
-                locale
-            )
-        }</i>"
     }
 }
