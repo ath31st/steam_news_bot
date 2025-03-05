@@ -49,6 +49,7 @@ fun Application.configureDependencyInjection() {
             single { UserGameStateRepository() }
             single { UserRepository() }
 
+            single { NewsItemService() }
             single { GameService(get()) }
             single { UserGameStateService(get()) }
             single { UserService(get()) }
