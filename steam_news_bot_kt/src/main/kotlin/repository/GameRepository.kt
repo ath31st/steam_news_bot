@@ -17,6 +17,15 @@ class GameRepository {
         }
     }
 
+    fun createGame(game: Game): Game? {
+        return transaction {
+            Games.insert {
+                it[appid] = game.appid
+                it[name] = game.name
+            }[Games.appid]
+        }.let { findGameByAppId(it) }
+    }
+
     fun findBannedByChatId(chatId: String): List<Game> {
         return transaction {
             (Games innerJoin UserGameStates)
@@ -72,6 +81,21 @@ class GameRepository {
                 .distinct()
                 .count()
                 .toLong()
+        }
+    }
+
+    fun existsByAppId(appId: String): Boolean {
+        return transaction {
+            Games.selectAll().any { it[Games.appid] == appId }
+        }
+    }
+
+    fun findGameByAppId(appId: String): Game? {
+        return transaction {
+            Games.selectAll()
+                .where { Games.appid eq appId }
+                .singleOrNull()
+                ?.let { rowToGame(it) }
         }
     }
 
