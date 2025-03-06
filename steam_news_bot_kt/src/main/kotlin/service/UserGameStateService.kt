@@ -27,11 +27,30 @@ class UserGameStateService(private val userGameStateRepository: UserGameStateRep
         userGameStateRepository.createUgs(ugs)
     }
 
+    fun getUgsByUserId(userId: String): List<UserGameState> =
+        userGameStateRepository.findByUserId(userId)
+
     fun deleteUgsByUserId(userId: String) = userGameStateRepository.deleteUgsByUserId(userId)
+
+    fun deleteUgsByGameIdAndUserId(gameId: String, userId: String) =
+        userGameStateRepository.deleteUgsByGameIdAndUserId(gameId, userId)
 
     fun updateIsBannedByGameIdAndUserId(isBanned: Boolean, gameId: String, userId: String) {
         userGameStateRepository.updateIsBannedByGameIdAndUserId(isBanned, gameId, userId)
     }
+
+    fun updateIsWishedAndIsOwnedByGameIdAndUserId(
+        isWished: Boolean,
+        isOwned: Boolean,
+        gameId: String,
+        userId: String
+    ) =
+        userGameStateRepository.updateIsWishedAndIsOwnedByGameIdAndUserId(
+            isWished,
+            isOwned,
+            gameId,
+            userId
+        )
 
     fun checkIsBannedByGameIdAndUserId(gameId: String, userId: String): Boolean =
         userGameStateRepository.findByUserIdAndGameId(userId, gameId)?.isBanned ?: false

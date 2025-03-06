@@ -26,6 +26,15 @@ class UserGameStateRepository {
         }
     }
 
+    fun deleteUgsByGameIdAndUserId(gameId: String, userId: String) {
+        return transaction {
+            UserGameStates
+                .deleteWhere {
+                    (UserGameStates.userId eq userId) and (UserGameStates.gameId eq gameId)
+                }
+        }
+    }
+
     fun findByUserIdAndGameId(userId: String, gameId: String): UserGameState? {
         return transaction {
             UserGameStates
@@ -116,14 +125,6 @@ class UserGameStateRepository {
         }
     }
 
-    private fun rowToUserGameState(it: ResultRow) = UserGameState(
-        userId = it[UserGameStates.userId],
-        gameId = it[UserGameStates.gameId],
-        isWished = it[UserGameStates.isWished],
-        isBanned = it[UserGameStates.isBanned],
-        isOwned = it[UserGameStates.isOwned]
-    )
-
     fun clearBlackListByUserId(userId: String) {
         return transaction {
             UserGameStates.update({
@@ -133,4 +134,37 @@ class UserGameStateRepository {
             }
         }
     }
+
+    fun findByUserId(userId: String): List<UserGameState> {
+        return transaction {
+            UserGameStates
+                .selectAll()
+                .where { UserGameStates.userId eq userId }
+                .map { rowToUserGameState(it) }
+        }
+    }
+
+    fun updateIsWishedAndIsOwnedByGameIdAndUserId(
+        isWished: Boolean,
+        isOwned: Boolean,
+        gameId: String,
+        userId: String
+    ) {
+        transaction {
+            UserGameStates.update({
+                (UserGameStates.userId eq userId) and (UserGameStates.gameId eq gameId)
+            }) {
+                it[UserGameStates.isWished] = isWished
+                it[UserGameStates.isOwned] = isOwned
+            }
+        }
+    }
+
+    private fun rowToUserGameState(it: ResultRow) = UserGameState(
+        userId = it[UserGameStates.userId],
+        gameId = it[UserGameStates.gameId],
+        isWished = it[UserGameStates.isWished],
+        isBanned = it[UserGameStates.isBanned],
+        isOwned = it[UserGameStates.isOwned]
+    )
 }
