@@ -50,29 +50,55 @@ class BotController(
             onDataCallbackQuery { callback ->
                 val chatId = callback.from.id
                 val locale = callback.user.languageCode ?: "en"
-                when (callback.data) {
-                    "/set_steam_id" -> interactionService.handleSetSteamId(chatId, locale)
-                    "/check_steam_id" -> interactionService.handleCheckSteamId(chatId, locale)
-                    "/set_active_mode" -> interactionService.handleSetActiveMode(chatId, locale)
-                    "/set_inactive_mode" -> interactionService.handleSetInactiveMode(chatId, locale)
-                    "/check_wishlist" -> interactionService.handleCheckWishlist(chatId, locale)
-                    "/unsubscribe" -> interactionService.handleUnsubscribe(
+                when {
+                    callback.data == "/set_steam_id" -> interactionService.handleSetSteamId(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data == "/check_steam_id" -> interactionService.handleCheckSteamId(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data == "/set_active_mode" -> interactionService.handleSetActiveMode(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data == "/set_inactive_mode" -> interactionService.handleSetInactiveMode(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data == "/check_wishlist" -> interactionService.handleCheckWishlist(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data.startsWith("/unsubscribe") -> interactionService.handleUnsubscribe(
                         chatId,
                         callback.data,
                         locale
                     )
 
-                    "/links_to_game" -> interactionService.handleLinksToGame(
+                    callback.data.startsWith("/links_to_game") -> interactionService.handleLinksToGame(
                         chatId,
                         callback.data,
                         locale
                     )
 
-                    "/black_list" -> interactionService.handleBlackList(chatId, locale)
-                    "/clear_black_list" -> interactionService.handleClearBlackList(chatId, locale)
-                    else -> if (callback.data.startsWith("/game_")) {
-                        // todo process game callback if needed
-                    } else {
+                    callback.data == "/black_list" -> interactionService.handleBlackList(
+                        chatId,
+                        locale
+                    )
+
+                    callback.data == "/clear_black_list" -> interactionService.handleClearBlackList(
+                        chatId,
+                        locale
+                    )
+
+                    else -> {
                         messageService.sendTextMessage(
                             chatId,
                             Localization.getText("message.default_message", locale)
