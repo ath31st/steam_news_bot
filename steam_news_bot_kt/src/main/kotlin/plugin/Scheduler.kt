@@ -87,6 +87,62 @@ fun Application.configureScheduler() = launch {
 
     schedulerScope.launch {
         while (isActive) {
+            if (problemGames.isNotEmpty()) {
+                logger.info("Found {} problem games, attempting retry", problemGames.size)
+
+                coroutineScope {
+                    problemGames.toList().forEach { game ->
+                        launch {
+                            semaphore.withPermit {
+                                var attempts = 0
+                                val maxAttempts = 3
+                                var success = false
+
+                                while (attempts < maxAttempts && !success) {
+                                    try {
+                                        attempts++
+                                        val news =
+                                            steamApiClient.getRecentNewsByOwnedGames(game.appid)
+                                        newsItems.addAll(news)
+                                        success = true
+                                        problemGames.remove(game)
+                                        logger.info(
+                                            "Successfully processed game {} after {} attempts",
+                                            game.appid,
+                                            attempts
+                                        )
+                                    } catch (e: IOException) {
+                                        logger.warn(
+                                            "Retry {}/{} failed for game {}: {}",
+                                            attempts,
+                                            maxAttempts,
+                                            game.appid,
+                                            e.message
+                                        )
+                                        if (attempts == maxAttempts) {
+                                            logger.error(
+                                                "All retries failed for game {}",
+                                                game.appid
+                                            )
+                                            problemGames.remove(game)
+                                        }
+                                        delay(1.minutes)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                logger.info("No problem games to retry")
+            }
+
+            delay(5.minutes)
+        }
+    }
+
+    schedulerScope.launch {
+        while (isActive) {
             val startUpdate = Instant.now()
             logger.info("Starting game states update for all active users")
 
@@ -143,7 +199,12 @@ suspend fun updateUserGameStates(
         )
     }
 
-    fun updateState(appid: String, isOwned: Boolean, isWished: Boolean, sourceGames: List<Game>) {
+    fun updateState(
+        appid: String,
+        isOwned: Boolean,
+        isWished: Boolean,
+        sourceGames: List<Game>
+    ) {
         val game = getOrCreateGame(appid, sourceGames)
         userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
             isWished = isWished,
