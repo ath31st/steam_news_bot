@@ -193,19 +193,13 @@ suspend fun updateUserGameStates(
     val currentOwned = currentStates.filter { it.isOwned }.map { it.gameId }.toSet()
     val currentWishlist = currentStates.filter { it.isWished }.map { it.gameId }.toSet()
 
-    fun getOrCreateGame(appid: String, games: List<Game>): Game {
-        return gameService.findGameByAppId(appid) ?: gameService.createGame(
-            Game(appid, games.first { it.appid == appid }.name)
-        )
-    }
-
     fun updateState(
         appid: String,
         isOwned: Boolean,
         isWished: Boolean,
         sourceGames: List<Game>
     ) {
-        val game = getOrCreateGame(appid, sourceGames)
+        val game = gameService.getOrCreateGame(appid, sourceGames)
         userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
             isWished = isWished,
             isOwned = isOwned,

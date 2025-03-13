@@ -6,7 +6,13 @@ import sidim.doma.repository.GameRepository
 class GameService(private val gameRepository: GameRepository) {
     fun createGames(games: List<Game>) = gameRepository.createGames(games)
 
-    fun createGame(game: Game): Game = gameRepository.createGame(game) ?: game
+    private fun createGame(game: Game): Game = gameRepository.createGame(game) ?: game
+
+    fun getOrCreateGame(appid: String, games: List<Game>): Game {
+        return findGameByAppId(appid) ?: createGame(
+            Game(appid, games.first { it.appid == appid }.name)
+        )
+    }
 
     fun getBanListByChatId(chatId: String): String {
         val games = gameRepository.findBannedByChatId(chatId)
