@@ -36,7 +36,7 @@ fun Application.configureNewsScheduler() = launch {
 
     schedulerScope.launch {
         while (isActive) {
-            val startCycle = Instant.now()
+            var startCycle = Instant.now()
             val games = gameService.getAllGamesByActiveUsersAndNotBanned()
 
             coroutineScope {
@@ -56,11 +56,13 @@ fun Application.configureNewsScheduler() = launch {
                 }
             }
 
-            logger.info("news: {}", newsItems.size)
+            logger.info("Found {} news", newsItems.size)
             logger.info(
                 "News cycle completed in {} seconds",
                 java.time.Duration.between(startCycle, Instant.now()).seconds
             )
+
+            startCycle = Instant.now()
 
             coroutineScope {
                 newsItems.flatMap { news ->
@@ -78,6 +80,11 @@ fun Application.configureNewsScheduler() = launch {
                     }
                 }.joinAll()
             }
+
+            logger.info(
+                "Message cycle completed in {} seconds",
+                java.time.Duration.between(startCycle, Instant.now()).seconds
+            )
 
             newsItems.clear()
             delay(NEWS_ITEMS_DELAY.minutes)
