@@ -24,7 +24,18 @@ class UserGameStateService(private val userGameStateRepository: UserGameStateRep
                         isOwned = false
                     )
                 }.distinctBy { it.gameId }
-        userGameStateRepository.createUgs(ugs)
+        userGameStateRepository.saveUserGameStates(ugs)
+    }
+
+    fun createGameState(
+        userId: String,
+        gameId: String,
+        isWished: Boolean,
+        isOwned: Boolean,
+        isBanned: Boolean = false,
+    ) {
+        val ugs = UserGameState(userId, gameId, isWished, isBanned, isOwned)
+        userGameStateRepository.saveUserGameState(ugs)
     }
 
     fun getUgsByUserId(userId: String): List<UserGameState> =

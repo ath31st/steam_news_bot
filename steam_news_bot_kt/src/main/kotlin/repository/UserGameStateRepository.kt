@@ -7,7 +7,7 @@ import sidim.doma.entity.UserGameState
 import sidim.doma.entity.UserGameStates
 
 class UserGameStateRepository {
-    fun createUgs(ugs: List<UserGameState>) {
+    fun saveUserGameStates(ugs: List<UserGameState>) {
         return transaction {
             UserGameStates.batchInsert(ugs) {
                 this[UserGameStates.userId] = it.userId
@@ -16,6 +16,21 @@ class UserGameStateRepository {
                 this[UserGameStates.isBanned] = it.isBanned
                 this[UserGameStates.isOwned] = it.isOwned
             }
+        }
+    }
+
+    fun saveUserGameState(
+        ugs: UserGameState
+    ) {
+        return transaction {
+            UserGameStates
+                .insert {
+                    it[userId] = ugs.userId
+                    it[gameId] = ugs.gameId
+                    it[isWished] = ugs.isWished
+                    it[isBanned] = ugs.isBanned
+                    it[isOwned] = ugs.isOwned
+                }
         }
     }
 
