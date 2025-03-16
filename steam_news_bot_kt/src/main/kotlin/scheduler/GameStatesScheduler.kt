@@ -10,6 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.config.SchedulerConfig.GAME_STATES_DELAY
+import sidim.doma.config.SchedulerConfig.GAME_STATES_START_DELAY
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.entity.Game
 import sidim.doma.entity.User
@@ -19,6 +20,7 @@ import sidim.doma.service.UserGameStateService
 import sidim.doma.service.UserService
 import java.time.Instant
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 fun Application.configureGameStatesScheduler() = launch {
     val steamApiClient = GlobalContext.get().get<SteamApiClient>()
@@ -31,6 +33,8 @@ fun Application.configureGameStatesScheduler() = launch {
     val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     schedulerScope.launch {
+        delay(GAME_STATES_START_DELAY.minutes)
+
         while (isActive) {
             val startUpdate = Instant.now()
             logger.info("Starting game states update for all active users")
