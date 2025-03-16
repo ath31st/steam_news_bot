@@ -82,7 +82,7 @@ suspend fun updateUserGameStates(
     val ownedGames = steamApiClient.getOwnedGames(steamId)
     val wishlistGames = steamApiClient.getWishlistGames(steamId)
 
-    logger.info("Updating game states for user ${user.chatId}")
+    logger.info("Updating game states for user ${user.chatId} (${user.steamId})")
     logger.info("Fresh steam data for id ${user.steamId}: Owned: ${ownedGames.size}, Wishlist: ${wishlistGames.size}")
 
     val ownedAppIds = ownedGames.associateBy { it.appid }.keys
@@ -90,6 +90,8 @@ suspend fun updateUserGameStates(
     val currentStates = userGameStateService.getUgsByUserId(user.chatId)
     val currentOwned = currentStates.filter { it.isOwned }.map { it.gameId }.toSet()
     val currentWishlist = currentStates.filter { it.isWished }.map { it.gameId }.toSet()
+
+    logger.info("Current states for user ${user.steamId}: Owned: ${currentOwned.size}, Wishlist: ${currentWishlist.size}")
 
     fun updateState(
         appid: String,
@@ -115,13 +117,22 @@ suspend fun updateUserGameStates(
 
         (ownedAppIds - currentOwned).forEach { appid ->
             launch {
-                updateState(appid, isOwned = true, isWished = false, ownedGames)
+                val game = gameService.getOrCreateGame(appid, ownedGames)
+                userGameStateService.createGameState(
+                    userId = user.chatId,
+                    gameId = game.appid,
+                    isWished = false,
+                    isOwned = true,
+                    isBanned = false
+                )
+                logger.info("Added game ${game.appid} to user ${user.chatId}")
             }
         }
 
         (wishlistAppIds - currentWishlist - ownedAppIds).forEach { appid ->
             launch {
                 updateState(appid, isOwned = false, isWished = true, wishlistGames)
+                logger.info("Added game to wishlist $appid for user ${user.chatId}")
             }
         }
 
@@ -129,6 +140,7 @@ suspend fun updateUserGameStates(
             launch {
                 if (gameService.findGameByAppId(appid) != null) {
                     userGameStateService.deleteUgsByGameIdAndUserId(appid, user.chatId)
+                    logger.info("Removed game from wishlist $appid for user ${user.chatId}")
                 }
             }
         }
