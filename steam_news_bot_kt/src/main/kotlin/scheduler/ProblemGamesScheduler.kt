@@ -74,9 +74,8 @@ fun Application.configureProblemGamesScheduler() = launch {
                         }
                     }
                 }
-            } else {
-                logger.info("No problem games to retry")
             }
+
             delay(PROBLEM_GAMES_DELAY.minutes)
         }
     }
