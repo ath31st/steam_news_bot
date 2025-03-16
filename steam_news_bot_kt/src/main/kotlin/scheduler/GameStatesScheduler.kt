@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.io.IOException
 import org.koin.core.context.GlobalContext
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.config.SchedulerConfig.GAME_STATES_DELAY
@@ -45,7 +46,8 @@ fun Application.configureGameStatesScheduler() = launch {
                                         user,
                                         steamApiClient,
                                         gameService,
-                                        userGameStateService
+                                        userGameStateService,
+                                        logger
                                     )
                                 } catch (e: IOException) {
                                     logger.error("Failed to update game states for user ${user.chatId}: ${e.message}")
@@ -57,7 +59,7 @@ fun Application.configureGameStatesScheduler() = launch {
             }
 
             logger.info(
-                "Game states update completed in {} seconds",
+                "Game states all active users updated in {} seconds",
                 java.time.Duration.between(startUpdate, Instant.now()).seconds
             )
             delay(GAME_STATES_DELAY.hours)
@@ -69,11 +71,15 @@ suspend fun updateUserGameStates(
     user: User,
     steamApiClient: SteamApiClient,
     gameService: GameService,
-    userGameStateService: UserGameStateService
+    userGameStateService: UserGameStateService,
+    logger: Logger
 ) {
     val steamId = user.steamId.toString()
     val ownedGames = steamApiClient.getOwnedGames(steamId)
     val wishlistGames = steamApiClient.getWishlistGames(steamId)
+
+    logger.info("Updating game states for user ${user.chatId}")
+    logger.info("Fresh steam data for id ${user.steamId}: Owned: ${ownedGames.size}, Wishlist: ${wishlistGames.size}")
 
     val ownedAppIds = ownedGames.associateBy { it.appid }.keys
     val wishlistAppIds = wishlistGames.associateBy { it.appid }.keys
