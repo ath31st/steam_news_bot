@@ -44,7 +44,7 @@ class SteamApiClient(
         }
         return when {
             response in INVALID_RESPONSES ->
-                throw IllegalStateException("Account is hidden or does not exist")
+                throw IllegalStateException("Account with steamId $steamId is hidden or does not exist")
 
             else -> parseGames(response)
         }
