@@ -1,6 +1,7 @@
 package sidim.doma.service
 
 import sidim.doma.entity.User
+import sidim.doma.plugin.Localization
 import sidim.doma.repository.UserRepository
 
 class UserService(private val userRepository: UserRepository) {
@@ -16,7 +17,13 @@ class UserService(private val userRepository: UserRepository) {
         userRepository.findByActiveAndAppidAndBanned(true, appId, false)
 
     fun createUser(chatId: String, name: String?, steamId: String, locale: String): User? {
-        val user = User(chatId, name ?: "", steamId.toLong(), locale, true)
+        val user = User(
+            chatId,
+            name ?: Localization.getText("users.default_name", locale),
+            steamId.toLong(),
+            locale,
+            true
+        )
         return userRepository.create(user)
     }
 
