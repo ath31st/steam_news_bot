@@ -6,6 +6,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.datetime.Clock
 import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem
 import java.util.regex.Pattern
@@ -22,13 +23,11 @@ class SteamApiClient(
         private const val NEWS_PATH = "/ISteamNews/GetNewsForApp/v2/"
         private const val WISHLIST_PATH = "/IWishlistService/GetWishlist/v1/"
 
-        private const val FILTER_WINDOW_IN_SECONDS: Long = 180000L
+        private const val FILTER_WINDOW_IN_SECONDS: Long = 1800L
         private const val NEW_COUNT_LIMIT: Int = 3
-        private const val MAX_LENGTH_FOR_CONTENT: Int = 300
+        private const val MAX_LENGTH_FOR_CONTENT: Int = 2000
 
         private val STEAM_ID_PATTERN = Pattern.compile("765\\d{14}")
-        private val IMAGE_LINK_PATTERN =
-            Pattern.compile("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*")
 
         private val INVALID_RESPONSES = listOf(
             """{"response":{}}""",
@@ -121,19 +120,14 @@ class SteamApiClient(
                     newsNode.mapNotNull { node ->
                         val dateSeconds = node["date"].asLong()
                         if (isRecentNews(dateSeconds)) {
-                            objectMapper.convertValue<NewsItem>(node).apply {
-                                contents = removeImageLinks(contents)
-                            }
+                            objectMapper.convertValue<NewsItem>(node)
                         } else null
                     }
                 } else emptyList()
             }
 
     private fun isRecentNews(seconds: Long, limit: Long = FILTER_WINDOW_IN_SECONDS): Boolean {
-        val currentTimeSeconds = System.currentTimeMillis() / 1000
+        val currentTimeSeconds = Clock.System.now().epochSeconds
         return seconds >= (currentTimeSeconds - limit)
     }
-
-    private fun removeImageLinks(text: String): String =
-        IMAGE_LINK_PATTERN.matcher(text).replaceAll("")
 }
