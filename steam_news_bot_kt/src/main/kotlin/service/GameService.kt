@@ -10,7 +10,7 @@ class GameService(private val gameRepository: GameRepository) {
 
     fun getOrCreateGame(appid: String, games: List<Game>): Game {
         return findGameByAppId(appid) ?: createGame(
-            Game(appid, games.first { it.appid == appid }.name)
+            Game(appid, games.firstOrNull()?.name)
         )
     }
 
