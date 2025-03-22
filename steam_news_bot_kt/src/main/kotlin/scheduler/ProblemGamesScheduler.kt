@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.io.IOException
 import org.koin.core.context.GlobalContext
 import org.slf4j.LoggerFactory
+import sidim.doma.config.SchedulerConfig.DELAY_BETWEEN_ATTEMPTS
 import sidim.doma.config.SchedulerConfig.PROBLEM_GAMES_ATTEMPTS
 import sidim.doma.config.SchedulerConfig.PROBLEM_GAMES_DELAY
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
@@ -18,12 +19,13 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.minutes
 
 fun Application.configureProblemGamesScheduler() = launch {
-    val steamApiClient = GlobalContext.get().get<SteamApiClient>()
     val logger = LoggerFactory.getLogger("ProblemGamesScheduler")
+
+    val steamApiClient = GlobalContext.get().get<SteamApiClient>()
     val newsItems = GlobalContext.get().get<CopyOnWriteArrayList<NewsItem>>()
     val problemGames = GlobalContext.get().get<CopyOnWriteArraySet<Game>>()
-    val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
+    val semaphore = Semaphore(SEMAPHORE_LIMIT)
     val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     schedulerScope.launch {
@@ -67,13 +69,14 @@ fun Application.configureProblemGamesScheduler() = launch {
                                             )
                                             problemGames.remove(game)
                                         }
-                                        delay(1.minutes)
+                                        delay(DELAY_BETWEEN_ATTEMPTS.minutes)
                                     }
                                 }
                             }
                         }
                     }
                 }
+                logger.info("Remaining problem games after processing: {}", problemGames.size)
             }
 
             delay(PROBLEM_GAMES_DELAY.minutes)
