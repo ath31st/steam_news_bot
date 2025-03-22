@@ -9,7 +9,7 @@ data class NewsItem @JsonCreator constructor(
     @JsonProperty("title") val title: String,
     @JsonProperty("url") val url: String,
     @JsonProperty("author") val author: String,
-    @JsonProperty("contents") var contents: String,
+    @JsonProperty("contents") val contents: String,
     @JsonProperty("is_external_url") val isExternalUrl: Boolean,
     @JsonProperty("feedlabel") val feedLabel: String,
     @JsonProperty("feedname") val feedName: String,
