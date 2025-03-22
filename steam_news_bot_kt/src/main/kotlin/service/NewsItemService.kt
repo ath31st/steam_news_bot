@@ -41,6 +41,7 @@ class NewsItemService {
         result = result.replace(Regex("<img\\s+[^>]*>"), "")
             .replace(Regex("\\[img].*?\\[/img]"), "")
             .replace(Regex("\\{STEAM_CLAN_IMAGE}/\\d+/[a-f0-9]+\\.(png|jpg|gif)"), "")
+            .replace(Regex("https://i\\.imgur\\.com/\\S+"), "")
 
         result = result.replace(Regex("<br\\s*/?>"), "\n")
             .replace(Regex("</?p>"), "\n")
