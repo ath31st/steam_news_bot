@@ -7,7 +7,11 @@ object Localization {
     private const val RESOURCE_BUNDLE_BASE_NAME = "messages"
 
     private fun getMessage(key: String, locale: String, vararg args: Any): String {
-        val effectiveLocale = if (locale == "ru") "ru" else DEFAULT_LOCALE
+        val effectiveLocale = when (locale.lowercase()) {
+            "ru" -> "ru"
+            "de" -> "de"
+            else -> DEFAULT_LOCALE
+        }
         val localeObj = Locale.forLanguageTag(effectiveLocale)
         return try {
             val bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE_NAME, localeObj)
