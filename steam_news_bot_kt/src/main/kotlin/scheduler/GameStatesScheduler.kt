@@ -1,6 +1,7 @@
 package sidim.doma.scheduler
 
 import io.ktor.server.application.*
+import korlibs.time.minutes
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -12,7 +13,6 @@ import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.config.SchedulerConfig.GAME_STATES_DELAY
 import sidim.doma.config.SchedulerConfig.GAME_STATES_START_DELAY
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
-import sidim.doma.entity.Game
 import sidim.doma.entity.User
 import sidim.doma.service.GameService
 import sidim.doma.service.SteamApiClient
@@ -20,7 +20,6 @@ import sidim.doma.service.UserGameStateService
 import sidim.doma.service.UserService
 import java.time.Instant
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 fun Application.configureGameStatesScheduler() = launch {
     val steamApiClient = GlobalContext.get().get<SteamApiClient>()
@@ -96,25 +95,16 @@ suspend fun updateUserGameStates(
 
     logger.info("Current states for user ${user.steamId}: Owned: ${currentOwned.size}, Wishlist: ${currentWishlist.size}")
 
-    fun updateState(
-        appid: String,
-        isOwned: Boolean,
-        isWished: Boolean,
-        sourceGames: List<Game>
-    ) {
-        val game = gameService.getOrCreateGame(appid, sourceGames)
-        userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
-            isWished = isWished,
-            isOwned = isOwned,
-            gameId = game.appid,
-            userId = user.chatId
-        )
-    }
-
     coroutineScope {
         (wishlistAppIds.intersect(currentOwned)).forEach { appid ->
             launch {
-                updateState(appid, isOwned = true, isWished = false, ownedGames)
+                val game = gameService.getOrCreateGame(appid, ownedGames)
+                userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
+                    gameId = game.appid,
+                    userId = user.chatId,
+                    isWished = false,
+                    isOwned = true,
+                )
             }
         }
 
@@ -134,14 +124,31 @@ suspend fun updateUserGameStates(
 
         (wishlistAppIds - currentWishlist - ownedAppIds).forEach { appid ->
             launch {
-                updateState(appid, isOwned = false, isWished = true, wishlistGames)
+                if (userGameStateService.checkExistsByUserIdAndGameId(user.chatId, appid)) {
+                    val game = gameService.getOrCreateGame(appid, ownedGames)
+                    userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
+                        gameId = game.appid,
+                        userId = user.chatId,
+                        isWished = true,
+                        isOwned = false,
+                    )
+                } else {
+                    val game = gameService.getOrCreateGame(appid, ownedGames)
+                    userGameStateService.createGameState(
+                        userId = user.chatId,
+                        gameId = game.appid,
+                        isWished = true,
+                        isOwned = false,
+                        isBanned = false
+                    )
+                }
                 logger.info("Added game to wishlist $appid for user ${user.chatId}")
             }
         }
 
         (currentWishlist - wishlistAppIds - ownedAppIds).forEach { appid ->
             launch {
-                if (gameService.findGameByAppId(appid) != null) {
+                if (userGameStateService.checkExistsByUserIdAndGameId(user.chatId, appid)) {
                     userGameStateService.deleteUgsByGameIdAndUserId(appid, user.chatId)
                     logger.info("Removed game from wishlist $appid for user ${user.chatId}")
                 }

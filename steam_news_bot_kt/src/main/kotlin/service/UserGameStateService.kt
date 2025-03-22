@@ -63,6 +63,9 @@ class UserGameStateService(private val userGameStateRepository: UserGameStateRep
             userId
         )
 
+    fun checkExistsByUserIdAndGameId(userId: String, gameId: String): Boolean =
+        userGameStateRepository.existsByUserIdAndGameId(userId, gameId)
+
     fun checkIsBannedByGameIdAndUserId(gameId: String, userId: String): Boolean =
         userGameStateRepository.findByUserIdAndGameId(userId, gameId)?.isBanned ?: false
 
