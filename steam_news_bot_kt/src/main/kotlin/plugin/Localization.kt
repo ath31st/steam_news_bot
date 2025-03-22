@@ -10,6 +10,8 @@ object Localization {
         val effectiveLocale = when (locale.lowercase()) {
             "ru" -> "ru"
             "de" -> "de"
+            "fr" -> "fr"
+            "uk" -> "uk"
             else -> DEFAULT_LOCALE
         }
         val localeObj = Locale.forLanguageTag(effectiveLocale)
