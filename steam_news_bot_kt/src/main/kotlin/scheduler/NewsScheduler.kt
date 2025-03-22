@@ -37,7 +37,7 @@ fun Application.configureNewsScheduler() = launch {
     val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     schedulerScope.launch {
-        delay(NEWS_START_DELAY.seconds)
+        delay(NEWS_START_DELAY.minutes)
 
         while (isActive) {
             var startCycle = Instant.now()

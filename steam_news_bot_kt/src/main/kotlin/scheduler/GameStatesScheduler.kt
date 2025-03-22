@@ -55,8 +55,7 @@ fun Application.configureGameStatesScheduler() = launch {
                                 } catch (e: IOException) {
                                     logger.error("Failed to update game states for user ${user.chatId}: ${e.message}")
                                 } catch (e: IllegalStateException) {
-                                    userService.updateActiveByChatId(false, user.chatId)
-                                    logger.info("User ${user.chatId} is no longer active")
+                                    logger.info("Caught IllegalStateException for user ${user.chatId} with message: ${e.message}")
                                 }
                             }
                         }
