@@ -1,13 +1,18 @@
 package sidim.doma.plugin
 
-import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
+import org.slf4j.LoggerFactory
 
-fun Application.configureDatabases() {
-    val database = Database.connect(
-        url = "jdbc:sqlite:./snb.db",
-        user = "root",
-        driver = "org.sqlite.JDBC",
-        password = "",
-    )
+fun configureDatabases() {
+    val logger = LoggerFactory.getLogger("Database")
+
+    try {
+        Database.connect(
+            url = "jdbc:sqlite:./steamidusers.db",
+            driver = "org.sqlite.JDBC",
+        )
+        logger.info("Database connected successfully")
+    } catch (e: Exception) {
+        logger.error("Failed to connect to database: ${e.message}", e)
+    }
 }
