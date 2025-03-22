@@ -19,7 +19,13 @@ class MessageService(
         replyMarkup: InlineKeyboardMarkup? = null
     ) {
         try {
-            bot.sendTextMessage(chatId, text, parseMode = HTMLParseMode, replyMarkup = replyMarkup)
+            bot.sendTextMessage(
+                chatId,
+                text,
+                parseMode = HTMLParseMode,
+                replyMarkup = replyMarkup,
+                disableNotification = true
+            )
         } catch (e: Exception) {
             if (e.message?.contains("403") == true) {
                 userService.updateActiveByChatId(false, chatId.toString())
