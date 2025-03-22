@@ -8,4 +8,5 @@ object SchedulerConfig {
     const val NEWS_ITEMS_DELAY = 30
     const val GAME_STATES_DELAY = 24
     const val GAME_STATES_START_DELAY = 5
+    const val NEWS_START_DELAY = 30
 }
