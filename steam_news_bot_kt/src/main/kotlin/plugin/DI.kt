@@ -20,9 +20,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 fun Application.configureDependencyInjection() {
-    val botToken = environment.config.propertyOrNull("telegram.bot_token")?.getString()
-        ?: System.getenv("TELEGRAM_BOT_TOKEN")
+    val botToken = System.getenv("TELEGRAM_BOT_TOKEN")
         ?: throw IllegalStateException("Telegram bot token not provided in config or environment")
+
+    val steamWebApiKey = System.getenv("STEAM_WEB_API_KEY")
+        ?: throw IllegalStateException("Steam web api key not provided in environment variables")
 
     install(Koin) {
         slf4jLogger()
@@ -42,8 +44,7 @@ fun Application.configureDependencyInjection() {
             }
             single {
                 SteamApiClient(
-                    apiKey = System.getenv("STEAM_WEB_API_KEY")
-                        ?: throw IllegalStateException("STEAM_WEB_API_KEY not provided in environment"),
+                    apiKey = steamWebApiKey,
                     client = get(),
                     objectMapper = get()
                 )
