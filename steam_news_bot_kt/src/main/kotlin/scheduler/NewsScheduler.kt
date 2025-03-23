@@ -20,7 +20,6 @@ import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 fun Application.configureNewsScheduler() = launch {
     val gameService = GlobalContext.get().get<GameService>()

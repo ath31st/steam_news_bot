@@ -49,19 +49,7 @@ fun Application.configureProblemGamesScheduler() = launch {
                                         newsItems.addAll(news)
                                         success = true
                                         problemGames.remove(game)
-                                        logger.info(
-                                            "Successfully processed game {} after {} attempts",
-                                            game.appid,
-                                            attempts
-                                        )
                                     } catch (e: IOException) {
-                                        logger.warn(
-                                            "Retry {}/{} failed for game {}: {}",
-                                            attempts,
-                                            maxAttempts,
-                                            game.appid,
-                                            e.message
-                                        )
                                         if (attempts == maxAttempts) {
                                             logger.error(
                                                 "All retries failed for game {}",
@@ -77,6 +65,12 @@ fun Application.configureProblemGamesScheduler() = launch {
                     }
                 }
                 logger.info("Remaining problem games after processing: {}", problemGames.size)
+                if (newsItems.isNotEmpty()) logger.info(
+                    "Found {} after processing problem games",
+                    newsItems.size
+                )
+
+                problemGames.clear()
             }
 
             delay(PROBLEM_GAMES_DELAY.minutes)
