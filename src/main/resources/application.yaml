@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - sidim.doma.ApplicationKt.module
+  deployment:
+    port: 7070
