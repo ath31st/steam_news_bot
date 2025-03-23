@@ -4,6 +4,7 @@ val koinVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 val tgbotapiVersion: String by project
+val quartzVersion: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
@@ -44,6 +45,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("dev.inmo:tgbotapi-jvm:$tgbotapiVersion")
+    implementation("org.quartz-scheduler:quartz:$quartzVersion")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
