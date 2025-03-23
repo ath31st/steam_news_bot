@@ -1,157 +1,37 @@
 package sidim.doma.scheduler
 
 import io.ktor.server.application.*
-import korlibs.time.minutes
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
-import kotlinx.io.IOException
-import org.koin.core.context.GlobalContext
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
-import sidim.doma.config.SchedulerConfig.GAME_STATES_DELAY
-import sidim.doma.config.SchedulerConfig.GAME_STATES_START_DELAY
-import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
-import sidim.doma.entity.User
-import sidim.doma.service.GameService
-import sidim.doma.service.SteamApiClient
-import sidim.doma.service.UserGameStateService
-import sidim.doma.service.UserService
+import org.quartz.JobBuilder
+import org.quartz.SimpleScheduleBuilder
+import org.quartz.TriggerBuilder
+import org.quartz.impl.StdSchedulerFactory
+import sidim.doma.config.SchedulerConfig.GAME_STATES_JOB_DELAY
+import sidim.doma.config.SchedulerConfig.GAME_STATES_START_JOB_DELAY
+import sidim.doma.scheduler.job.GameStatesJob
 import java.time.Instant
-import kotlin.time.Duration.Companion.hours
+import java.util.*
 
-fun Application.configureGameStatesScheduler() = launch {
-    val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-    val userService = GlobalContext.get().get<UserService>()
-    val gameService = GlobalContext.get().get<GameService>()
-    val userGameStateService = GlobalContext.get().get<UserGameStateService>()
+fun Application.configureGameStatesScheduler() {
+    val scheduler = StdSchedulerFactory().scheduler
 
-    val logger = LoggerFactory.getLogger("GameStatesScheduler")
-    val semaphore = Semaphore(SEMAPHORE_LIMIT)
-    val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val job = JobBuilder.newJob(GameStatesJob::class.java)
+        .withIdentity("gameStatesJob", "gameStatesGroup")
+        .build()
 
-    schedulerScope.launch {
-        delay(GAME_STATES_START_DELAY.minutes)
+    val trigger = TriggerBuilder.newTrigger()
+        .withIdentity("gameStatesTrigger", "gameStatesGroup")
+        .startAt(Date.from(Instant.now().plusSeconds(GAME_STATES_START_JOB_DELAY)))
+        .withSchedule(
+            SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInHours(GAME_STATES_JOB_DELAY)
+                .repeatForever()
+        )
+        .build()
 
-        while (isActive) {
-            val startUpdate = Instant.now()
-            logger.info("Starting game states update for all active users")
+    scheduler.scheduleJob(job, trigger)
+    scheduler.start()
 
-            val activeUsers = userService.getAllActiveUsers()
-            coroutineScope {
-                activeUsers.chunked(CHUNK_SIZE).forEach { userChunk ->
-                    launch {
-                        semaphore.withPermit {
-                            userChunk.forEach { user ->
-                                try {
-                                    updateUserGameStates(
-                                        user,
-                                        steamApiClient,
-                                        gameService,
-                                        userGameStateService,
-                                        logger
-                                    )
-                                } catch (e: IOException) {
-                                    logger.error("Failed to update game states for user ${user.chatId}: ${e.message}")
-                                } catch (e: IllegalStateException) {
-                                    logger.info("Caught IllegalStateException for user ${user.chatId} with message: ${e.message}")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            logger.info(
-                "Game states all active users updated in {} seconds",
-                java.time.Duration.between(startUpdate, Instant.now()).seconds
-            )
-            delay(GAME_STATES_DELAY.hours)
-        }
-    }
-}
-
-suspend fun updateUserGameStates(
-    user: User,
-    steamApiClient: SteamApiClient,
-    gameService: GameService,
-    userGameStateService: UserGameStateService,
-    logger: Logger
-) {
-    val steamId = user.steamId.toString()
-    val ownedGames = steamApiClient.getOwnedGames(steamId)
-    val wishlistGames = steamApiClient.getWishlistGames(steamId)
-
-    logger.info("Updating game states for user ${user.chatId} (${user.steamId})")
-    logger.info("Fresh steam data for id ${user.steamId}: Owned: ${ownedGames.size}, Wishlist: ${wishlistGames.size}")
-
-    val ownedAppIds = ownedGames.associateBy { it.appid }.keys
-    val wishlistAppIds = wishlistGames.associateBy { it.appid }.keys
-    val currentStates = userGameStateService.getUgsByUserId(user.chatId)
-    val currentOwned = currentStates.filter { it.isOwned }.map { it.gameId }.toSet()
-    val currentWishlist = currentStates.filter { it.isWished }.map { it.gameId }.toSet()
-
-    logger.info("Current states for user ${user.steamId}: Owned: ${currentOwned.size}, Wishlist: ${currentWishlist.size}")
-
-    coroutineScope {
-        (wishlistAppIds.intersect(currentOwned)).forEach { appid ->
-            launch {
-                val game = gameService.getOrCreateGame(appid, ownedGames)
-                userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
-                    gameId = game.appid,
-                    userId = user.chatId,
-                    isWished = false,
-                    isOwned = true,
-                )
-            }
-        }
-
-        (ownedAppIds - currentOwned).forEach { appid ->
-            launch {
-                val game = gameService.getOrCreateGame(appid, ownedGames)
-                userGameStateService.createGameState(
-                    userId = user.chatId,
-                    gameId = game.appid,
-                    isWished = false,
-                    isOwned = true,
-                    isBanned = false
-                )
-                logger.info("Added game ${game.appid} to user ${user.chatId}")
-            }
-        }
-
-        (wishlistAppIds - currentWishlist - ownedAppIds).forEach { appid ->
-            launch {
-                if (userGameStateService.checkExistsByUserIdAndGameId(user.chatId, appid)) {
-                    val game = gameService.getOrCreateGame(appid, ownedGames)
-                    userGameStateService.updateIsWishedAndIsOwnedByGameIdAndUserId(
-                        gameId = game.appid,
-                        userId = user.chatId,
-                        isWished = true,
-                        isOwned = false,
-                    )
-                } else {
-                    val game = gameService.getOrCreateGame(appid, ownedGames)
-                    userGameStateService.createGameState(
-                        userId = user.chatId,
-                        gameId = game.appid,
-                        isWished = true,
-                        isOwned = false,
-                        isBanned = false
-                    )
-                }
-                logger.info("Added game to wishlist $appid for user ${user.chatId}")
-            }
-        }
-
-        (currentWishlist - wishlistAppIds - ownedAppIds).forEach { appid ->
-            launch {
-                if (userGameStateService.checkExistsByUserIdAndGameId(user.chatId, appid)) {
-                    userGameStateService.deleteUgsByGameIdAndUserId(appid, user.chatId)
-                    logger.info("Removed game from wishlist $appid for user ${user.chatId}")
-                }
-            }
-        }
+    monitor.subscribe(ApplicationStopping) {
+        scheduler.shutdown(true)
     }
 }

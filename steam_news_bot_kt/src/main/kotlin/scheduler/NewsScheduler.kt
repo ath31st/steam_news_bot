@@ -1,99 +1,54 @@
 package sidim.doma.scheduler
 
-import dev.inmo.tgbotapi.types.ChatId
-import dev.inmo.tgbotapi.types.RawChatId
 import io.ktor.server.application.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
-import kotlinx.io.IOException
-import org.koin.core.context.GlobalContext
-import org.slf4j.LoggerFactory
-import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
-import sidim.doma.config.SchedulerConfig.NEWS_ITEMS_DELAY
-import sidim.doma.config.SchedulerConfig.NEWS_START_DELAY
-import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
-import sidim.doma.entity.Game
-import sidim.doma.entity.NewsItem
-import sidim.doma.service.*
-import java.time.Instant
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.CopyOnWriteArraySet
-import kotlin.time.Duration.Companion.minutes
+import org.quartz.JobBuilder
+import org.quartz.SimpleScheduleBuilder
+import org.quartz.TriggerBuilder
+import org.quartz.impl.StdSchedulerFactory
+import org.quartz.listeners.JobChainingJobListener
+import sidim.doma.config.SchedulerConfig.NEWS_FETCHER_JOB_INTERVAL
+import sidim.doma.config.SchedulerConfig.NEWS_FETCHER_START_JOB_DELAY
+import sidim.doma.scheduler.job.NewsFetcherJob
+import sidim.doma.scheduler.job.NewsSenderJob
+import sidim.doma.scheduler.job.ProblemGamesJob
+import java.util.*
 
-fun Application.configureNewsScheduler() = launch {
-    val gameService = GlobalContext.get().get<GameService>()
-    val messageService = GlobalContext.get().get<MessageService>()
-    val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-    val userService = GlobalContext.get().get<UserService>()
-    val newsItemService = GlobalContext.get().get<NewsItemService>()
+fun Application.configureNewsScheduler() {
+    val scheduler = StdSchedulerFactory().scheduler
 
-    val logger = LoggerFactory.getLogger("NewsScheduler")
-    val newsItems = CopyOnWriteArrayList<NewsItem>()
-    val problemGames = GlobalContext.get().get<CopyOnWriteArraySet<Game>>()
-    val semaphore = Semaphore(SEMAPHORE_LIMIT)
+    val fetcherJob = JobBuilder.newJob(NewsFetcherJob::class.java)
+        .withIdentity("newsFetcherJob", "newsGroup")
+        .build()
 
-    val schedulerScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val fetcherTrigger = TriggerBuilder.newTrigger()
+        .withIdentity("newsFetcherTrigger", "newsGroup")
+        .startAt(Date.from(java.time.Instant.now().plusSeconds(NEWS_FETCHER_START_JOB_DELAY)))
+        .withSchedule(
+            SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInMinutes(NEWS_FETCHER_JOB_INTERVAL)
+                .repeatForever()
+        )
+        .build()
 
-    schedulerScope.launch {
-        delay(NEWS_START_DELAY.minutes)
+    val problemGamesJob = JobBuilder.newJob(ProblemGamesJob::class.java)
+        .withIdentity("problemGamesJob", "newsGroup")
+        .build()
 
-        while (isActive) {
-            var startCycle = Instant.now()
-            logger.info("Starting news cycle at {}", startCycle)
+    val senderJob = JobBuilder.newJob(NewsSenderJob::class.java)
+        .withIdentity("newsSenderJob", "newsGroup")
+        .build()
 
-            val games = gameService.getAllGamesByActiveUsersAndNotBanned()
+    val chainingListener = JobChainingJobListener("newsChain")
+    chainingListener.addJobChainLink(fetcherJob.key, problemGamesJob.key)
+    chainingListener.addJobChainLink(problemGamesJob.key, senderJob.key)
 
-            coroutineScope {
-                games.chunked(CHUNK_SIZE).forEach { chunk ->
-                    launch {
-                        semaphore.withPermit {
-                            chunk.forEach { game ->
-                                try {
-                                    val news = steamApiClient.getRecentNewsByOwnedGames(game.appid)
-                                    newsItems.addAll(news)
-                                } catch (e: IOException) {
-                                    problemGames.add(game)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    scheduler.listenerManager.addJobListener(chainingListener)
+    scheduler.scheduleJob(fetcherJob, fetcherTrigger)
+    scheduler.scheduleJob(problemGamesJob, setOf(), false)
+    scheduler.scheduleJob(senderJob, setOf(), false)
+    scheduler.start()
 
-            logger.info("Found {} news", newsItems.size)
-            logger.info(
-                "News cycle completed in {} seconds",
-                java.time.Duration.between(startCycle, Instant.now()).seconds
-            )
-            logger.info("Problem games: {}", problemGames.size)
-
-            startCycle = Instant.now()
-
-            coroutineScope {
-                newsItems.flatMap { news ->
-                    userService.getActiveUsersByAppId(news.appid).map { user -> news to user }
-                }.map { (news, user) ->
-                    launch {
-                        val chatId = ChatId(RawChatId(user.chatId.toLong()))
-                        val newsText = newsItemService.formatNewsForTelegram(news, user.locale)
-                        messageService.sendNewsMessage(
-                            chatId = chatId,
-                            text = newsText,
-                            appid = news.appid,
-                            locale = user.locale
-                        )
-                    }
-                }.joinAll()
-            }
-
-            logger.info(
-                "Message cycle completed in {} seconds",
-                java.time.Duration.between(startCycle, Instant.now()).seconds
-            )
-
-            newsItems.clear()
-            delay(NEWS_ITEMS_DELAY.minutes)
-        }
+    monitor.subscribe(ApplicationStopping) {
+        scheduler.shutdown(true)
     }
 }
