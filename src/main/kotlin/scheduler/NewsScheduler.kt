@@ -32,10 +32,12 @@ fun Application.configureNewsScheduler() {
 
     val problemGamesJob = JobBuilder.newJob(ProblemGamesJob::class.java)
         .withIdentity("problemGamesJob", "newsGroup")
+        .storeDurably()
         .build()
 
     val senderJob = JobBuilder.newJob(NewsSenderJob::class.java)
         .withIdentity("newsSenderJob", "newsGroup")
+        .storeDurably()
         .build()
 
     val chainingListener = JobChainingJobListener("newsChain")
@@ -44,8 +46,8 @@ fun Application.configureNewsScheduler() {
 
     scheduler.listenerManager.addJobListener(chainingListener)
     scheduler.scheduleJob(fetcherJob, fetcherTrigger)
-    scheduler.scheduleJob(problemGamesJob, setOf(), false)
-    scheduler.scheduleJob(senderJob, setOf(), false)
+    scheduler.addJob(problemGamesJob, false)
+    scheduler.addJob(senderJob, false)
     scheduler.start()
 
     monitor.subscribe(ApplicationStopping) {
