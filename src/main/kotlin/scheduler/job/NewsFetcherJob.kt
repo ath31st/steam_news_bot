@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.io.IOException
 import org.koin.core.context.GlobalContext
+import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -17,7 +18,6 @@ import sidim.doma.entity.NewsItem
 import sidim.doma.service.GameService
 import sidim.doma.service.SteamApiClient
 import java.time.Instant
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 class NewsFetcherJob : Job {
@@ -27,8 +27,10 @@ class NewsFetcherJob : Job {
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
 
             val logger = LoggerFactory.getLogger("NewsFetcherJob")
-            val newsItems = GlobalContext.get().get<CopyOnWriteArrayList<NewsItem>>()
-            val problemGames = GlobalContext.get().get<CopyOnWriteArraySet<Game>>()
+            val newsItems =
+                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
+            val problemGames =
+                GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startCycle = Instant.now()

@@ -6,16 +6,16 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.io.IOException
 import org.koin.core.context.GlobalContext
+import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
-import sidim.doma.config.SchedulerConfig.PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS
 import sidim.doma.config.SchedulerConfig.PROBLEM_GAMES_ATTEMPTS
+import sidim.doma.config.SchedulerConfig.PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem
 import sidim.doma.service.SteamApiClient
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.minutes
 
@@ -24,8 +24,10 @@ class ProblemGamesJob : Job {
         runBlocking {
             val logger = LoggerFactory.getLogger("ProblemGamesScheduler")
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-            val newsItems = GlobalContext.get().get<CopyOnWriteArrayList<NewsItem>>()
-            val problemGames = GlobalContext.get().get<CopyOnWriteArraySet<Game>>()
+            val newsItems =
+                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
+            val problemGames =
+                GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             if (problemGames.isNotEmpty()) {

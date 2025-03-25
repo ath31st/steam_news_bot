@@ -7,6 +7,7 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.context.GlobalContext
+import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -15,7 +16,7 @@ import sidim.doma.service.MessageService
 import sidim.doma.service.NewsItemService
 import sidim.doma.service.UserService
 import java.time.Instant
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 class NewsSenderJob : Job {
     override fun execute(context: JobExecutionContext) {
@@ -24,7 +25,8 @@ class NewsSenderJob : Job {
             val messageService = GlobalContext.get().get<MessageService>()
             val userService = GlobalContext.get().get<UserService>()
             val newsItemService = GlobalContext.get().get<NewsItemService>()
-            val newsItems = GlobalContext.get().get<CopyOnWriteArrayList<NewsItem>>()
+            val newsItems =
+                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
 
             if (newsItems.isEmpty()) {
                 return@runBlocking
@@ -38,6 +40,8 @@ class NewsSenderJob : Job {
                 newsItems.flatMap { news ->
                     userService.getActiveUsersByAppId(news.appid).map { user -> news to user }
                 }.map { (news, user) ->
+                    logger.info("Sending news ${news.appid} to user ${user.chatId} (${user.steamId})")
+
                     launch {
                         try {
                             val chatId = ChatId(RawChatId(user.chatId.toLong()))

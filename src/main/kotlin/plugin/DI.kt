@@ -7,6 +7,7 @@ import dev.inmo.tgbotapi.bot.ktor.telegramBot
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -16,7 +17,6 @@ import sidim.doma.repository.GameRepository
 import sidim.doma.repository.UserGameStateRepository
 import sidim.doma.repository.UserRepository
 import sidim.doma.service.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
 
 fun Application.configureDependencyInjection() {
@@ -49,8 +49,9 @@ fun Application.configureDependencyInjection() {
                     objectMapper = get()
                 )
             }
-            single { CopyOnWriteArrayList<NewsItem>() }
-            single { CopyOnWriteArraySet<Game>() }
+
+            single(named("newsItems")) { CopyOnWriteArraySet<NewsItem>() }
+            single(named("problemGames")) { CopyOnWriteArraySet<Game>() }
 
             single { telegramBot(botToken) }
             single { GameRepository() }
