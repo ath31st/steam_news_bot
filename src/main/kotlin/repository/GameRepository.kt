@@ -41,12 +41,9 @@ class GameRepository {
     fun findByActiveUsersAndNotBanned(): List<Game> {
         return transaction {
             (Games innerJoin UserGameStates innerJoin Users)
-                .selectAll()
-                .where {
-                    (Users.active eq true) and
-                            (UserGameStates.isBanned eq false)
-                }
-                .distinct()
+                .select(Games.columns)
+                .where { (Users.active eq true) and (UserGameStates.isBanned eq false) }
+                .groupBy(Games.appid)
                 .map { rowToGame(it) }
         }
     }
