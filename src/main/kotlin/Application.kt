@@ -3,7 +3,8 @@ package sidim.doma
 import io.ktor.server.application.*
 import sidim.doma.config.configureLogging
 import sidim.doma.plugin.*
-import sidim.doma.scheduler.*
+import sidim.doma.scheduler.configureGameStatesScheduler
+import sidim.doma.scheduler.configureNewsScheduler
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
