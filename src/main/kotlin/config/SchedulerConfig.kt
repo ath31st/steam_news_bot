@@ -10,7 +10,6 @@ object SchedulerConfig {
     const val NEWS_FETCHER_JOB_INTERVAL = 30 // minutes
     const val NEWS_FETCHER_START_JOB_DELAY = 120L // seconds
 
-
     const val GAME_STATES_JOB_DELAY = 24 // hours
     const val GAME_STATES_START_JOB_DELAY = 60L // seconds
 }

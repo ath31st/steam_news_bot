@@ -1,6 +1,7 @@
 package sidim.doma
 
 import io.ktor.server.application.*
+import sidim.doma.config.configureLogging
 import sidim.doma.plugin.*
 import sidim.doma.scheduler.*
 

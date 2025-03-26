@@ -1,4 +1,4 @@
-package sidim.doma.plugin
+package sidim.doma.config
 
 import dev.inmo.kslog.common.KSLog
 import dev.inmo.kslog.common.LogLevel
