@@ -10,7 +10,7 @@ data class User(
     val active: Boolean,
 )
 
-object Users : Table("Users") {
+object Users : Table("users") {
     val chatId = varchar("user_id", 255)
     val name = varchar("name", 255)
     val steamId = long("steam_id")

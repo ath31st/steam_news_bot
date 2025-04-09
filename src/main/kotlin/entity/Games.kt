@@ -9,7 +9,7 @@ data class Game @JsonCreator constructor(
     @JsonProperty("name") val name: String?
 )
 
-object Games : Table("Games") {
+object Games : Table("games") {
     val appid = varchar("game_id", 255)
     val name = varchar("name", 255).nullable()
 
