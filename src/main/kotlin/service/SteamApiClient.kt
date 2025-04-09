@@ -27,7 +27,7 @@ class SteamApiClient(
 
         private const val FILTER_WINDOW_IN_SECONDS: Long = 1800L
         private const val NEW_COUNT_LIMIT: Int = 3
-        private const val MAX_LENGTH_FOR_CONTENT: Int = 2000
+        private const val MAX_LENGTH_FOR_CONTENT: Int = 500
 
         private val STEAM_ID_PATTERN = Pattern.compile("765\\d{14}")
 
