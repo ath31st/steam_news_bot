@@ -41,8 +41,8 @@ class NewsItemService {
 
         result = result.replace(Regex("<img\\s+[^>]*>"), "")
             .replace(Regex("\\[img].*?\\[/img]"), "")
-            .replace(Regex("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*"), "")
-            .replace(Regex("\\{STEAM_CLAN_IMAGE}/\\d+/[a-f0-9]+\\.(png|jpg|gif)"), "")
+            .replace(Regex("\\{STEAM[^}]*\\.(jpg|png|gif)\\b"), "")
+            .replace(Regex("\\{STEAM_CLAN_IMAGE}/\\d+/[a-f0-9]+(?:\\.(png|jpg|gif))?"), "")
             .replace(Regex("https://i\\.imgur\\.com/\\S+"), "")
             .replace(Regex("https://i\\.ibb\\.co/\\S+"), "")
 
