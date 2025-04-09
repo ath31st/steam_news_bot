@@ -9,8 +9,6 @@ class UserService(private val userRepository: UserRepository) {
 
     fun getUserByChatId(chatId: Long): User? = userRepository.findByChatId(chatId.toString())
 
-    fun getAllUsers(): List<User> = userRepository.findAll()
-
     fun getAllActiveUsers(): List<User> = userRepository.findAllByActive(true)
 
     fun getActiveUsersByAppId(appId: String): List<User> =
@@ -35,7 +33,7 @@ class UserService(private val userRepository: UserRepository) {
         }
     }
 
-    fun updateActiveByChatId(isActive: Boolean, chatId: String) =
+    fun updateActiveByChatId(isActive: Boolean, chatId: String): Int =
         userRepository.updateActiveByChatId(isActive, chatId)
 
     fun existsByChatId(chatId: String) = userRepository.existsByChatId(chatId)

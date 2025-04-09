@@ -82,8 +82,8 @@ class UserRepository {
         return findByChatId(chatId)
     }
 
-    fun updateActiveByChatId(isActive: Boolean, chatId: String) {
-        transaction {
+    fun updateActiveByChatId(isActive: Boolean, chatId: String): Int {
+        return transaction {
             Users.update({ Users.chatId eq chatId }) {
                 it[active] = isActive
             }

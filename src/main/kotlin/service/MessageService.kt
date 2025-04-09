@@ -1,6 +1,7 @@
 package sidim.doma.service
 
 import dev.inmo.tgbotapi.bot.TelegramBot
+import dev.inmo.tgbotapi.bot.exceptions.CommonRequestException
 
 import dev.inmo.tgbotapi.extensions.api.send.sendTextMessage
 import dev.inmo.tgbotapi.types.ChatId
@@ -30,11 +31,18 @@ class MessageService(
                 replyMarkup = replyMarkup,
                 disableNotification = true
             )
-        } catch (e: Exception) {
-            if (e.message?.contains("403") == true) {
-                userService.updateActiveByChatId(false, chatId.toString())
-                logger.info("User $chatId deactivated")
+        } catch (e: CommonRequestException) {
+            if (e.response.errorCode == 403) {
+                val chatIdStr = chatId.chatId.toString()
+                userService.updateActiveByChatId(false, chatIdStr).let {
+                    when (it) {
+                        1 -> logger.info("User $chatIdStr deactivated")
+                        0 -> logger.info("Failed to deactivate user $chatIdStr")
+                    }
+                }
             }
+        } catch (e: Exception) {
+            logger.error("Unexpected error while sending message to $chatId: ${e.message}")
         }
     }
 
