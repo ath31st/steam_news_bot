@@ -7,7 +7,6 @@ import org.koin.core.context.GlobalContext
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
-import sidim.doma.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.config.SchedulerConfig.UPDATE_GAMES_JOB_LIMIT
 import sidim.doma.entity.Game
@@ -33,15 +32,13 @@ class UpdateGamesJob : Job {
 
             val gamesForUpdate = ConcurrentHashMap.newKeySet<Game?>()
 
-            gamesWithNullName.chunked(CHUNK_SIZE).forEach { chunk ->
-                chunk.forEach { game ->
-                    semaphore.withPermit {
-                        try {
-                            val gameDetails = steamApiClient.getAppDetails(game.appid)
-                            gamesForUpdate.add(gameDetails)
-                        } catch (e: Exception) {
-                            logger.error("Failed to get game details for ${game.appid}: ${e.message}")
-                        }
+            gamesWithNullName.forEach { game ->
+                semaphore.withPermit {
+                    try {
+                        val gameDetails = steamApiClient.getAppDetails(game.appid)
+                        gamesForUpdate.add(gameDetails)
+                    } catch (e: Exception) {
+                        logger.error("Failed to get game details for ${game.appid}: ${e.message}")
                     }
                 }
             }
