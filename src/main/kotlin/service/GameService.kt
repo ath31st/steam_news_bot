@@ -24,7 +24,7 @@ class GameService(private val gameRepository: GameRepository) {
 
     fun getGamesWithNullName(): List<Game> = gameRepository.findGamesWithNullName()
 
-    fun updateGames(games: List<Game>) = gameRepository.updateGames(games)
+    fun updateGames(games: List<Game>): Int = gameRepository.updateGames(games)
 
     private fun findGameByAppId(appId: String): Game? = gameRepository.findGameByAppId(appId)
 }

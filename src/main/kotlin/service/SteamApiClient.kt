@@ -19,9 +19,11 @@ class SteamApiClient(
     companion object {
         private const val USER_AGENT = "Mozilla/5.0"
         private const val BASE_API_URL = "http://api.steampowered.com"
+        private const val BASE_STORE_URL = "http://store.steampowered.com"
         private const val OWNED_GAMES_PATH = "/IPlayerService/GetOwnedGames/v1/"
         private const val NEWS_PATH = "/ISteamNews/GetNewsForApp/v2/"
         private const val WISHLIST_PATH = "/IWishlistService/GetWishlist/v1/"
+        private const val APP_DETAILS_PATH = "$BASE_STORE_URL/api/appdetails"
 
         private const val FILTER_WINDOW_IN_SECONDS: Long = 1800L
         private const val NEW_COUNT_LIMIT: Int = 3
@@ -33,6 +35,21 @@ class SteamApiClient(
             """{"response":{}}""",
             """{"success": 2}"""
         )
+    }
+
+    suspend fun getAppDetails(appId: String): Game? {
+        val response = fetch(APP_DETAILS_PATH) {
+            parameter("appids", appId)
+            parameter("filters", "basic")
+        }
+        return when {
+            response in INVALID_RESPONSES -> null
+            else -> try {
+                parseAppDetails(response)
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     suspend fun getOwnedGames(steamId: String): List<Game> {
@@ -103,6 +120,19 @@ class SteamApiClient(
         .let { gamesNode ->
             if (gamesNode.isArray) gamesNode.map { objectMapper.convertValue(it, Game::class.java) }
             else emptyList()
+        }
+
+    private fun parseAppDetails(json: String): Game = objectMapper.readTree(json)
+        .let { rootNode ->
+            val appEntry = rootNode.fields().next()
+            val dataNode = appEntry.value.path("data")
+
+            require(!dataNode.isEmpty && dataNode.path("success").asBoolean(true))
+
+            Game(
+                appid = appEntry.key,
+                name = dataNode.path("name").asText()
+            )
         }
 
     private fun parseWishlistGames(json: String): List<Game> = objectMapper.readTree(json)

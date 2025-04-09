@@ -34,12 +34,13 @@ class GameRepository {
         }
     }
 
-    fun updateGames(games: List<Game>) {
-        transaction {
-            Games.batchUpsert(games) { game ->
+    fun updateGames(games: List<Game>): Int {
+        return transaction {
+            val results = Games.batchUpsert(games) { game ->
                 this[Games.appid] = game.appid
                 this[Games.name] = game.name
             }
+            results.size
         }
     }
 
