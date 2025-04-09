@@ -5,6 +5,7 @@ import sidim.doma.config.configureLogging
 import sidim.doma.plugin.*
 import sidim.doma.scheduler.configureGameStatesScheduler
 import sidim.doma.scheduler.configureNewsScheduler
+import sidim.doma.scheduler.configureUpdateGamesScheduler
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -21,4 +22,5 @@ fun Application.module() {
 
     configureNewsScheduler()
     configureGameStatesScheduler()
+    configureUpdateGamesScheduler()
 }

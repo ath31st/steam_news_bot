@@ -12,4 +12,8 @@ object SchedulerConfig {
 
     const val GAME_STATES_JOB_DELAY = 24 // hours
     const val GAME_STATES_START_JOB_DELAY = 60L // seconds
+
+    const val UPDATE_GAMES_JOB_DELAY = 2 // hours
+    const val UPDATE_GAMES_START_JOB_DELAY = 240L // seconds
+    const val UPDATE_GAMES_JOB_LIMIT = 500 // games
 }
