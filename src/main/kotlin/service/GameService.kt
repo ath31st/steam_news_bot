@@ -22,14 +22,9 @@ class GameService(private val gameRepository: GameRepository) {
     fun getAllGamesByActiveUsersAndNotBanned(): List<Game> =
         gameRepository.findByActiveUsersAndNotBanned()
 
-    fun findGameByAppId(appId: String): Game? = gameRepository.findGameByAppId(appId)
+    fun getGamesWithNullName(): List<Game> = gameRepository.findGamesWithNullName()
 
-    fun existsByAppId(appId: String): Boolean = gameRepository.existsByAppId(appId)
+    fun updateGames(games: List<Game>) = gameRepository.updateGames(games)
 
-    fun getTopGames(limit: Long): List<Game> = gameRepository.findTopGames(limit)
-
-    fun countAllGames(): Long = gameRepository.countAllGames()
-
-    fun countGamesByUsersIsActive(isActive: Boolean): Long =
-        gameRepository.countGamesByUsersIsActive(isActive)
+    private fun findGameByAppId(appId: String): Game? = gameRepository.findGameByAppId(appId)
 }
