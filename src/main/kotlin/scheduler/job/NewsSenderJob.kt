@@ -12,6 +12,7 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import sidim.doma.entity.NewsItem
+import sidim.doma.service.GameService
 import sidim.doma.service.MessageService
 import sidim.doma.service.NewsItemService
 import sidim.doma.service.UserService
@@ -24,6 +25,7 @@ class NewsSenderJob : Job {
             val logger = LoggerFactory.getLogger("NewsSenderJob")
             val messageService = GlobalContext.get().get<MessageService>()
             val userService = GlobalContext.get().get<UserService>()
+            val gameService = GlobalContext.get().get<GameService>()
             val newsItemService = GlobalContext.get().get<NewsItemService>()
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
@@ -36,6 +38,9 @@ class NewsSenderJob : Job {
             logger.info("Starting news sender job at {}", startCycle)
             logger.info("Found {} news items for sending", newsItems.size)
 
+            val appIds = newsItems.map { it.appid }.toSet()
+            val gamesMap = gameService.getGamesByAppIds(appIds).associateBy { it.appid }
+
             coroutineScope {
                 newsItems.flatMap { news ->
                     userService.getActiveUsersByAppId(news.appid).map { user -> news to user }
@@ -45,7 +50,9 @@ class NewsSenderJob : Job {
                     launch {
                         try {
                             val chatId = ChatId(RawChatId(user.chatId.toLong()))
-                            val newsText = newsItemService.formatNewsForTelegram(news, user.locale)
+                            val gameName = gamesMap[news.appid]?.name
+                            val newsText =
+                                newsItemService.formatNewsForTelegram(news, gameName, user.locale)
                             messageService.sendNewsMessage(
                                 chatId = chatId,
                                 text = newsText,

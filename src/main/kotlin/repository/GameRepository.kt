@@ -75,6 +75,14 @@ class GameRepository {
         }
     }
 
+    fun findGameByAppIds(appIds: Set<String>): List<Game> {
+        return transaction {
+            Games.selectAll()
+                .where { Games.appid inList appIds }
+                .map { rowToGame(it) }
+        }
+    }
+
     private fun rowToGame(it: ResultRow) = Game(
         appid = it[Games.appid],
         name = it[Games.name]

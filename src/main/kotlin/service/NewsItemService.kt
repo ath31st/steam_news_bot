@@ -10,8 +10,9 @@ class NewsItemService {
         const val MAX_MESSAGE_LENGTH = 4000
     }
 
-    fun formatNewsForTelegram(newsItem: NewsItem, locale: String): String {
-        val title = "<b>${newsItem.title}</b>\n\n"
+    fun formatNewsForTelegram(newsItem: NewsItem, gameName: String?, locale: String): String {
+        val name = if (gameName != null) "<b><u>$gameName</u></b>\n" else ""
+        val newsTitle = "<b>${newsItem.title}</b>\n\n"
         val url =
             "\n<a href=\"${newsItem.url}\">${Localization.getText("news.read_more", locale)}</a>"
         val date = "\n<i>${
@@ -21,7 +22,7 @@ class NewsItemService {
             )
         }: ${convertUnixToDate(newsItem.date.toLong(), locale)}</i>"
 
-        val fixedLength = title.length + date.length + url.length + 2
+        val fixedLength = name.length + newsTitle.length + date.length + url.length + 2
         val maxContentLength = MAX_MESSAGE_LENGTH - fixedLength
 
         val formattedContent = formatContent(newsItem.contents)
@@ -32,7 +33,7 @@ class NewsItemService {
             "$truncated...\n<i>${Localization.getText("news.truncated", locale)}</i>"
         }
 
-        return title + truncatedContent + date + url
+        return name + newsTitle + truncatedContent + date + url
     }
 
     private fun formatContent(content: String): String {
@@ -43,6 +44,7 @@ class NewsItemService {
             .replace(Regex("\\{STEAM.*((.jpg)|(.png)|(.gif))\\b|\\{STEAM.*"), "")
             .replace(Regex("\\{STEAM_CLAN_IMAGE}/\\d+/[a-f0-9]+\\.(png|jpg|gif)"), "")
             .replace(Regex("https://i\\.imgur\\.com/\\S+"), "")
+            .replace(Regex("https://i\\.ibb\\.co/\\S+"), "")
 
         result = result.replace(Regex("<br\\s*/?>"), "\n")
             .replace(Regex("</?p>"), "\n")

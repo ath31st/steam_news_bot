@@ -26,5 +26,7 @@ class GameService(private val gameRepository: GameRepository) {
 
     fun updateGames(games: List<Game>): Int = gameRepository.updateGames(games)
 
+    fun getGamesByAppIds(appIds: Set<String>): List<Game> = gameRepository.findGameByAppIds(appIds)
+
     private fun findGameByAppId(appId: String): Game? = gameRepository.findGameByAppId(appId)
 }
