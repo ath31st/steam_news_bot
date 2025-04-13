@@ -12,6 +12,7 @@ import sidim.doma.config.SchedulerConfig.UPDATE_GAMES_JOB_LIMIT
 import sidim.doma.entity.Game
 import sidim.doma.service.GameService
 import sidim.doma.service.SteamApiClient
+import sidim.doma.util.formatted
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -25,7 +26,7 @@ class UpdateGamesJob : Job {
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startUpdate = Instant.now()
-            logger.info("Starting update games job at {}", startUpdate)
+            logger.info("Starting update games job at {}", startUpdate.formatted())
 
             val gamesWithNullName = gameService.getGamesWithNullName().take(UPDATE_GAMES_JOB_LIMIT)
             logger.info("Found {} games with null name", gamesWithNullName.size)
@@ -49,7 +50,7 @@ class UpdateGamesJob : Job {
             logger.info(
                 "Finished update games job with {} updated games at {}",
                 updatedGamesSize,
-                endUpdate
+                endUpdate.formatted()
             )
         }
     }

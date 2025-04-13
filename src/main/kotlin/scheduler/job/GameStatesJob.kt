@@ -18,6 +18,7 @@ import sidim.doma.service.GameService
 import sidim.doma.service.SteamApiClient
 import sidim.doma.service.UserGameStateService
 import sidim.doma.service.UserService
+import sidim.doma.util.formatted
 import java.time.Instant
 
 class GameStatesJob : Job {
@@ -32,7 +33,10 @@ class GameStatesJob : Job {
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startUpdate = Instant.now()
-            logger.info("Starting game states update for all active users at {}", startUpdate)
+            logger.info(
+                "Starting game states update for all active users at {}",
+                startUpdate.formatted()
+            )
 
             val activeUsers = userService.getAllActiveUsers()
             logger.info("Found {} active users to update game states", activeUsers.size)

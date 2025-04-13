@@ -17,6 +17,7 @@ import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem
 import sidim.doma.service.GameService
 import sidim.doma.service.SteamApiClient
+import sidim.doma.util.formatted
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -34,7 +35,7 @@ class NewsFetcherJob : Job {
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startCycle = Instant.now()
-            logger.info("Starting news fetcher job at {}", startCycle)
+            logger.info("Starting news fetcher job at {}", startCycle.formatted())
 
             val games = gameService.getAllGamesByActiveUsersAndNotBanned()
             logger.info("Found {} games to check for news", games.size)

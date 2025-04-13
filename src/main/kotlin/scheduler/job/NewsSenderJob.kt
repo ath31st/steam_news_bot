@@ -16,6 +16,7 @@ import sidim.doma.service.GameService
 import sidim.doma.service.MessageService
 import sidim.doma.service.NewsItemService
 import sidim.doma.service.UserService
+import sidim.doma.util.formatted
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -35,7 +36,7 @@ class NewsSenderJob : Job {
             }
 
             val startCycle = Instant.now()
-            logger.info("Starting news sender job at {}", startCycle)
+            logger.info("Starting news sender job at {}", startCycle.formatted())
             logger.info("Found {} news items for sending", newsItems.size)
 
             val appIds = newsItems.map { it.appid }.toSet()
