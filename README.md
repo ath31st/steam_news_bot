@@ -20,7 +20,7 @@
 
 ## Program version
 
-2.3.0
+2.3.1
 
 ## Introduction
 
@@ -78,11 +78,14 @@ node.js).<br/>
    for the bot to get access to the desired list, the privacy settings in steam should look like
    this: (updated 21.08.2023)<br/>
    ![image info](images/image06.jpg)![image info](images/image07.jpg)
+9. Added statistics for the bot (updated 13.04.2025).<br/>
+   ![image info](images/image08.jpg)
 
 ## List of supported commands:
 
     /start
     /settings
+    /stats
     /help
 
 ## List of used libraries:
