@@ -14,7 +14,20 @@ class UserService(private val userRepository: UserRepository) {
     fun getActiveUsersByAppId(appId: String): List<User> =
         userRepository.findByActiveAndAppidAndBanned(true, appId, false)
 
-    fun createUser(chatId: String, name: String?, steamId: String, locale: String): User? {
+    fun registerOrUpdateUser(
+        chatId: String,
+        name: String?,
+        steamId: String,
+        locale: String
+    ) {
+        if (existsByChatId(chatId)) {
+            updateUser(chatId, name, steamId, locale)
+        } else {
+            createUser(chatId, name, steamId, locale)
+        }
+    }
+
+    private fun createUser(chatId: String, name: String?, steamId: String, locale: String): User? {
         val user = User(
             chatId,
             name ?: Localization.getText("users.default_name", locale),
@@ -25,7 +38,7 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.create(user)
     }
 
-    fun updateUser(chatId: String, name: String?, steamId: String, locale: String): User? {
+    private fun updateUser(chatId: String, name: String?, steamId: String, locale: String): User? {
         return if (existsByChatId(chatId)) {
             userRepository.update(chatId, name, steamId.toLong(), locale)
         } else {

@@ -228,7 +228,7 @@ class UserInteractionService(
             val chatIdStr = chatId.chatId.toString()
             val user = userService.getUserByChatId(chatIdStr)
 
-            registerOrUpdateUser(chatId, name, steamId, locale)
+            userService.registerOrUpdateUser(chatIdStr, name, steamId, locale)
 
             if (user == null || user.steamId != steamId.toLong()) {
                 userGameStateService.deleteUgsByUserId(chatIdStr)
@@ -261,21 +261,6 @@ class UserInteractionService(
                 Localization.getText("message.incorrect_steam_id", locale)
             )
             false
-        }
-    }
-
-    private fun registerOrUpdateUser(
-        chatId: IdChatIdentifier,
-        name: String?,
-        steamId: String,
-        locale: String
-    ) {
-        val chatIdStr = chatId.chatId.toString()
-
-        if (userService.existsByChatId(chatIdStr)) {
-            userService.updateUser(chatIdStr, name, steamId, locale)
-        } else {
-            userService.createUser(chatIdStr, name, steamId, locale)
         }
     }
 
