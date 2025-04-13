@@ -52,6 +52,14 @@ class MessageService(
         appid: String,
         locale: String,
     ) {
-        sendTextMessage(chatId, text, uiService.subscribeMenuKeyboard(appid, locale))
+        sendTextMessage(chatId, text, uiService.newsMenuKeyboard(appid, locale))
+    }
+
+    suspend fun sendMessageWithKeyboard(
+        chatId: ChatId,
+        text: String,
+        keyboard: InlineKeyboardMarkup
+    ) {
+        sendTextMessage(chatId, text, keyboard)
     }
 }

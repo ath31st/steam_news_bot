@@ -100,26 +100,51 @@ class UserInteractionService(
         messageService.sendTextMessage(chatId, response)
     }
 
+
+    suspend fun handleSubscribe(chatId: ChatId, messageText: String, locale: String) {
+        if (!ensureUserRegistered(chatId, locale)) return
+
+        val chatIdStr = chatId.chatId.toString()
+        val appid = messageText.removePrefix("/subscribe_")
+        val isBanned = userGameStateService.checkIsBannedByGameIdAndUserId(appid, chatIdStr)
+
+        when (isBanned) {
+            false -> messageService.sendTextMessage(
+                chatId,
+                getText("message.already_subscribed", locale) + appid
+            )
+
+            true -> {
+                userGameStateService.updateIsBannedByGameIdAndUserId(false, appid, chatIdStr)
+                messageService.sendTextMessage(chatId, getText("message.subscribe", locale) + appid)
+            }
+
+            null -> return
+        }
+    }
+
     suspend fun handleUnsubscribe(chatId: ChatId, messageText: String, locale: String) {
         if (!ensureUserRegistered(chatId, locale)) return
 
+        val chatIdStr = chatId.chatId.toString()
         val appid = messageText.removePrefix("/unsubscribe_")
-        if (userGameStateService.checkIsBannedByGameIdAndUserId(
-                appid,
-                chatId.chatId.toString()
-            )
-        ) {
-            messageService.sendTextMessage(
+        val isBanned = userGameStateService.checkIsBannedByGameIdAndUserId(appid, chatIdStr)
+
+        when (isBanned) {
+            true -> messageService.sendTextMessage(
                 chatId,
                 getText("message.already_unsubscribed", locale) + appid
             )
-        } else {
-            userGameStateService.updateIsBannedByGameIdAndUserId(
-                isBanned = true,
-                appid,
-                chatId.chatId.toString(),
-            )
-            messageService.sendTextMessage(chatId, getText("message.unsubscribe", locale) + appid)
+
+            false -> {
+                userGameStateService.updateIsBannedByGameIdAndUserId(true, appid, chatIdStr)
+                messageService.sendTextMessage(
+                    chatId,
+                    getText("message.unsubscribe", locale) + appid
+                )
+            }
+
+            null -> return
         }
     }
 
@@ -136,12 +161,10 @@ class UserInteractionService(
         if (banList.isEmpty()) {
             messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
-            messageService.sendTextMessage(
+            messageService.sendMessageWithKeyboard(
                 chatId,
-                getText(
-                    "message.black_list",
-                    locale
-                ) + System.lineSeparator() + gameService.nameToString(banList)
+                getText("message.black_list", locale),
+                uiService.blackListKeyboard(banList)
             )
         }
     }
@@ -237,7 +260,10 @@ class UserInteractionService(
         return if (steamApiClient.isValidSteamId(steamId)) {
             true
         } else {
-            messageService.sendTextMessage(chatId, getText("message.incorrect_steam_id", locale))
+            messageService.sendTextMessage(
+                chatId,
+                getText("message.incorrect_steam_id", locale)
+            )
             false
         }
     }

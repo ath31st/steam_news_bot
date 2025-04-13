@@ -2,62 +2,73 @@ package sidim.doma.service
 
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.dataButton
 import dev.inmo.tgbotapi.extensions.utils.types.buttons.inlineKeyboard
-
 import dev.inmo.tgbotapi.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.utils.row
-import sidim.doma.plugin.Localization
+import sidim.doma.entity.Game
+import sidim.doma.plugin.Localization.getButton
 
 class BotUiService {
     fun mainMenuKeyboard(locale: String): InlineKeyboardMarkup = inlineKeyboard {
         row {
             dataButton(
-                text = "λ ${Localization.getButton("button.set_upd_steam_id", locale)}",
+                text = "λ ${getButton("button.set_upd_steam_id", locale)}",
                 data = "/set_steam_id"
             )
             dataButton(
-                text = "Ω ${Localization.getButton("button.check_steam_id", locale)}",
+                text = "Ω ${getButton("button.check_steam_id", locale)}",
                 data = "/check_steam_id"
             )
         }
         row {
             dataButton(
-                text = "✅ ${Localization.getButton("button.set_active_mode", locale)}",
+                text = "✅ ${getButton("button.set_active_mode", locale)}",
                 data = "/set_active_mode"
             )
             dataButton(
-                text = "☑ ${Localization.getButton("button.set_inactive_mode", locale)}",
+                text = "☑ ${getButton("button.set_inactive_mode", locale)}",
                 data = "/set_inactive_mode"
             )
         }
         row {
             dataButton(
-                text = "🧹 ${Localization.getButton("button.clear_black_list", locale)}",
+                text = "🧹 ${getButton("button.clear_black_list", locale)}",
                 data = "/clear_black_list"
             )
             dataButton(
-                text = "🗑 ${Localization.getButton("button.black_list", locale)}",
+                text = "🗑 ${getButton("button.black_list", locale)}",
                 data = "/black_list"
             )
         }
         row {
             dataButton(
-                text = "♥ ${Localization.getButton("button.check_wishlist", locale)}",
+                text = "♥ ${getButton("button.check_wishlist", locale)}",
                 data = "/check_wishlist"
             )
         }
     }
 
-    fun subscribeMenuKeyboard(appid: String, locale: String): InlineKeyboardMarkup =
+    fun newsMenuKeyboard(appid: String, locale: String): InlineKeyboardMarkup =
         inlineKeyboard {
             row {
                 dataButton(
-                    text = "🚫 ${Localization.getButton("button.unsubscribe", locale)}",
+                    text = "🚫 ${getButton("button.unsubscribe", locale)}",
                     data = "/unsubscribe_$appid"
                 )
                 dataButton(
-                    text = "🔗 ${Localization.getButton("button.links_to_game", locale)}",
+                    text = "🔗 ${getButton("button.links_to_game", locale)}",
                     data = "/links_to_game_$appid"
                 )
             }
         }
+
+    fun blackListKeyboard(banList: List<Game>): InlineKeyboardMarkup = inlineKeyboard {
+        banList.forEach { game ->
+            row {
+                dataButton(
+                    text = game.name ?: game.appid,
+                    data = "/subscribe_${game.appid}"
+                )
+            }
+        }
+    }
 }

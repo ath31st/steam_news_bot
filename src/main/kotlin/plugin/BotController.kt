@@ -71,6 +71,12 @@ class BotController(
                         locale
                     )
 
+                    callback.data.startsWith("/subscribe_") -> interactionService.handleSubscribe(
+                        chatId,
+                        callback.data,
+                        locale
+                    )
+
                     callback.data.startsWith("/unsubscribe") -> interactionService.handleUnsubscribe(
                         chatId,
                         callback.data,
