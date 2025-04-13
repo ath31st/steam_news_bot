@@ -133,16 +133,22 @@ class UserInteractionService(
 
     suspend fun handleBlackList(chatId: ChatId, locale: String) {
         val banList = gameService.getBanListByChatId(chatId.chatId.toString())
-        if (banList.isBlank()) {
+        if (banList.isEmpty()) {
             messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
-            messageService.sendTextMessage(chatId, getText("message.black_list", locale) + banList)
+            messageService.sendTextMessage(
+                chatId,
+                getText(
+                    "message.black_list",
+                    locale
+                ) + System.lineSeparator() + gameService.nameToString(banList)
+            )
         }
     }
 
     suspend fun handleClearBlackList(chatId: ChatId, locale: String) {
         val banList = gameService.getBanListByChatId(chatId.chatId.toString())
-        if (banList.isBlank()) {
+        if (banList.isEmpty()) {
             messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
             userGameStateService.clearBlackListByUserId(chatId.chatId.toString())
