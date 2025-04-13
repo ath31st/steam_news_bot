@@ -6,7 +6,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.transactions.transaction
 import sidim.doma.entity.Game
-import sidim.doma.plugin.Localization
+import sidim.doma.plugin.Localization.getText
 import sidim.doma.util.UserState
 import java.io.IOException
 
@@ -23,39 +23,30 @@ class UserInteractionService(
     private val mutex = Mutex()
 
     suspend fun handleUnknownCommand(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(
-            chatId,
-            Localization.getText("message.default_message", locale)
-        )
+        messageService.sendTextMessage(chatId, getText("message.default_message", locale))
 
     suspend fun handleStart(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(
             chatId,
-            Localization.getText("message.start", locale),
+            getText("message.start", locale),
             replyMarkup = uiService.mainMenuKeyboard(locale)
         )
 
     suspend fun handleHelp(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(chatId, Localization.getText("message.help", locale))
+        messageService.sendTextMessage(chatId, getText("message.help", locale))
 
     suspend fun handleSettings(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(
             chatId,
-            Localization.getText("message.settings", locale),
+            getText("message.settings", locale),
             replyMarkup = uiService.mainMenuKeyboard(locale)
         )
 
     suspend fun handleStats(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(
-            chatId,
-            Localization.getText("message.stats", locale)
-        )
+        messageService.sendTextMessage(chatId, getText("message.stats", locale))
 
     suspend fun handleSetSteamId(chatId: ChatId, locale: String) {
-        messageService.sendTextMessage(
-            chatId,
-            Localization.getText("message.enter_steam_id", locale)
-        )
+        messageService.sendTextMessage(chatId, getText("message.enter_steam_id", locale))
         mutex.withLock {
             if (userStates.size >= maxSize) {
                 userStates.remove(userStates.keys.first())
@@ -68,11 +59,11 @@ class UserInteractionService(
         val user = userService.getUserByChatId(chatId.chatId.long)
             ?: return sendNotRegistered(chatId, locale)
 
-        val status = if (user.active) Localization.getText("message.active", locale)
-        else Localization.getText("message.inactive", locale)
+        val status = if (user.active) getText("message.active", locale)
+        else getText("message.inactive", locale)
         messageService.sendTextMessage(
             chatId,
-            Localization.getText("message.check_steam_id", locale, user.steamId) + status
+            getText("message.check_steam_id", locale, user.steamId) + status
         )
     }
 
@@ -80,7 +71,7 @@ class UserInteractionService(
         if (!ensureUserRegistered(chatId, locale)) return
 
         userService.updateActiveByChatId(true, chatId.chatId.toString())
-        messageService.sendTextMessage(chatId, Localization.getText("message.active_mode", locale))
+        messageService.sendTextMessage(chatId, getText("message.active_mode", locale))
     }
 
 
@@ -88,10 +79,7 @@ class UserInteractionService(
         if (!ensureUserRegistered(chatId, locale)) return
 
         userService.updateActiveByChatId(false, chatId.chatId.toString())
-        messageService.sendTextMessage(
-            chatId,
-            Localization.getText("message.inactive_mode", locale)
-        )
+        messageService.sendTextMessage(chatId, getText("message.inactive_mode", locale))
     }
 
     suspend fun handleCheckWishlist(chatId: ChatId, locale: String) {
@@ -100,9 +88,9 @@ class UserInteractionService(
 
         val responseCode = steamApiClient.checkWishlistAvailability(user.steamId)
         val response = when (responseCode) {
-            200 -> Localization.getText("message.wishlist_available", locale)
-            500 -> Localization.getText("message.wishlist_not_available", locale)
-            else -> Localization.getText("message.problem_with_network_or_steam_service", locale)
+            200 -> getText("message.wishlist_available", locale)
+            500 -> getText("message.wishlist_not_available", locale)
+            else -> getText("message.problem_with_network_or_steam_service", locale)
         }
         messageService.sendTextMessage(chatId, response)
     }
@@ -118,7 +106,7 @@ class UserInteractionService(
         ) {
             messageService.sendTextMessage(
                 chatId,
-                Localization.getText("message.already_unsubscribed", locale) + appid
+                getText("message.already_unsubscribed", locale) + appid
             )
         } else {
             userGameStateService.updateIsBannedByGameIdAndUserId(
@@ -126,10 +114,7 @@ class UserInteractionService(
                 appid,
                 chatId.chatId.toString(),
             )
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.unsubscribe", locale) + appid
-            )
+            messageService.sendTextMessage(chatId, getText("message.unsubscribe", locale) + appid)
         }
     }
 
@@ -137,38 +122,26 @@ class UserInteractionService(
         val appid = messageText.removePrefix("/links_to_game_")
         messageService.sendTextMessage(
             chatId,
-            Localization.getText("message.links_to_game_message", locale, appid, appid)
+            getText("message.links_to_game_message", locale, appid, appid)
         )
     }
 
     suspend fun handleBlackList(chatId: ChatId, locale: String) {
         val banList = gameService.getBanListByChatId(chatId.chatId.toString())
         if (banList.isBlank()) {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.empty_black_list", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.black_list", locale) + banList
-            )
+            messageService.sendTextMessage(chatId, getText("message.black_list", locale) + banList)
         }
     }
 
     suspend fun handleClearBlackList(chatId: ChatId, locale: String) {
         val banList = gameService.getBanListByChatId(chatId.chatId.toString())
         if (banList.isBlank()) {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.empty_black_list", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
             userGameStateService.clearBlackListByUserId(chatId.chatId.toString())
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.black_list_clear", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.black_list_clear", locale))
         }
     }
 
@@ -182,10 +155,7 @@ class UserInteractionService(
         if (state == UserState.SET_STEAM_ID) {
             handleSteamIdInput(chatId, name, text, locale)
         } else {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.default_message", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.default_message", locale))
         }
     }
 
@@ -210,7 +180,7 @@ class UserInteractionService(
             clearUserState(chatId)
             return false
         }
-        messageService.sendTextMessage(chatId, Localization.getText("message.waiting", locale))
+        messageService.sendTextMessage(chatId, getText("message.waiting", locale))
         return true
     }
 
@@ -256,10 +226,7 @@ class UserInteractionService(
         return if (steamApiClient.isValidSteamId(steamId)) {
             true
         } else {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.incorrect_steam_id", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.incorrect_steam_id", locale))
             false
         }
     }
@@ -276,20 +243,17 @@ class UserInteractionService(
         } catch (e: NullPointerException) {
             messageService.sendTextMessage(
                 chatId,
-                Localization.getText("message.error_hidden_acc", locale, steamId)
+                getText("message.error_hidden_acc", locale, steamId)
             )
             null
         } catch (e: IOException) {
             messageService.sendTextMessage(
                 chatId,
-                Localization.getText("message.error_dont_exists_acc", locale, steamId)
+                getText("message.error_dont_exists_acc", locale, steamId)
             )
             null
         } catch (e: Exception) {
-            messageService.sendTextMessage(
-                chatId,
-                Localization.getText("message.error_common", locale)
-            )
+            messageService.sendTextMessage(chatId, getText("message.error_common", locale))
             null
         }
     }
@@ -303,11 +267,11 @@ class UserInteractionService(
         val chatIdStr = chatId.chatId.toString()
         messageService.sendTextMessage(
             chatId,
-            Localization.getText(
+            getText(
                 "message.registration",
                 locale,
                 steamId,
-                name ?: Localization.getText("message.default_name", locale),
+                name ?: getText("message.default_name", locale),
                 userGameStateService.countByUserIdAndIsOwned(chatIdStr, true),
                 userGameStateService.countByUserIdAndIsWished(chatIdStr, true)
             )
@@ -322,12 +286,9 @@ class UserInteractionService(
         mutex.withLock { userStates.remove(chatId.chatId.long) }
     }
 
-    private suspend fun sendNotRegistered(chatId: ChatId, locale: String) {
-        messageService.sendTextMessage(
-            chatId,
-            Localization.getText("message.not_registered", locale)
-        )
-    }
+    private suspend fun sendNotRegistered(chatId: ChatId, locale: String) =
+        messageService.sendTextMessage(chatId, getText("message.not_registered", locale))
+
 
     private suspend fun ensureUserRegistered(chatId: ChatId, locale: String): Boolean {
         if (!userService.existsByChatId(chatId.chatId.toString())) {
