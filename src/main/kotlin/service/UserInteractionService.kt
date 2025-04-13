@@ -1,10 +1,10 @@
 package sidim.doma.service
 
+import com.sksamuel.aedile.core.Cache
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import org.jetbrains.exposed.sql.transactions.transaction
+import sidim.doma.dto.Statistics
 import sidim.doma.entity.Game
 import sidim.doma.plugin.Localization.getText
 import sidim.doma.util.UserState
@@ -16,12 +16,10 @@ class UserInteractionService(
     private val gameService: GameService,
     private val steamApiClient: SteamApiClient,
     private val messageService: MessageService,
-    private val userGameStateService: UserGameStateService
+    private val userGameStateService: UserGameStateService,
+    private val userStateCache: Cache<Long, UserState>,
+    private val statsCache: Cache<String, Statistics>
 ) {
-    private val maxSize = 50
-    private val userStates = linkedMapOf<Long, UserState>()
-    private val mutex = Mutex()
-
     suspend fun handleUnknownCommand(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(chatId, getText("message.default_message", locale))
 
@@ -43,9 +41,13 @@ class UserInteractionService(
         )
 
     suspend fun handleStats(chatId: IdChatIdentifier, locale: String) {
-        val countUsers = userService.countUsers()
-        val countActiveUsers = userService.countActiveUsers()
-        val countGames = gameService.countGames()
+        val (countUsers, countActiveUsers, countGames) = statsCache.get("stats", compute = {
+            Statistics(
+                userService.countUsers(),
+                userService.countActiveUsers(),
+                gameService.countGames()
+            )
+        })
 
         messageService.sendTextMessage(
             chatId,
@@ -55,12 +57,7 @@ class UserInteractionService(
 
     suspend fun handleSetSteamId(chatId: ChatId, locale: String) {
         messageService.sendTextMessage(chatId, getText("message.enter_steam_id", locale))
-        mutex.withLock {
-            if (userStates.size >= maxSize) {
-                userStates.remove(userStates.keys.first())
-            }
-            userStates[chatId.chatId.long] = UserState.SET_STEAM_ID
-        }
+        userStateCache.put(chatId.chatId.long, UserState.SET_STEAM_ID)
     }
 
     suspend fun handleCheckSteamId(chatId: ChatId, locale: String) {
@@ -286,13 +283,12 @@ class UserInteractionService(
         )
     }
 
-    private suspend fun getUserState(chatId: IdChatIdentifier): UserState? {
-        return mutex.withLock { userStates[chatId.chatId.long] }
-    }
+    private suspend fun getUserState(chatId: IdChatIdentifier): UserState? =
+        userStateCache.getIfPresent(chatId.chatId.long)
 
-    private suspend fun clearUserState(chatId: IdChatIdentifier) {
-        mutex.withLock { userStates.remove(chatId.chatId.long) }
-    }
+    private fun clearUserState(chatId: IdChatIdentifier) =
+        userStateCache.invalidate(chatId.chatId.long)
+
 
     private suspend fun sendNotRegistered(chatId: ChatId, locale: String) =
         messageService.sendTextMessage(chatId, getText("message.not_registered", locale))

@@ -53,5 +53,5 @@ class UserService(private val userRepository: UserRepository) {
 
     fun countUsers(): Long = userRepository.countUsers()
 
-    fun countActiveUsers() = userRepository.findAllByActive(true).size
+    fun countActiveUsers(): Long = userRepository.findAllByActive(true).size.toLong()
 }

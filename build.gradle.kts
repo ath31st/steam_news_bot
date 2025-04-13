@@ -5,6 +5,7 @@ val kotlinVersion: String by project
 val logbackVersion: String by project
 val tgbotapiVersion: String by project
 val quartzVersion: String by project
+val caffeineAedileVersion: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
@@ -13,7 +14,7 @@ plugins {
 }
 
 group = "sidim.doma"
-version = "2.2.0"
+version = "2.3.0"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -46,6 +47,7 @@ dependencies {
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("dev.inmo:tgbotapi-jvm:$tgbotapiVersion")
     implementation("org.quartz-scheduler:quartz:$quartzVersion")
+    implementation("com.sksamuel.aedile:aedile-core:$caffeineAedileVersion")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
