@@ -63,42 +63,12 @@ class UserGameStateRepository {
         }
     }
 
-    fun findByUserIdAndBanned(userId: String, isBanned: Boolean): UserGameState? {
-        return transaction {
-            UserGameStates
-                .selectAll()
-                .where {
-                    (UserGameStates.userId eq userId) and
-                            (UserGameStates.isBanned eq isBanned)
-                }
-                .singleOrNull()
-                ?.let { rowToUserGameState(it) }
-        }
-    }
-
-    fun updateIsBannedById(isBanned: Boolean, id: Long) {
-        transaction {
-            UserGameStates.update({ UserGameStates.id eq id }) {
-                it[UserGameStates.isBanned] = isBanned
-            }
-        }
-    }
-
     fun updateIsBannedByGameIdAndUserId(banned: Boolean, gameId: String, userId: String) {
         transaction {
             UserGameStates.update({
                 (UserGameStates.userId eq userId) and (UserGameStates.gameId eq gameId)
             }) {
                 it[isBanned] = banned
-            }
-        }
-    }
-
-    fun updateIsWishedAndIsOwnedById(isWished: Boolean, isOwned: Boolean, id: Long) {
-        transaction {
-            UserGameStates.update({ UserGameStates.id eq id }) {
-                it[UserGameStates.isWished] = isWished
-                it[UserGameStates.isOwned] = isOwned
             }
         }
     }

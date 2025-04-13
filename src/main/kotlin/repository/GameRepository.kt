@@ -83,6 +83,12 @@ class GameRepository {
         }
     }
 
+    fun countGames(): Long {
+        return transaction {
+            Games.selectAll().count()
+        }
+    }
+
     private fun rowToGame(it: ResultRow) = Game(
         appid = it[Games.appid],
         name = it[Games.name]

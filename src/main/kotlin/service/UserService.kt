@@ -50,4 +50,8 @@ class UserService(private val userRepository: UserRepository) {
         userRepository.updateActiveByChatId(isActive, chatId)
 
     fun existsByChatId(chatId: String) = userRepository.existsByChatId(chatId)
+
+    fun countUsers(): Long = userRepository.countUsers()
+
+    fun countActiveUsers() = userRepository.findAllByActive(true).size
 }

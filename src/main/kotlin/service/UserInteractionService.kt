@@ -42,8 +42,16 @@ class UserInteractionService(
             replyMarkup = uiService.mainMenuKeyboard(locale)
         )
 
-    suspend fun handleStats(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(chatId, getText("message.stats", locale))
+    suspend fun handleStats(chatId: IdChatIdentifier, locale: String) {
+        val countUsers = userService.countUsers()
+        val countActiveUsers = userService.countActiveUsers()
+        val countGames = gameService.countGames()
+
+        messageService.sendTextMessage(
+            chatId,
+            getText("message.stats", locale, countUsers, countActiveUsers, countGames)
+        )
+    }
 
     suspend fun handleSetSteamId(chatId: ChatId, locale: String) {
         messageService.sendTextMessage(chatId, getText("message.enter_steam_id", locale))

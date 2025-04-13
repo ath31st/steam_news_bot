@@ -90,6 +90,12 @@ class UserRepository {
         }
     }
 
+    fun countUsers(): Long {
+        return transaction {
+            Users.selectAll().count()
+        }
+    }
+
     private fun rowToUser(it: ResultRow) = User(
         chatId = it[Users.chatId],
         name = it[Users.name],
