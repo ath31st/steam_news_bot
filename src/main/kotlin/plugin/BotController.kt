@@ -8,14 +8,11 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onText
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.from
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.text
 import dev.inmo.tgbotapi.types.chat.CommonUser
+import dev.inmo.tgbotapi.types.message.abstracts.CommonMessage
 import dev.inmo.tgbotapi.utils.RiskFeature
-import sidim.doma.service.BotUiService
-import sidim.doma.service.MessageService
 import sidim.doma.service.UserInteractionService
 
 class BotController(
-    private val uiService: BotUiService,
-    private val messageService: MessageService,
     private val interactionService: UserInteractionService
 ) {
     @OptIn(RiskFeature::class)
@@ -23,28 +20,26 @@ class BotController(
         with(context) {
             onCommand("start") { message ->
                 val chatId = message.chat.id
-                val locale = (message.from as CommonUser).languageCode ?: "en"
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText("message.start", locale),
-                    replyMarkup = uiService.mainMenuKeyboard(locale)
-                )
+                val locale = getUserLocale(message)
+                interactionService.handleStart(chatId, locale)
             }
 
             onCommand("help") { message ->
                 val chatId = message.chat.id
-                val locale = (message.from as CommonUser).languageCode ?: "en"
-                messageService.sendTextMessage(chatId, Localization.getText("message.help", locale))
+                val locale = getUserLocale(message)
+                interactionService.handleHelp(chatId, locale)
             }
 
             onCommand("settings") { message ->
                 val chatId = message.chat.id
-                val locale = (message.from as CommonUser).languageCode ?: "en"
-                messageService.sendTextMessage(
-                    chatId,
-                    Localization.getText("message.settings", locale),
-                    replyMarkup = uiService.mainMenuKeyboard(locale)
-                )
+                val locale = getUserLocale(message)
+                interactionService.handleSettings(chatId, locale)
+            }
+
+            onCommand("stats") { message ->
+                val chatId = message.chat.id
+                val locale = getUserLocale(message)
+                interactionService.handleStats(chatId, locale)
             }
 
             onDataCallbackQuery { callback ->
@@ -98,23 +93,21 @@ class BotController(
                         locale
                     )
 
-                    else -> {
-                        messageService.sendTextMessage(
-                            chatId,
-                            Localization.getText("message.default_message", locale)
-                        )
-                    }
+                    else -> interactionService.handleUnknownCommand(chatId, locale)
                 }
                 bot.answerCallbackQuery(callback)
             }
 
             onText(initialFilter = { it.text?.startsWith("/") != true }) { message ->
                 val chatId = message.chat.id
-                val user = message.from as CommonUser
-                val locale = user.languageCode ?: "en"
-                val name = user.username?.username
+                val locale = getUserLocale(message)
+                val name = message.from?.username?.username
                 interactionService.handleTextInput(chatId, name, message.text ?: "", locale)
             }
         }
     }
+
+    @OptIn(RiskFeature::class)
+    private fun getUserLocale(message: CommonMessage<*>): String =
+        (message.from as CommonUser).languageCode ?: "en"
 }

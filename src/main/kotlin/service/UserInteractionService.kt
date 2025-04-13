@@ -11,6 +11,7 @@ import sidim.doma.util.UserState
 import java.io.IOException
 
 class UserInteractionService(
+    private val uiService: BotUiService,
     private val userService: UserService,
     private val gameService: GameService,
     private val steamApiClient: SteamApiClient,
@@ -20,6 +21,35 @@ class UserInteractionService(
     private val maxSize = 50
     private val userStates = linkedMapOf<Long, UserState>()
     private val mutex = Mutex()
+
+    suspend fun handleUnknownCommand(chatId: IdChatIdentifier, locale: String) =
+        messageService.sendTextMessage(
+            chatId,
+            Localization.getText("message.default_message", locale)
+        )
+
+    suspend fun handleStart(chatId: IdChatIdentifier, locale: String) =
+        messageService.sendTextMessage(
+            chatId,
+            Localization.getText("message.start", locale),
+            replyMarkup = uiService.mainMenuKeyboard(locale)
+        )
+
+    suspend fun handleHelp(chatId: IdChatIdentifier, locale: String) =
+        messageService.sendTextMessage(chatId, Localization.getText("message.help", locale))
+
+    suspend fun handleSettings(chatId: IdChatIdentifier, locale: String) =
+        messageService.sendTextMessage(
+            chatId,
+            Localization.getText("message.settings", locale),
+            replyMarkup = uiService.mainMenuKeyboard(locale)
+        )
+
+    suspend fun handleStats(chatId: IdChatIdentifier, locale: String) =
+        messageService.sendTextMessage(
+            chatId,
+            Localization.getText("message.stats", locale)
+        )
 
     suspend fun handleSetSteamId(chatId: ChatId, locale: String) {
         messageService.sendTextMessage(

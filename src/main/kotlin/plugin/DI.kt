@@ -64,8 +64,8 @@ fun Application.configureDependencyInjection() {
             single { UserService(get()) }
             single { BotUiService() }
             single { MessageService(get(), get(), get()) }
-            single { UserInteractionService(get(), get(), get(), get(), get()) }
-            single { BotController(get(), get(), get()) }
+            single { UserInteractionService(get(), get(), get(), get(), get(), get()) }
+            single { BotController(get()) }
         })
     }
 }
