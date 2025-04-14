@@ -96,16 +96,18 @@ node.js).<br/>
 4. quartz - job scheduling library
 5. koin - dependency injection library
 6. ktor - web framework
+7. caffeine - caching library
 
 ## Versions:
 
-- Kotlin: 2.1.10</br>
-- Ktor: 3.0.3</br>
-- Koin: 3.5.6</br>
-- SQLite: 3.42.0.1</br>
-- Exposed: 0.58.0</br>
+- Kotlin: 2.1.20</br>
+- Ktor: 3.1.2</br>
+- Koin: 4.0.4</br>
+- SQLite: 3.49.1.0</br>
+- Exposed: 0.60.0</br>
 - Quartz: 2.5.0</br>
-- TelegramBotAPI: 24.0.0</br>
+- TelegramBotAPI: 24.0.2</br>
+- Caffeine (Aedile): 2.0.3</br>
 - Gradle: 8.5</br>
 
 You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
