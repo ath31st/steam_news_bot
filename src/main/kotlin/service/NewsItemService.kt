@@ -1,7 +1,7 @@
 package sidim.doma.service
 
 import sidim.doma.entity.NewsItem
-import sidim.doma.plugin.Localization
+import sidim.doma.util.Localization
 import java.text.SimpleDateFormat
 import java.util.*
 

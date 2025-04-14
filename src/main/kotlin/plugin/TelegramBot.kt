@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import kotlinx.coroutines.launch
 import org.koin.core.context.GlobalContext
 import org.slf4j.LoggerFactory
+import sidim.doma.controller.BotController
 
 fun Application.configureTelegramBot() {
     val logger = LoggerFactory.getLogger("TelegramBot")

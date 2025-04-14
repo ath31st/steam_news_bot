@@ -18,6 +18,7 @@ import org.koin.logger.slf4jLogger
 import sidim.doma.config.InitializeConfig.REQUEST_TIMEOUT
 import sidim.doma.config.InitializeConfig.STATISTICS_EXPIRATION_TIME
 import sidim.doma.config.InitializeConfig.USER_STATE_EXPIRATION_TIME
+import sidim.doma.controller.BotController
 import sidim.doma.dto.Statistics
 import sidim.doma.entity.Game
 import sidim.doma.entity.NewsItem

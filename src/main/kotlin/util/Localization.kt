@@ -1,4 +1,4 @@
-package sidim.doma.plugin
+package sidim.doma.util
 
 import java.util.*
 

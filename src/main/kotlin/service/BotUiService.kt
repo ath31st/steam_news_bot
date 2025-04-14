@@ -5,7 +5,7 @@ import dev.inmo.tgbotapi.extensions.utils.types.buttons.inlineKeyboard
 import dev.inmo.tgbotapi.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.utils.row
 import sidim.doma.entity.Game
-import sidim.doma.plugin.Localization.getButton
+import sidim.doma.util.Localization.getButton
 
 class BotUiService {
     fun mainMenuKeyboard(locale: String): InlineKeyboardMarkup = inlineKeyboard {

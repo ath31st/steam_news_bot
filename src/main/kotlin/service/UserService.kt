@@ -1,8 +1,8 @@
 package sidim.doma.service
 
 import sidim.doma.entity.User
-import sidim.doma.plugin.Localization
 import sidim.doma.repository.UserRepository
+import sidim.doma.util.Localization
 
 class UserService(private val userRepository: UserRepository) {
     fun getUserByChatId(chatId: String): User? = userRepository.findByChatId(chatId)

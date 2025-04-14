@@ -6,7 +6,7 @@ import dev.inmo.tgbotapi.types.IdChatIdentifier
 import org.jetbrains.exposed.sql.transactions.transaction
 import sidim.doma.dto.Statistics
 import sidim.doma.entity.Game
-import sidim.doma.plugin.Localization.getText
+import sidim.doma.util.Localization.getText
 import sidim.doma.util.UserState
 import java.io.IOException
 

@@ -1,4 +1,4 @@
-package sidim.doma.plugin
+package sidim.doma.controller
 
 import dev.inmo.tgbotapi.extensions.api.answers.answerCallbackQuery
 import dev.inmo.tgbotapi.extensions.behaviour_builder.BehaviourContext
