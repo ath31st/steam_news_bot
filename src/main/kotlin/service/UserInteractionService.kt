@@ -26,8 +26,7 @@ class UserInteractionService(
     suspend fun handleStart(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(
             chatId,
-            getText("message.start", locale),
-            replyMarkup = uiService.mainMenuKeyboard(locale)
+            getText("message.start", locale)
         )
 
     suspend fun handleHelp(chatId: IdChatIdentifier, locale: String) =
