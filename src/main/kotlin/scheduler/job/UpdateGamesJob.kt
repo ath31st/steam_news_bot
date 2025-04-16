@@ -1,5 +1,6 @@
 package sidim.doma.scheduler.job
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -8,6 +9,7 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import sidim.doma.config.SchedulerConfig.SEMAPHORE_LIMIT
+import sidim.doma.config.SchedulerConfig.UPDATE_GAMES_DELAY
 import sidim.doma.config.SchedulerConfig.UPDATE_GAMES_JOB_LIMIT
 import sidim.doma.entity.Game
 import sidim.doma.service.GameService
@@ -41,6 +43,7 @@ class UpdateGamesJob : Job {
                     } catch (e: Exception) {
                         logger.error("Failed to get game details for ${game.appid}: ${e.message}")
                     }
+                    delay(UPDATE_GAMES_DELAY)
                 }
             }
 
