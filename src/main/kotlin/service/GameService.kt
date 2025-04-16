@@ -1,5 +1,6 @@
 package sidim.doma.service
 
+import sidim.doma.dto.Page
 import sidim.doma.entity.Game
 import sidim.doma.repository.GameRepository
 
@@ -14,10 +15,10 @@ class GameService(private val gameRepository: GameRepository) {
         )
     }
 
-    fun getBanListByChatId(chatId: String): List<Game> = gameRepository.findBannedByChatId(chatId)
+    fun getPageBannedByChatId(chatId: String, pageNumber: Int, pageSize: Int): Page<Game> =
+        gameRepository.getPageBannedByChatId(chatId, pageNumber, pageSize)
 
-    fun nameToString(games: List<Game>): String =
-        games.joinToString(System.lineSeparator()) { it.name ?: it.appid }
+    fun getCountBannedByChatId(chatId: String): Long = gameRepository.getCountBannedByChatId(chatId)
 
     fun getAllGamesByActiveUsersAndNotBanned(): List<Game> =
         gameRepository.findByActiveUsersAndNotBanned()

@@ -89,9 +89,10 @@ class BotController(
                         locale
                     )
 
-                    callback.data == "/black_list" -> interactionService.handleBlackList(
+                    callback.data.startsWith("/black_list") -> interactionService.handleBlackList(
                         chatId,
-                        locale
+                        callback.data,
+                        locale,
                     )
 
                     callback.data == "/clear_black_list" -> interactionService.handleClearBlackList(

@@ -156,22 +156,30 @@ class UserInteractionService(
         )
     }
 
-    suspend fun handleBlackList(chatId: ChatId, locale: String) {
-        val banList = gameService.getBanListByChatId(chatId.chatId.toString())
-        if (banList.isEmpty()) {
+    suspend fun handleBlackList(chatId: ChatId, messageText: String, locale: String) {
+        val pageNumber = messageText.removePrefix("/black_list_").toInt()
+        val pageSize = 10
+
+        val bannedGamesPage =
+            gameService.getPageBannedByChatId(chatId.chatId.toString(), pageNumber, pageSize)
+        if (bannedGamesPage.items.isEmpty()) {
             messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
             messageService.sendMessageWithKeyboard(
                 chatId,
-                getText("message.black_list", locale),
-                uiService.blackListKeyboard(banList)
+                getText("message.black_list", locale, bannedGamesPage.totalItems),
+                uiService.blackListKeyboard(
+                    bannedGamesPage.items,
+                    bannedGamesPage.currentPage,
+                    bannedGamesPage.totalPages
+                )
             )
         }
     }
 
     suspend fun handleClearBlackList(chatId: ChatId, locale: String) {
-        val banList = gameService.getBanListByChatId(chatId.chatId.toString())
-        if (banList.isEmpty()) {
+        val bannedGamesCount = gameService.getCountBannedByChatId(chatId.chatId.toString())
+        if (bannedGamesCount == 0L) {
             messageService.sendTextMessage(chatId, getText("message.empty_black_list", locale))
         } else {
             userGameStateService.clearBlackListByUserId(chatId.chatId.toString())

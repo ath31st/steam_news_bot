@@ -36,7 +36,7 @@ class BotUiService {
             )
             dataButton(
                 text = "🗑 ${getButton("button.black_list", locale)}",
-                data = "/black_list"
+                data = "/black_list_1"
             )
         }
         row {
@@ -61,13 +61,37 @@ class BotUiService {
             }
         }
 
-    fun blackListKeyboard(banList: List<Game>): InlineKeyboardMarkup = inlineKeyboard {
+    fun blackListKeyboard(
+        banList: List<Game>,
+        currentPage: Int,
+        totalPages: Int
+    ): InlineKeyboardMarkup = inlineKeyboard {
         banList.forEach { game ->
             row {
                 dataButton(
                     text = game.name ?: game.appid,
                     data = "/subscribe_${game.appid}"
                 )
+            }
+        }
+        if (totalPages > 1) {
+            row {
+                if (currentPage > 1) {
+                    dataButton(
+                        text = "⬅️ ${currentPage - 1}",
+                        data = "/black_list_${currentPage - 1}"
+                    )
+                }
+                dataButton(
+                    text = "$currentPage/$totalPages",
+                    data = "/black_list_$currentPage"
+                )
+                if (currentPage < totalPages) {
+                    dataButton(
+                        text = "${currentPage + 1} ➡️",
+                        data = "/black_list_${currentPage + 1}"
+                    )
+                }
             }
         }
     }

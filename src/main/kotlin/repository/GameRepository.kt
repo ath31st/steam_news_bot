@@ -2,6 +2,7 @@ package sidim.doma.repository
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import sidim.doma.dto.Page
 import sidim.doma.entity.Game
 import sidim.doma.entity.Games
 import sidim.doma.entity.UserGameStates
@@ -44,7 +45,38 @@ class GameRepository {
         }
     }
 
-    fun findBannedByChatId(chatId: String): List<Game> {
+    fun getPageBannedByChatId(
+        chatId: String,
+        pageNumber: Int,
+        pageSize: Int,
+        sortOrder: SortOrder = SortOrder.ASC
+    ): Page<Game> {
+        return transaction {
+            val offset: Long = ((pageNumber - 1) * pageSize).toLong()
+
+            val query = (Games innerJoin UserGameStates).selectAll()
+                .where { (UserGameStates.userId eq chatId) and (UserGameStates.isBanned eq true) }
+                .orderBy(Games.name, sortOrder)
+
+            val totalCount = query.count()
+
+            val items = query.limit(count = pageSize)
+                .offset(start = offset)
+                .map { rowToGame(it) }
+
+            val totalPages =
+                (totalCount / pageSize).toInt() + if (totalCount % pageSize != 0L) 1 else 0
+
+            Page(
+                items = items,
+                totalItems = totalCount,
+                totalPages = totalPages,
+                currentPage = pageNumber
+            )
+        }
+    }
+
+    fun getCountBannedByChatId(chatId: String): Long {
         return transaction {
             (Games innerJoin UserGameStates)
                 .selectAll()
@@ -52,7 +84,7 @@ class GameRepository {
                     (UserGameStates.userId eq chatId) and
                             (UserGameStates.isBanned eq true)
                 }
-                .map { rowToGame(it) }
+                .count()
         }
     }
 
