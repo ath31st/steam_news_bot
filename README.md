@@ -20,7 +20,7 @@
 
 ## Program version
 
-2.4.0
+2.5.0
 
 ## Introduction
 
@@ -123,6 +123,12 @@ from improvised means.
 The application was completely rewritten from Java + Spring to Kotlin + Ktor using an asynchronous
 approach.
 It has become more stable and faster, and is prepared for an increase in the number of users.
+
+(update 13.04.2025)
+Added statistics for the bot.
+
+(update 16.04.2025)
+Pagination added for blacklist games.
 
 ## License
 

@@ -8,13 +8,13 @@ val quartzVersion: String by project
 val caffeineAedileVersion: String by project
 
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
     id("io.ktor.plugin") version "3.0.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
 }
 
 group = "sidim.doma"
-version = "2.4.0"
+version = "2.5.0"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
