@@ -188,7 +188,7 @@ class UserInteractionService(
 
     suspend fun handleTextInput(
         chatId: IdChatIdentifier,
-        name: String?,
+        name: String,
         text: String,
         locale: String
     ) {
@@ -202,13 +202,13 @@ class UserInteractionService(
 
     private suspend fun handleSteamIdInput(
         chatId: IdChatIdentifier,
-        name: String?,
+        name: String,
         steamId: String,
         locale: String
     ) {
         if (!validateAndPrepare(chatId, steamId, locale)) return
         val gameLists = getGamesFromSteam(chatId, steamId, locale) ?: return
-        saveUserAndGames(chatId, name, steamId, locale, gameLists)
+        saveUserAndGamesTransactional(chatId, name, steamId.toLong(), locale, gameLists)
         finalizeRegistration(chatId, steamId, name, locale)
     }
 
@@ -225,27 +225,25 @@ class UserInteractionService(
         return true
     }
 
-    private fun saveUserAndGames(
+    private fun saveUserAndGamesTransactional(
         chatId: IdChatIdentifier,
-        name: String?,
-        steamId: String,
+        name: String,
+        steamId: Long,
         locale: String,
         gameLists: Pair<List<Game>, List<Game>>
-    ) {
+    ) = transaction {
         val (ownedGames, wishedGames) = gameLists
         val allGames = (ownedGames + wishedGames).distinctBy { it.appid }
 
-        transaction {
-            val chatIdStr = chatId.chatId.toString()
-            val user = userService.getUserByChatId(chatIdStr)
+        val chatIdStr = chatId.chatId.toString()
+        val user = userService.getUserByChatId(chatIdStr)
 
-            userService.registerOrUpdateUser(chatIdStr, name, steamId, locale)
+        userService.registerOrUpdateUser(chatIdStr, name, steamId, locale)
 
-            if (user == null || user.steamId != steamId.toLong()) {
-                userGameStateService.deleteUgsByUserId(chatIdStr)
-                gameService.createGames(allGames)
-                userGameStateService.createUgsByUserId(chatIdStr, ownedGames, wishedGames)
-            }
+        if (user == null || user.steamId != steamId) {
+            userGameStateService.deleteUgsByUserId(chatIdStr)
+            gameService.createGames(allGames)
+            userGameStateService.createUgsByUserId(chatIdStr, ownedGames, wishedGames)
         }
     }
 
@@ -284,19 +282,19 @@ class UserInteractionService(
             val games = steamApiClient.getOwnedGames(steamId)
             val wishedGames = steamApiClient.getWishlistGames(steamId)
             Pair(games, wishedGames)
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
             messageService.sendTextMessage(
                 chatId,
                 getText("message.error_hidden_acc", locale, steamId)
             )
             null
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             messageService.sendTextMessage(
                 chatId,
                 getText("message.error_dont_exists_acc", locale, steamId)
             )
             null
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             messageService.sendTextMessage(chatId, getText("message.error_common", locale))
             null
         }

@@ -11,6 +11,7 @@ import dev.inmo.tgbotapi.types.chat.CommonUser
 import dev.inmo.tgbotapi.types.message.abstracts.CommonMessage
 import dev.inmo.tgbotapi.utils.RiskFeature
 import sidim.doma.service.UserInteractionService
+import sidim.doma.util.Localization.getText
 
 class BotController(
     private val interactionService: UserInteractionService
@@ -108,7 +109,8 @@ class BotController(
             onText(initialFilter = { it.text?.startsWith("/") != true }) { message ->
                 val chatId = message.chat.id
                 val locale = getUserLocale(message)
-                val name = message.from?.username?.username
+                val name = message.from?.username?.username ?: getText("users.default_name", locale)
+
                 interactionService.handleTextInput(chatId, name, message.text ?: "", locale)
             }
         }

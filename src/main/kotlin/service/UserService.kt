@@ -2,7 +2,6 @@ package sidim.doma.service
 
 import sidim.doma.entity.User
 import sidim.doma.repository.UserRepository
-import sidim.doma.util.Localization
 
 class UserService(private val userRepository: UserRepository) {
     fun getUserByChatId(chatId: String): User? = userRepository.findByChatId(chatId)
@@ -16,34 +15,28 @@ class UserService(private val userRepository: UserRepository) {
 
     fun registerOrUpdateUser(
         chatId: String,
-        name: String?,
-        steamId: String,
+        name: String,
+        steamId: Long,
         locale: String
-    ) {
-        if (existsByChatId(chatId)) {
+    ): User? {
+        require(chatId.isNotBlank()) { "chatId must not be blank" }
+        require(locale.isNotBlank()) { "locale must not be blank" }
+
+        return if (existsByChatId(chatId)) {
             updateUser(chatId, name, steamId, locale)
         } else {
             createUser(chatId, name, steamId, locale)
         }
     }
 
-    private fun createUser(chatId: String, name: String?, steamId: String, locale: String): User? {
-        val user = User(
-            chatId,
-            name ?: Localization.getText("users.default_name", locale),
-            steamId.toLong(),
-            locale,
-            true
-        )
+    private fun createUser(chatId: String, name: String, steamId: Long, locale: String): User? {
+        val user = User(chatId, name, steamId, locale, true)
+
         return userRepository.create(user)
     }
 
-    private fun updateUser(chatId: String, name: String?, steamId: String, locale: String): User? {
-        return if (existsByChatId(chatId)) {
-            userRepository.update(chatId, name, steamId.toLong(), locale)
-        } else {
-            null
-        }
+    private fun updateUser(chatId: String, name: String, steamId: Long, locale: String): User? {
+        return userRepository.update(chatId, name, steamId, locale)
     }
 
     fun updateActiveByChatId(isActive: Boolean, chatId: String): Int =
