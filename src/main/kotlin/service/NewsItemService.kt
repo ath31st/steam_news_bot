@@ -48,7 +48,8 @@ class NewsItemService {
 
         result = result.replace(Regex("<br\\s*/?>"), "\n")
             .replace(Regex("</?p>"), "\n")
-            .replace(Regex("<strong>"), "<b>").replace(Regex("</strong>"), "</b>")
+            .replace(Regex("<strong>"), "<b>")
+            .replace(Regex("</strong>"), "</b>")
 
         result = result.replace("[h1]", "<b>").replace("[/h1]", "</b>\n")
             .replace("[h2]", "<b>").replace("[/h2]", "</b>\n")
@@ -68,7 +69,7 @@ class NewsItemService {
 
         result = result.replace(Regex("RELATED LINKS:.*", RegexOption.DOT_MATCHES_ALL), "")
 
-        return result
+        return result.trim()
     }
 
     private fun convertUnixToDate(unixSeconds: Long, locale: String): String {
