@@ -89,17 +89,32 @@ fun Application.configureDependencyInjection() {
             single { BotUiService() }
             single { MessageService(get(), get(), get()) }
             single {
-                UserInteractionService(
+                UserManagementService(
                     get(),
                     get(),
                     get(),
                     get(),
                     get(),
-                    get(),
-                    get(named("userStates")),
-                    get(named("statistics"))
+                    get(named("userStates"))
                 )
             }
+            single { GameSubscriptionService(get(), get(), get(), get(), get()) }
+            single { SteamIntegrationService(get(), get(), get()) }
+            single { StatisticsService(get(), get(), get(), get(named("statistics"))) }
+
+            single<UserInteraction> {
+                UserInteractionFacade(
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get()
+                )
+            }
+
+            single { CommandHandler(get()) }
+            single { CallbackCommandRegistry(get()) }
             single { BotController(get()) }
         })
     }
