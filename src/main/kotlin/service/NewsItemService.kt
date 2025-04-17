@@ -1,7 +1,7 @@
 package sidim.doma.service
 
 import sidim.doma.entity.NewsItem
-import sidim.doma.util.Localization
+import sidim.doma.util.LocalizationUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,9 +14,9 @@ class NewsItemService {
         val name = if (gameName != null) "<b><u>$gameName</u></b>\n" else ""
         val newsTitle = "<b>${newsItem.title}</b>\n\n"
         val url =
-            "\n<a href=\"${newsItem.url}\">${Localization.getText("news.read_more", locale)}</a>"
+            "\n<a href=\"${newsItem.url}\">${LocalizationUtils.getText("news.read_more", locale)}</a>"
         val date = "\n<i>${
-            Localization.getText(
+            LocalizationUtils.getText(
                 "news.published",
                 locale
             )
@@ -30,7 +30,7 @@ class NewsItemService {
             formattedContent
         } else {
             val truncated = formattedContent.substring(0, maxContentLength - 50)
-            "$truncated...\n<i>${Localization.getText("news.truncated", locale)}</i>"
+            "$truncated...\n<i>${LocalizationUtils.getText("news.truncated", locale)}</i>"
         }
 
         return name + newsTitle + truncatedContent + date + url
