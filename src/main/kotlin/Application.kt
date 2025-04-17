@@ -1,11 +1,13 @@
 package sidim.doma
 
 import io.ktor.server.application.*
-import sidim.doma.config.configureLogging
-import sidim.doma.plugin.*
-import sidim.doma.scheduler.configureGameStatesScheduler
-import sidim.doma.scheduler.configureNewsScheduler
-import sidim.doma.scheduler.configureUpdateGamesScheduler
+import org.koin.core.context.GlobalContext
+import sidim.doma.application.bot.TelegramBotLauncher
+import sidim.doma.application.scheduler.configureGameStatesScheduler
+import sidim.doma.application.scheduler.configureNewsScheduler
+import sidim.doma.application.scheduler.configureUpdateGamesScheduler
+import sidim.doma.common.config.configureLogging
+import sidim.doma.infrastructure.plugin.*
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -18,7 +20,8 @@ fun Application.module() {
     configureDatabases()
     configureDependencyInjection()
     configureRouting()
-    configureTelegramBot()
+
+    GlobalContext.get().get<TelegramBotLauncher>().configure(this)
 
     configureNewsScheduler()
     configureGameStatesScheduler()
