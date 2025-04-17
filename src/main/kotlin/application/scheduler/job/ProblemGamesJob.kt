@@ -20,9 +20,10 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.minutes
 
 class ProblemGamesJob : Job {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     override fun execute(context: JobExecutionContext) {
         runBlocking {
-            val logger = LoggerFactory.getLogger(this::class.java)
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
@@ -30,42 +31,57 @@ class ProblemGamesJob : Job {
                 GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
-            if (problemGames.isNotEmpty()) {
-                logger.info("Found {} problem games, attempting retry", problemGames.size)
+            processProblemGames(problemGames, newsItems, steamApiClient, semaphore)
+        }
+    }
 
-                problemGames.toList().forEach { game ->
-                    semaphore.withPermit {
-                        var attempts = 0
-                        val maxAttempts = PROBLEM_GAMES_ATTEMPTS
-                        var success = false
+    private suspend fun processProblemGames(
+        problemGames: CopyOnWriteArraySet<Game>,
+        newsItems: CopyOnWriteArraySet<NewsItem>,
+        steamApiClient: SteamApiClient,
+        semaphore: Semaphore
+    ) {
+        if (problemGames.isEmpty()) return
 
-                        while (attempts < maxAttempts && !success) {
-                            try {
-                                attempts++
-                                val news = steamApiClient.getRecentNewsByOwnedGames(game.appid)
-                                newsItems.addAll(news)
-                                success = true
-                                problemGames.remove(game)
-                            } catch (e: IOException) {
-                                if (attempts == maxAttempts) {
-                                    logger.error("All retries failed for game {}", game.appid)
-                                    problemGames.remove(game)
-                                }
-                                delay(PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS.minutes.inWholeMilliseconds)
-                            }
-                        }
-                    }
+        logger.info("Found {} problem games, attempting retry", problemGames.size)
+
+        problemGames.toList().forEach { game ->
+            semaphore.withPermit {
+                processSingleGame(game, newsItems, steamApiClient, problemGames)
+            }
+        }
+
+        logger.info("Remaining problem games after processing: {}", problemGames.size)
+        if (newsItems.isNotEmpty()) {
+            logger.info("Found {} news items after processing problem games", newsItems.size)
+        }
+
+        problemGames.clear()
+    }
+
+    private suspend fun processSingleGame(
+        game: Game,
+        newsItems: CopyOnWriteArraySet<NewsItem>,
+        steamApiClient: SteamApiClient,
+        problemGames: CopyOnWriteArraySet<Game>
+    ) {
+        var attempts = 0
+        val maxAttempts = PROBLEM_GAMES_ATTEMPTS
+        var success = false
+
+        while (attempts < maxAttempts && !success) {
+            try {
+                attempts++
+                val news = steamApiClient.getRecentNewsByOwnedGames(game.appid)
+                newsItems.addAll(news)
+                success = true
+                problemGames.remove(game)
+            } catch (_: IOException) {
+                if (attempts == maxAttempts) {
+                    logger.error("All retries failed for game {}", game.appid)
+                    problemGames.remove(game)
                 }
-
-                logger.info("Remaining problem games after processing: {}", problemGames.size)
-                if (newsItems.isNotEmpty()) {
-                    logger.info(
-                        "Found {} news items after processing problem games",
-                        newsItems.size
-                    )
-                }
-
-                problemGames.clear()
+                delay(PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS.minutes.inWholeMilliseconds)
             }
         }
     }
