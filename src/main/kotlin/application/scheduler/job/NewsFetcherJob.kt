@@ -28,7 +28,7 @@ class NewsFetcherJob : Job {
             val gameService = GlobalContext.get().get<GameService>()
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
 
-            val logger = LoggerFactory.getLogger("NewsFetcherJob")
+            val logger = LoggerFactory.getLogger(this::class.java)
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
             val problemGames =

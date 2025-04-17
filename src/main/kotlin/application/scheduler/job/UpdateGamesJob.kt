@@ -21,10 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
 class UpdateGamesJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
+            val logger = LoggerFactory.getLogger(this::class.java)
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
             val gameService = GlobalContext.get().get<GameService>()
 
-            val logger = LoggerFactory.getLogger("UpdateGamesJob")
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startUpdate = Instant.now()

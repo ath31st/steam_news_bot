@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.minutes
 class ProblemGamesJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
-            val logger = LoggerFactory.getLogger("ProblemGamesScheduler")
+            val logger = LoggerFactory.getLogger(this::class.java)
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))

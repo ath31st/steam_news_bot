@@ -30,7 +30,7 @@ class GameStatesJob : Job {
             val gameService = GlobalContext.get().get<GameService>()
             val userGameStateService = GlobalContext.get().get<UserGameStateService>()
 
-            val logger = LoggerFactory.getLogger("GameStatesScheduler")
+            val logger = LoggerFactory.getLogger(this::class.java)
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
 
             val startUpdate = Instant.now()
