@@ -46,7 +46,7 @@ class SteamApiClient(
             response in INVALID_RESPONSES -> null
             else -> try {
                 parseAppDetails(response)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
