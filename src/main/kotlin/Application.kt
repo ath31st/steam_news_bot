@@ -7,7 +7,9 @@ import sidim.doma.application.scheduler.configureGameStatesScheduler
 import sidim.doma.application.scheduler.configureNewsScheduler
 import sidim.doma.application.scheduler.configureUpdateGamesScheduler
 import sidim.doma.common.config.configureLogging
-import sidim.doma.infrastructure.plugin.*
+import sidim.doma.infrastructure.plugin.configureDatabases
+import sidim.doma.infrastructure.plugin.configureDependencyInjection
+import sidim.doma.infrastructure.plugin.configureSerialization
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
@@ -15,11 +17,9 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     configureLogging()
-    configureHTTP()
     configureSerialization()
     configureDatabases()
     configureDependencyInjection()
-    configureRouting()
 
     GlobalContext.get().get<TelegramBotLauncher>().configure(this)
 
