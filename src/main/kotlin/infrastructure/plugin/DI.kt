@@ -26,13 +26,16 @@ import sidim.doma.common.config.InitializeConfig.STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.USER_STATE_EXPIRATION_TIME
 import sidim.doma.common.dto.Statistics
 import sidim.doma.domain.game.entity.Game
+import sidim.doma.domain.game.repository.ExposedGameRepository
 import sidim.doma.domain.game.repository.GameRepository
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
+import sidim.doma.domain.state.repository.ExposedUserGameStateRepository
 import sidim.doma.domain.state.repository.UserGameStateRepository
 import sidim.doma.domain.state.service.UserGameStateService
 import sidim.doma.domain.user.entity.UserState
+import sidim.doma.domain.user.repository.ExposedUserRepository
 import sidim.doma.domain.user.repository.UserRepository
 import sidim.doma.domain.user.service.UserService
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
@@ -98,9 +101,9 @@ private fun infrastructureModule(botToken: String, steamWebApiKey: String) = mod
 }
 
 private val domainModule = module {
-    single { GameRepository() }
-    single { UserGameStateRepository() }
-    single { UserRepository() }
+    single<GameRepository> { ExposedGameRepository() }
+    single<UserGameStateRepository> { ExposedUserGameStateRepository() }
+    single<UserRepository> { ExposedUserRepository() }
     single { NewsItemService() }
     single { GameService(get()) }
     single { UserGameStateService(get()) }
