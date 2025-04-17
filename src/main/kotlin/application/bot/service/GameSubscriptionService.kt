@@ -2,6 +2,7 @@ package sidim.doma.application.bot.service
 
 import dev.inmo.tgbotapi.types.ChatId
 import sidim.doma.common.util.LocalizationUtils
+import sidim.doma.common.util.SortingOrder
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.state.service.UserGameStateService
 import sidim.doma.domain.user.service.UserService
@@ -77,8 +78,12 @@ class GameSubscriptionService(
         val pageNumber = messageText.removePrefix("/black_list_").toInt()
         val pageSize = 10
 
-        val bannedGamesPage =
-            gameService.getPageBannedByChatId(chatId.chatId.toString(), pageNumber, pageSize)
+        val bannedGamesPage = gameService.getPageBannedByChatId(
+            chatId.chatId.toString(),
+            pageNumber,
+            pageSize,
+            SortingOrder.ASC
+        )
         if (bannedGamesPage.items.isEmpty()) {
             messageService.sendTextMessage(
                 chatId,
@@ -98,7 +103,7 @@ class GameSubscriptionService(
     }
 
     suspend fun handleClearBlackList(chatId: ChatId, locale: String) {
-        val bannedGamesCount = gameService.getCountBannedByChatId(chatId.chatId.toString())
+        val bannedGamesCount = gameService.countBannedGamesByChatId(chatId.chatId.toString())
         if (bannedGamesCount == 0L) {
             messageService.sendTextMessage(
                 chatId,

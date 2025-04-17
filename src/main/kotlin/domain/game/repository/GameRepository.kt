@@ -2,7 +2,7 @@ package sidim.doma.domain.game.repository
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import sidim.doma.common.dto.Page
+import sidim.doma.common.util.SortingOrder
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.entity.Games
 import sidim.doma.domain.state.entity.UserGameStates
@@ -45,45 +45,31 @@ class GameRepository {
         }
     }
 
-    fun getPageBannedByChatId(
+    fun findBannedGamesByChatId(
         chatId: String,
         pageNumber: Int,
         pageSize: Int,
-        sortOrder: SortOrder = SortOrder.ASC
-    ): Page<Game> {
+        sortOrder: SortingOrder
+    ): List<Game> {
         return transaction {
+            val order = if (sortOrder == SortingOrder.ASC) SortOrder.ASC else SortOrder.DESC
             val offset: Long = ((pageNumber - 1) * pageSize).toLong()
 
-            val query = (Games innerJoin UserGameStates).selectAll()
+            (Games innerJoin UserGameStates)
+                .selectAll()
                 .where { (UserGameStates.userId eq chatId) and (UserGameStates.isBanned eq true) }
-                .orderBy(Games.name, sortOrder)
-
-            val totalCount = query.count()
-
-            val items = query.limit(count = pageSize)
-                .offset(start = offset)
+                .orderBy(Games.name, order)
+                .limit(pageSize)
+                .offset(offset)
                 .map { rowToGame(it) }
-
-            val totalPages =
-                (totalCount / pageSize).toInt() + if (totalCount % pageSize != 0L) 1 else 0
-
-            Page(
-                items = items,
-                totalItems = totalCount,
-                totalPages = totalPages,
-                currentPage = pageNumber
-            )
         }
     }
 
-    fun getCountBannedByChatId(chatId: String): Long {
+    fun countBannedGamesByChatId(chatId: String): Long {
         return transaction {
             (Games innerJoin UserGameStates)
                 .selectAll()
-                .where {
-                    (UserGameStates.userId eq chatId) and
-                            (UserGameStates.isBanned eq true)
-                }
+                .where { (UserGameStates.userId eq chatId) and (UserGameStates.isBanned eq true) }
                 .count()
         }
     }
