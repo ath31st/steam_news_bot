@@ -12,8 +12,12 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import sidim.doma.common.config.SchedulerConfig.CHUNK_SIZE
+import sidim.doma.common.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
+import sidim.doma.common.config.SchedulerConfig.NEWS_TIME_WINDOW
+import sidim.doma.common.config.SchedulerConfig.NEW_COUNT_LIMIT
 import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.common.util.formatted
+import sidim.doma.common.util.isNewsRecent
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
@@ -47,9 +51,19 @@ class NewsFetcherJob : Job {
                         semaphore.withPermit {
                             chunk.forEach { game ->
                                 try {
-                                    val news = steamApiClient.getRecentNewsByOwnedGames(game.appid)
-                                    newsItems.addAll(news)
-                                } catch (e: IOException) {
+                                    val recentNews = steamApiClient.getNewsByAppid(
+                                        game.appid,
+                                        NEW_COUNT_LIMIT,
+                                        MAX_LENGTH_FOR_CONTENT
+                                    ).filter {
+                                        isNewsRecent(
+                                            it.date,
+                                            NEWS_TIME_WINDOW,
+                                            startCycle.epochSecond
+                                        )
+                                    }
+                                    newsItems.addAll(recentNews)
+                                } catch (_: IOException) {
                                     problemGames.add(game)
                                 }
                             }

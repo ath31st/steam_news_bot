@@ -6,7 +6,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.datetime.Clock
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.news.entity.NewsItem
 import java.util.regex.Pattern
@@ -24,10 +23,6 @@ class SteamApiClient(
         private const val NEWS_PATH = "/ISteamNews/GetNewsForApp/v2/"
         private const val WISHLIST_PATH = "/IWishlistService/GetWishlist/v1/"
         private const val APP_DETAILS_PATH = "$BASE_STORE_URL/api/appdetails"
-
-        private const val FILTER_WINDOW_IN_SECONDS: Long = 1800L
-        private const val NEW_COUNT_LIMIT: Int = 3
-        private const val MAX_LENGTH_FOR_CONTENT: Int = 500
 
         private val STEAM_ID_PATTERN = Pattern.compile("765\\d{14}")
 
@@ -78,17 +73,17 @@ class SteamApiClient(
         }
     }
 
-    suspend fun getRecentNewsByOwnedGames(
+    suspend fun getNewsByAppid(
         appId: String,
-        newsCount: Int = NEW_COUNT_LIMIT,
-        maxLength: Int = MAX_LENGTH_FOR_CONTENT
+        newsCount: Int,
+        maxLength: Int
     ): List<NewsItem> {
         val response = fetch("$BASE_API_URL$NEWS_PATH") {
             parameter("appid", appId)
             parameter("count", newsCount)
             parameter("maxlength", maxLength)
         }
-        return parseNewsItemsWithTimeFilter(response)
+        return parseNewsItems(response)
     }
 
     fun isValidSteamId(steamId: String): Boolean = STEAM_ID_PATTERN.matcher(steamId).matches()
@@ -142,22 +137,12 @@ class SteamApiClient(
             else emptyList()
         }
 
-    private fun parseNewsItemsWithTimeFilter(json: String): List<NewsItem> =
+    private fun parseNewsItems(json: String): List<NewsItem> =
         objectMapper.readTree(json)
             .path("appnews")["newsitems"]
             .let { newsNode ->
                 if (newsNode.isArray) {
-                    newsNode.mapNotNull { node ->
-                        val dateSeconds = node["date"].asLong()
-                        if (isRecentNews(dateSeconds)) {
-                            objectMapper.convertValue<NewsItem>(node)
-                        } else null
-                    }
+                    newsNode.mapNotNull { objectMapper.convertValue<NewsItem>(it) }
                 } else emptyList()
             }
-
-    private fun isRecentNews(seconds: Long, limit: Long = FILTER_WINDOW_IN_SECONDS): Boolean {
-        val currentTimeSeconds = Clock.System.now().epochSeconds
-        return seconds >= (currentTimeSeconds - limit)
-    }
 }

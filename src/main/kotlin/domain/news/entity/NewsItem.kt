@@ -15,7 +15,7 @@ data class NewsItem @JsonCreator constructor(
     @JsonProperty("feedname") val feedName: String,
     @JsonProperty("feed_type") val feedType: Int,
     @JsonProperty("appid") val appid: String,
-    @JsonProperty("date") val date: String
+    @JsonProperty("date") val date: Long
 )
 
 object NewsItems : Table("news_item") {
@@ -29,7 +29,7 @@ object NewsItems : Table("news_item") {
     val feedName = varchar("feed_name", 255)
     val feedType = integer("feed_type")
     val appid = varchar("appid", 255)
-    val date = varchar("date", 255)
+    val date = long("date")
 
     override val primaryKey = PrimaryKey(gid)
 }

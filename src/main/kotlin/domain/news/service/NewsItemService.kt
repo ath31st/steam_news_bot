@@ -25,7 +25,7 @@ class NewsItemService {
                 "news.published",
                 locale
             )
-        }: ${convertUnixToDate(newsItem.date.toLong(), locale)}</i>"
+        }: ${convertUnixToDate(newsItem.date, locale)}</i>"
 
         val fixedLength = name.length + newsTitle.length + date.length + url.length + 2
         val maxContentLength = MAX_MESSAGE_LENGTH - fixedLength

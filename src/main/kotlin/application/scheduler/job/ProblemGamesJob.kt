@@ -10,9 +10,13 @@ import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
+import sidim.doma.common.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
+import sidim.doma.common.config.SchedulerConfig.NEWS_TIME_WINDOW
+import sidim.doma.common.config.SchedulerConfig.NEW_COUNT_LIMIT
 import sidim.doma.common.config.SchedulerConfig.PROBLEM_GAMES_ATTEMPTS
 import sidim.doma.common.config.SchedulerConfig.PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS
 import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
+import sidim.doma.common.util.isNewsRecent
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
@@ -72,8 +76,14 @@ class ProblemGamesJob : Job {
         while (attempts < maxAttempts && !success) {
             try {
                 attempts++
-                val news = steamApiClient.getRecentNewsByOwnedGames(game.appid)
-                newsItems.addAll(news)
+
+                val recentNews = steamApiClient.getNewsByAppid(
+                    game.appid,
+                    NEW_COUNT_LIMIT,
+                    MAX_LENGTH_FOR_CONTENT
+                ).filter { isNewsRecent(it.date, NEWS_TIME_WINDOW) }
+
+                newsItems.addAll(recentNews)
                 success = true
                 problemGames.remove(game)
             } catch (_: IOException) {

@@ -7,6 +7,9 @@ object SchedulerConfig {
     const val PROBLEM_GAMES_ATTEMPTS = 5
     const val PROBLEM_GAMES_INTERVAL_BETWEEN_ATTEMPTS = 1
 
+    const val NEW_COUNT_LIMIT: Int = 3
+    const val MAX_LENGTH_FOR_CONTENT: Int = 500
+    const val NEWS_TIME_WINDOW: Long = 1800L
     const val NEWS_FETCHER_JOB_INTERVAL = 30 // minutes
     const val NEWS_FETCHER_START_JOB_DELAY = 120L // seconds
 
