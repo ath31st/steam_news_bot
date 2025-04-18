@@ -6,8 +6,10 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import sidim.doma.domain.game.entity.Game
-import sidim.doma.domain.news.entity.NewsItem
+import sidim.doma.infrastructure.integration.steam.dto.SteamAppDetailsDto
+import sidim.doma.infrastructure.integration.steam.dto.SteamAppDto
+import sidim.doma.infrastructure.integration.steam.dto.SteamNewsItemDto
+import sidim.doma.infrastructure.integration.steam.dto.SteamWishlistAppDto
 import java.util.regex.Pattern
 
 class SteamApiClient(
@@ -32,7 +34,7 @@ class SteamApiClient(
         )
     }
 
-    suspend fun getAppDetails(appId: String): Game? {
+    suspend fun getAppDetails(appId: String): SteamAppDetailsDto? {
         val response = fetch(APP_DETAILS_PATH) {
             parameter("appids", appId)
             parameter("filters", "basic")
@@ -47,7 +49,7 @@ class SteamApiClient(
         }
     }
 
-    suspend fun getOwnedGames(steamId: String): List<Game> {
+    suspend fun getOwnedApps(steamId: String): List<SteamAppDto> {
         val response = fetch("$BASE_API_URL$OWNED_GAMES_PATH") {
             parameter("skip_unvetted_apps", "true")
             parameter("key", apiKey)
@@ -58,18 +60,18 @@ class SteamApiClient(
             response in INVALID_RESPONSES ->
                 throw IllegalStateException("Account with steamId $steamId is hidden or does not exist")
 
-            else -> parseGames(response)
+            else -> parseApps(response)
         }
     }
 
-    suspend fun getWishlistGames(steamId: String): List<Game> {
+    suspend fun getWishlistApps(steamId: String): List<SteamWishlistAppDto> {
         val response = fetch("$BASE_API_URL$WISHLIST_PATH") {
             parameter("steamid", steamId)
         }
         return when {
             response in INVALID_RESPONSES -> emptyList()
 
-            else -> parseWishlistGames(response)
+            else -> parseWishlistApps(response)
         }
     }
 
@@ -77,7 +79,7 @@ class SteamApiClient(
         appId: String,
         newsCount: Int,
         maxLength: Int
-    ): List<NewsItem> {
+    ): List<SteamNewsItemDto> {
         val response = fetch("$BASE_API_URL$NEWS_PATH") {
             parameter("appid", appId)
             parameter("count", newsCount)
@@ -110,39 +112,53 @@ class SteamApiClient(
         }.bodyAsText()
     }
 
-    private fun parseGames(json: String): List<Game> = objectMapper.readTree(json)
+    private fun parseApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
         .path("response")["games"]
         .let { gamesNode ->
-            if (gamesNode.isArray) gamesNode.map { objectMapper.convertValue(it, Game::class.java) }
+            if (gamesNode.isArray) gamesNode.map {
+                objectMapper.convertValue(
+                    it,
+                    SteamAppDto::class.java
+                )
+            }
             else emptyList()
         }
 
-    private fun parseAppDetails(json: String): Game = objectMapper.readTree(json)
+    private fun parseAppDetails(json: String): SteamAppDetailsDto = objectMapper.readTree(json)
         .let { rootNode ->
             val appEntry = rootNode.fields().next()
             val dataNode = appEntry.value.path("data")
 
             require(!dataNode.isEmpty && dataNode.path("success").asBoolean(true))
 
-            Game(
+            SteamAppDetailsDto(
                 appid = appEntry.key,
-                name = dataNode.path("name").asText()
+                name = dataNode.path("name").asText(),
+                type = dataNode.path("type").asText().takeIf { !it.isNullOrEmpty() },
+                isFree = dataNode.path("is_free").asBoolean(false)
+                    .takeIf { dataNode.path("is_free").isBoolean }
             )
         }
 
-    private fun parseWishlistGames(json: String): List<Game> = objectMapper.readTree(json)
-        .path("response")["items"]
-        .let { itemsNode ->
-            if (itemsNode.isArray) itemsNode.map { objectMapper.convertValue(it, Game::class.java) }
-            else emptyList()
-        }
+    private fun parseWishlistApps(json: String): List<SteamWishlistAppDto> =
+        objectMapper.readTree(json)
+            .path("response")["items"]
+            .let { itemsNode ->
+                if (itemsNode.isArray) itemsNode.map {
+                    objectMapper.convertValue(
+                        it,
+                        SteamWishlistAppDto::class.java
+                    )
+                }
+                else emptyList()
+            }
 
-    private fun parseNewsItems(json: String): List<NewsItem> =
+    private fun parseNewsItems(json: String): List<SteamNewsItemDto> =
         objectMapper.readTree(json)
             .path("appnews")["newsitems"]
             .let { newsNode ->
                 if (newsNode.isArray) {
-                    newsNode.mapNotNull { objectMapper.convertValue<NewsItem>(it) }
+                    newsNode.mapNotNull { objectMapper.convertValue<SteamNewsItemDto>(it) }
                 } else emptyList()
             }
 }
