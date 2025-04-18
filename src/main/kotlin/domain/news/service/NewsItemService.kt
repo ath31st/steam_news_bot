@@ -48,8 +48,7 @@ class NewsItemService {
             .replace(Regex("\\[img].*?\\[/img]"), "")
             .replace(Regex("\\{STEAM[^}]*\\.(jpg|png|gif)\\b"), "")
             .replace(Regex("\\{STEAM_CLAN_IMAGE}/\\d+/[a-f0-9]+(?:\\.(png|jpg|gif))?"), "")
-            .replace(Regex("https://i\\.imgur\\.com/\\S+"), "")
-            .replace(Regex("https://i\\.ibb\\.co/\\S+"), "")
+            .replace(Regex("https://\\S+\\.(jpg|png|gif)\\b"), "")
 
         result = result.replace(Regex("<br\\s*/?>"), "\n")
             .replace(Regex("</?p>"), "\n")
