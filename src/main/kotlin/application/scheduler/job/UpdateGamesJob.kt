@@ -8,13 +8,14 @@ import org.koin.core.context.GlobalContext
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
+import sidim.doma.application.game.mapper.toGame
 import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.common.config.SchedulerConfig.UPDATE_GAMES_DELAY
 import sidim.doma.common.config.SchedulerConfig.UPDATE_GAMES_JOB_LIMIT
 import sidim.doma.common.util.formatted
-import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
+import sidim.doma.infrastructure.integration.steam.dto.SteamAppDetailsDto
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,7 +34,7 @@ class UpdateGamesJob : Job {
             val gamesWithNullName = gameService.getGamesWithNullName().take(UPDATE_GAMES_JOB_LIMIT)
             logger.info("Found {} games with null name", gamesWithNullName.size)
 
-            val gamesForUpdate = ConcurrentHashMap.newKeySet<Game?>()
+            val gamesForUpdate = ConcurrentHashMap.newKeySet<SteamAppDetailsDto?>()
 
             gamesWithNullName.forEach { game ->
                 semaphore.withPermit {
@@ -47,7 +48,8 @@ class UpdateGamesJob : Job {
                 }
             }
 
-            val updatedGamesSize = gameService.updateGames(gamesForUpdate.filterNotNull())
+            val updatedGamesSize =
+                gameService.updateGames(gamesForUpdate.filterNotNull().map { it.toGame() })
 
             val endUpdate = Instant.now()
             logger.info(

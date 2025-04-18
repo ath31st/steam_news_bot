@@ -10,6 +10,7 @@ import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
+import sidim.doma.application.news.mapper.toNewsItem
 import sidim.doma.common.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
 import sidim.doma.common.config.SchedulerConfig.NEWS_TIME_WINDOW
 import sidim.doma.common.config.SchedulerConfig.NEW_COUNT_LIMIT
@@ -83,7 +84,7 @@ class ProblemGamesJob : Job {
                     MAX_LENGTH_FOR_CONTENT
                 ).filter { isNewsRecent(it.date, NEWS_TIME_WINDOW) }
 
-                newsItems.addAll(recentNews)
+                newsItems.addAll(recentNews.map { it.toNewsItem() })
                 success = true
                 problemGames.remove(game)
             } catch (_: IOException) {

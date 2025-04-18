@@ -4,6 +4,7 @@ import com.sksamuel.aedile.core.Cache
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import org.jetbrains.exposed.sql.transactions.transaction
+import sidim.doma.application.game.mapper.toGame
 import sidim.doma.common.util.LocalizationUtils
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.service.GameService
@@ -157,8 +158,8 @@ class UserManagementService(
         locale: String
     ): Pair<List<Game>, List<Game>>? {
         return try {
-            val games = steamApiClient.getOwnedGames(steamId)
-            val wishedGames = steamApiClient.getWishlistGames(steamId)
+            val games = steamApiClient.getOwnedApps(steamId).map { it.toGame() }
+            val wishedGames = steamApiClient.getWishlistApps(steamId).map { it.toGame() }
             Pair(games, wishedGames)
         } catch (_: NullPointerException) {
             messageService.sendTextMessage(

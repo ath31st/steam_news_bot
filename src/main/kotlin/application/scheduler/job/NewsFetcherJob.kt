@@ -11,6 +11,7 @@ import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
+import sidim.doma.application.news.mapper.toNewsItem
 import sidim.doma.common.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.common.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
 import sidim.doma.common.config.SchedulerConfig.NEWS_TIME_WINDOW
@@ -62,7 +63,7 @@ class NewsFetcherJob : Job {
                                             startCycle.epochSecond
                                         )
                                     }
-                                    newsItems.addAll(recentNews)
+                                    newsItems.addAll(recentNews.map { it.toNewsItem() })
                                 } catch (_: IOException) {
                                     problemGames.add(game)
                                 }

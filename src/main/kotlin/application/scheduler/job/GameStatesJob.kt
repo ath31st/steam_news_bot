@@ -11,6 +11,7 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import sidim.doma.application.game.mapper.toGame
 import sidim.doma.common.config.SchedulerConfig.CHUNK_SIZE
 import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.common.util.formatted
@@ -77,8 +78,8 @@ class GameStatesJob : Job {
         logger: Logger
     ) {
         val steamId = user.steamId.toString()
-        val ownedGames = steamApiClient.getOwnedGames(steamId)
-        val wishlistGames = steamApiClient.getWishlistGames(steamId)
+        val ownedGames = steamApiClient.getOwnedApps(steamId).map { it.toGame() }
+        val wishlistGames = steamApiClient.getWishlistApps(steamId).map { it.toGame() }
 
         logger.info("Updating game states for user ${user.chatId} (${user.steamId})")
         logger.info("Fresh steam data for id ${user.steamId}: Owned: ${ownedGames.size}, Wishlist: ${wishlistGames.size}")
