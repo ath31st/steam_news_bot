@@ -12,8 +12,8 @@ import org.quartz.JobExecutionContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import sidim.doma.application.game.mapper.toGame
-import sidim.doma.common.config.SchedulerConfig.CHUNK_SIZE
-import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
+import sidim.doma.application.scheduler.config.SchedulerConfig.CHUNK_SIZE
+import sidim.doma.application.scheduler.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.common.util.formatted
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.state.service.UserGameStateService

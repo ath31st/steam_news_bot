@@ -24,7 +24,7 @@ import sidim.doma.application.statistics.service.StatisticsService
 import sidim.doma.common.config.InitializeConfig.REQUEST_TIMEOUT
 import sidim.doma.common.config.InitializeConfig.STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.USER_STATE_EXPIRATION_TIME
-import sidim.doma.common.dto.Statistics
+import sidim.doma.application.statistics.dto.Statistics
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.repository.ExposedGameRepository
 import sidim.doma.domain.game.repository.GameRepository

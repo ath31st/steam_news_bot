@@ -3,7 +3,7 @@ package sidim.doma.application.statistics.service
 import com.sksamuel.aedile.core.Cache
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import sidim.doma.application.bot.service.MessageService
-import sidim.doma.common.dto.Statistics
+import sidim.doma.application.statistics.dto.Statistics
 import sidim.doma.common.util.LocalizationUtils
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.user.service.UserService

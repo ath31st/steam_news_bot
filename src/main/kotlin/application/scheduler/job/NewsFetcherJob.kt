@@ -12,11 +12,11 @@ import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import sidim.doma.application.news.mapper.toNewsItem
-import sidim.doma.common.config.SchedulerConfig.CHUNK_SIZE
-import sidim.doma.common.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
-import sidim.doma.common.config.SchedulerConfig.NEWS_TIME_WINDOW
-import sidim.doma.common.config.SchedulerConfig.NEW_COUNT_LIMIT
-import sidim.doma.common.config.SchedulerConfig.SEMAPHORE_LIMIT
+import sidim.doma.application.scheduler.config.SchedulerConfig.CHUNK_SIZE
+import sidim.doma.application.scheduler.config.SchedulerConfig.MAX_LENGTH_FOR_CONTENT
+import sidim.doma.application.scheduler.config.SchedulerConfig.NEWS_TIME_WINDOW
+import sidim.doma.application.scheduler.config.SchedulerConfig.NEW_COUNT_LIMIT
+import sidim.doma.application.scheduler.config.SchedulerConfig.SEMAPHORE_LIMIT
 import sidim.doma.common.util.formatted
 import sidim.doma.common.util.isNewsRecent
 import sidim.doma.domain.game.entity.Game

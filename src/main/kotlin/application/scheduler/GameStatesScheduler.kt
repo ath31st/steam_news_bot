@@ -6,8 +6,8 @@ import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import sidim.doma.application.scheduler.job.GameStatesJob
-import sidim.doma.common.config.SchedulerConfig.GAME_STATES_JOB_DELAY
-import sidim.doma.common.config.SchedulerConfig.GAME_STATES_START_JOB_DELAY
+import sidim.doma.application.scheduler.config.SchedulerConfig.GAME_STATES_JOB_DELAY
+import sidim.doma.application.scheduler.config.SchedulerConfig.GAME_STATES_START_JOB_DELAY
 import java.time.Instant
 import java.util.*
 

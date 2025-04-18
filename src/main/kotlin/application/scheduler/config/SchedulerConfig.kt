@@ -1,4 +1,4 @@
-package sidim.doma.common.config
+package sidim.doma.application.scheduler.config
 
 object SchedulerConfig {
     const val SEMAPHORE_LIMIT = 20
