@@ -1,6 +1,7 @@
 package sidim.doma.application.scheduler.job
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -10,12 +11,11 @@ import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
 import sidim.doma.application.game.mapper.toGame
 import sidim.doma.application.scheduler.config.SchedulerConfig.SEMAPHORE_LIMIT
-import sidim.doma.application.scheduler.config.SchedulerConfig.UPDATE_GAMES_DELAY
-import sidim.doma.application.scheduler.config.SchedulerConfig.UPDATE_GAMES_JOB_LIMIT
+import sidim.doma.application.scheduler.config.SchedulerConfig.UPDATE_GAMES_CHUNK_SIZE
 import sidim.doma.common.util.formatted
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
-import sidim.doma.infrastructure.integration.steam.dto.SteamAppDetailsDto
+import sidim.doma.infrastructure.integration.steam.dto.SteamAppDto
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -31,20 +31,23 @@ class UpdateGamesJob : Job {
             val startUpdate = Instant.now()
             logger.info("Starting update games job at {}", startUpdate.formatted())
 
-            val gamesWithNullName = gameService.getGamesWithNullName().take(UPDATE_GAMES_JOB_LIMIT)
+            val gamesWithNullName = gameService.getGamesWithNullName()
             logger.info("Found {} games with null name", gamesWithNullName.size)
 
-            val gamesForUpdate = ConcurrentHashMap.newKeySet<SteamAppDetailsDto?>()
+            val gamesForUpdate = ConcurrentHashMap.newKeySet<SteamAppDto>()
 
-            gamesWithNullName.forEach { game ->
-                semaphore.withPermit {
-                    try {
-                        val gameDetails = steamApiClient.getAppDetails(game.appid)
-                        gamesForUpdate.add(gameDetails)
-                    } catch (e: Exception) {
-                        logger.error("Failed to get game details for ${game.appid}: ${e.message}")
+            coroutineScope {
+                gamesWithNullName.chunked(UPDATE_GAMES_CHUNK_SIZE).forEach { chunk ->
+                    launch {
+                        semaphore.withPermit {
+                            try {
+                                val appDtos = steamApiClient.getAppsByAppids(chunk.map { it.appid })
+                                gamesForUpdate.addAll(appDtos)
+                            } catch (e: Exception) {
+                                logger.error("Failed to get apps for ${chunk.map { it.appid }}: ${e.message}")
+                            }
+                        }
                     }
-                    delay(UPDATE_GAMES_DELAY)
                 }
             }
 

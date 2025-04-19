@@ -21,7 +21,8 @@ class SteamApiClient(
         private const val USER_AGENT = "Mozilla/5.0"
         private const val BASE_API_URL = "http://api.steampowered.com"
         private const val BASE_STORE_URL = "http://store.steampowered.com"
-        private const val OWNED_GAMES_PATH = "/IPlayerService/GetOwnedGames/v1/"
+        private const val OWNED_APPS_PATH = "/IPlayerService/GetOwnedGames/v1/"
+        private const val GET_APPS_PATH = "/ICommunityService/GetApps/v1/"
         private const val NEWS_PATH = "/ISteamNews/GetNewsForApp/v2/"
         private const val WISHLIST_PATH = "/IWishlistService/GetWishlist/v1/"
         private const val APP_DETAILS_PATH = "$BASE_STORE_URL/api/appdetails"
@@ -32,6 +33,24 @@ class SteamApiClient(
             """{"response":{}}""",
             """{"success": 2}"""
         )
+    }
+
+    suspend fun getAppsByAppids(appIds: List<String>): List<SteamAppDto> {
+        require(appIds.size <= 50)
+
+        val queryParams = buildString {
+            append("key=$apiKey")
+            appIds.forEachIndexed { index, appId ->
+                append("&appids[$index]=$appId")
+            }
+        }
+
+        val response = fetch("$BASE_API_URL$GET_APPS_PATH?$queryParams")
+
+        return when {
+            response in INVALID_RESPONSES -> emptyList()
+            else -> parseGetApps(response)
+        }
     }
 
     suspend fun getAppDetails(appId: String): SteamAppDetailsDto? {
@@ -50,7 +69,7 @@ class SteamApiClient(
     }
 
     suspend fun getOwnedApps(steamId: String): List<SteamAppDto> {
-        val response = fetch("$BASE_API_URL$OWNED_GAMES_PATH") {
+        val response = fetch("$BASE_API_URL$OWNED_APPS_PATH") {
             parameter("skip_unvetted_apps", "true")
             parameter("key", apiKey)
             parameter("include_appinfo", "true")
@@ -60,7 +79,7 @@ class SteamApiClient(
             response in INVALID_RESPONSES ->
                 throw IllegalStateException("Account with steamId $steamId is hidden or does not exist")
 
-            else -> parseApps(response)
+            else -> parseOwnedApps(response)
         }
     }
 
@@ -112,7 +131,7 @@ class SteamApiClient(
         }.bodyAsText()
     }
 
-    private fun parseApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
+    private fun parseOwnedApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
         .path("response")["games"]
         .let { gamesNode ->
             if (gamesNode.isArray) gamesNode.map {
@@ -120,6 +139,24 @@ class SteamApiClient(
                     it,
                     SteamAppDto::class.java
                 )
+            }
+            else emptyList()
+        }
+
+    private fun parseGetApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
+        .path("response")["apps"]
+        .let { appsNode ->
+            if (appsNode.isArray) appsNode.mapNotNull { dataNode ->
+                val appId = dataNode.path("appid").asLong()
+                val name = dataNode.path("name").asText()
+                val icon = dataNode.path("icon").asText()
+                if (name.isNotEmpty() && icon.isNotEmpty()) SteamAppDto(
+                    appid = appId,
+                    name = name,
+                    hashImgIconUrl = icon,
+                    hasCommunityVisibleStats = dataNode.path("community_visible_stats")
+                        .takeIf { it.isBoolean }?.asBoolean()
+                ) else null
             }
             else emptyList()
         }
