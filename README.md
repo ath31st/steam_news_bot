@@ -20,7 +20,7 @@
 
 ## Program version
 
-2.7.0
+2.7.1
 
 ## Introduction
 
@@ -97,6 +97,7 @@ node.js).<br/>
 5. koin - dependency injection library
 6. ktor - web framework
 7. caffeine - caching library
+8. flyway - database migrations
 
 ## Versions:
 
@@ -108,7 +109,8 @@ node.js).<br/>
 - Quartz: 2.5.0</br>
 - TelegramBotAPI: 24.0.2</br>
 - Caffeine (Aedile): 2.0.3</br>
-- Gradle: 8.5</br>
+- Flyway: 11.7.2</br>
+- Gradle: 8.12</br>
 
 You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
 

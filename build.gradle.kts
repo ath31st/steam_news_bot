@@ -6,15 +6,17 @@ val logbackVersion: String by project
 val tgbotapiVersion: String by project
 val quartzVersion: String by project
 val caffeineAedileVersion: String by project
+val flywayVersion: String by project
 
 plugins {
     kotlin("jvm") version "2.1.20"
     id("io.ktor.plugin") version "3.0.3"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
+    id("org.flywaydb.flyway") version "11.7.2"
 }
 
 group = "sidim.doma"
-version = "2.7.0"
+version = "2.7.1"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -40,6 +42,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.xerial:sqlite-jdbc:$sqliteVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("io.ktor:ktor-server-netty")
@@ -50,6 +53,12 @@ dependencies {
     implementation("com.sksamuel.aedile:aedile-core:$caffeineAedileVersion")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+}
+
+flyway {
+    url = project.properties["dbUrl"].toString()
+    locations = arrayOf("classpath:db/migration")
+    baselineOnMigrate = true
 }
 
 kotlin {
