@@ -23,19 +23,23 @@ class UpdateGamesJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
+
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
             val gameService = GlobalContext.get().get<GameService>()
 
-            val semaphore = Semaphore(SEMAPHORE_LIMIT)
+            val gamesWithNullName = gameService.getGamesWithNullName()
+            if (gamesWithNullName.isEmpty()) {
+                logger.info("No games with null name found")
+                return@runBlocking
+            }
 
             val startUpdate = Instant.now()
             logger.info("Starting update games job at {}", startUpdate.formatted())
-
-            val gamesWithNullName = gameService.getGamesWithNullName()
             logger.info("Found {} games with null name", gamesWithNullName.size)
 
             val gamesForUpdate = ConcurrentHashMap.newKeySet<SteamAppDto>()
 
+            val semaphore = Semaphore(SEMAPHORE_LIMIT)
             coroutineScope {
                 gamesWithNullName.chunked(UPDATE_GAMES_CHUNK_SIZE).forEach { chunk ->
                     launch {

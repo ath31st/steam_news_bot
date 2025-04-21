@@ -20,7 +20,7 @@
 
 ## Program version
 
-2.8.1
+2.8.2
 
 ## Introduction
 

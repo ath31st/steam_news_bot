@@ -26,23 +26,27 @@ import java.time.Instant
 class GameStatesJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
+            val logger = LoggerFactory.getLogger(this::class.java)
+
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
             val userService = GlobalContext.get().get<UserService>()
             val gameService = GlobalContext.get().get<GameService>()
             val userGameStateService = GlobalContext.get().get<UserGameStateService>()
 
-            val logger = LoggerFactory.getLogger(this::class.java)
-            val semaphore = Semaphore(SEMAPHORE_LIMIT)
+            val activeUsers = userService.getAllActiveUsers()
+            if (activeUsers.isEmpty()) {
+                logger.info("No active users found")
+                return@runBlocking
+            }
 
             val startUpdate = Instant.now()
             logger.info(
                 "Starting game states update for all active users at {}",
                 startUpdate.formatted()
             )
-
-            val activeUsers = userService.getAllActiveUsers()
             logger.info("Found {} active users to update game states", activeUsers.size)
 
+            val semaphore = Semaphore(SEMAPHORE_LIMIT)
             activeUsers.chunked(CHUNK_SIZE).forEach { userChunk ->
                 userChunk.forEach { user ->
                     semaphore.withPermit {

@@ -30,22 +30,26 @@ import java.util.concurrent.CopyOnWriteArraySet
 class NewsFetcherJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
+            val logger = LoggerFactory.getLogger(this::class.java)
+
             val gameService = GlobalContext.get().get<GameService>()
             val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-
-            val logger = LoggerFactory.getLogger(this::class.java)
-            val newsItems =
-                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
             val problemGames =
                 GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
-            val semaphore = Semaphore(SEMAPHORE_LIMIT)
+            val newsItems =
+                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
+
+            val games = gameService.getAllGamesByActiveUsersAndNotBanned()
+            if (games.isEmpty()) {
+                logger.info("No games to check for news")
+                return@runBlocking
+            }
 
             val startCycle = Instant.now()
             logger.info("Starting news fetcher job at {}", startCycle.formatted())
-
-            val games = gameService.getAllGamesByActiveUsersAndNotBanned()
             logger.info("Found {} games to check for news", games.size)
 
+            val semaphore = Semaphore(SEMAPHORE_LIMIT)
             coroutineScope {
                 games.chunked(CHUNK_SIZE).forEach { chunk ->
                     launch {

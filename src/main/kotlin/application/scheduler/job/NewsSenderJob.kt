@@ -26,6 +26,7 @@ class NewsSenderJob : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
+
             val messageService = GlobalContext.get().get<MessageService>()
             val userService = GlobalContext.get().get<UserService>()
             val gameService = GlobalContext.get().get<GameService>()
