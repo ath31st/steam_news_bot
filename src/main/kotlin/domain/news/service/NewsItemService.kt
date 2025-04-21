@@ -1,6 +1,6 @@
 package sidim.doma.domain.news.service
 
-import sidim.doma.common.util.LocalizationUtils
+import sidim.doma.common.util.LocalizationUtils.getText
 import sidim.doma.domain.news.entity.NewsItem
 import java.text.SimpleDateFormat
 import java.util.*
@@ -10,24 +10,23 @@ class NewsItemService {
         const val MAX_MESSAGE_LENGTH = 4000
     }
 
-    fun formatNewsForTelegram(newsItem: NewsItem, gameName: String?, locale: String): String {
-        val name = if (gameName != null) "<b><u>$gameName</u></b>\n" else ""
+    fun prepareNewsMessageForTelegram(
+        newsItem: NewsItem,
+        gameName: String?,
+        isInWishlist: Boolean,
+        locale: String
+    ): String {
+        val name = if (gameName != null) "<b><u>$gameName</u></b>" else ""
+        val isInWishlistStr =
+            if (isInWishlist) " ${getText("news.in_wishlist", locale)}\n" else "\n"
         val newsTitle = "<b>${newsItem.title}</b>\n\n"
-        val url =
-            "\n<a href=\"${newsItem.url}\">${
-                LocalizationUtils.getText(
-                    "news.read_more",
-                    locale
-                )
-            }</a>"
-        val date = "\n<i>${
-            LocalizationUtils.getText(
-                "news.published",
-                locale
-            )
-        }: ${convertUnixToDate(newsItem.date, locale)}</i>"
+        val url = "\n<a href=\"${newsItem.url}\">${getText("news.read_more", locale)}</a>"
+        val date = "\n<i>${getText("news.published", locale)}: ${
+            convertUnixToDate(newsItem.date, locale)
+        }</i>"
 
-        val fixedLength = name.length + newsTitle.length + date.length + url.length + 2
+        val fixedLength =
+            name.length + isInWishlistStr.length + newsTitle.length + date.length + url.length + 2
         val maxContentLength = MAX_MESSAGE_LENGTH - fixedLength
 
         val formattedContent = formatContent(newsItem.contents)
@@ -35,10 +34,10 @@ class NewsItemService {
             formattedContent
         } else {
             val truncated = formattedContent.substring(0, maxContentLength - 50)
-            "$truncated...\n<i>${LocalizationUtils.getText("news.truncated", locale)}</i>"
+            "$truncated...\n<i>${getText("news.truncated", locale)}</i>"
         }
 
-        return name + newsTitle + truncatedContent + date + url
+        return name + isInWishlistStr + newsTitle + truncatedContent + date + url
     }
 
     private fun formatContent(content: String): String {
