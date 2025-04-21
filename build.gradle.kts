@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "sidim.doma"
-version = "2.7.1"
+version = "2.7.2"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -55,9 +55,11 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
 
+val migrationPath = "$projectDir/src/main/resources/db/migration"
+
 flyway {
-    url = project.properties["dbUrl"].toString()
-    locations = arrayOf("classpath:db/migration")
+    url = "jdbc:sqlite:${projectDir}/${project.properties["dbName"].toString()}"
+    locations = arrayOf("filesystem:$migrationPath")
     baselineOnMigrate = true
 }
 
