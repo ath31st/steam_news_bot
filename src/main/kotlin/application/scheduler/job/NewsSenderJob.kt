@@ -16,6 +16,7 @@ import sidim.doma.common.util.formatted
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
+import sidim.doma.domain.state.service.UserGameStateService
 import sidim.doma.domain.user.service.UserService
 import java.time.Duration
 import java.time.Instant
@@ -29,6 +30,7 @@ class NewsSenderJob : Job {
             val userService = GlobalContext.get().get<UserService>()
             val gameService = GlobalContext.get().get<GameService>()
             val newsItemService = GlobalContext.get().get<NewsItemService>()
+            val userGameStateService = GlobalContext.get().get<UserGameStateService>()
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
 
@@ -43,18 +45,34 @@ class NewsSenderJob : Job {
             val appIds = newsItems.map { it.appid }.toSet()
             val gamesMap = gameService.getGamesByAppIds(appIds).associateBy { it.appid }
 
+            val usersByAppId = newsItems.associate { news ->
+                news.appid to userService.getActiveUsersByAppId(news.appid)
+            }
+
+            val userIdAppIdPairs = usersByAppId.flatMap { (appid, users) ->
+                users.map { user -> user.chatId to appid }
+            }
+            val wishlistStates = userGameStateService.getWishlistStates(userIdAppIdPairs)
+
             coroutineScope {
                 newsItems.flatMap { news ->
-                    userService.getActiveUsersByAppId(news.appid).map { user -> news to user }
+                    usersByAppId[news.appid]?.map { user -> news to user } ?: emptyList()
                 }.map { (news, user) ->
-                    logger.info("Sending news ${news.appid} to user ${user.chatId} (${user.steamId})")
+                    logger.info("Sending news ${news.gid} for appid ${news.appid} to user ${user.chatId} (${user.steamId})")
 
                     launch {
                         try {
                             val chatId = ChatId(RawChatId(user.chatId.toLong()))
                             val gameName = gamesMap[news.appid]?.name
-                            val newsText =
-                                newsItemService.formatNewsForTelegram(news, gameName, user.locale)
+                            val isInWishlist = wishlistStates[user.chatId to news.appid] ?: false
+
+                            val newsText = newsItemService.prepareNewsMessageForTelegram(
+                                news,
+                                gameName,
+                                isInWishlist,
+                                user.locale
+                            )
+
                             messageService.sendNewsMessage(
                                 chatId = chatId,
                                 text = newsText,

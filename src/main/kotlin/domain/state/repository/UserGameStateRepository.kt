@@ -8,6 +8,7 @@ interface UserGameStateRepository {
     fun deleteUgsByUserId(userId: String)
     fun deleteUgsByGameIdAndUserId(gameId: String, userId: String)
     fun findByUserIdAndGameId(userId: String, gameId: String): UserGameState?
+    fun findWishlistStatesByUserAndGameIds(userIdAppIdPairs: List<Pair<String, String>>): List<UserGameState>
     fun updateIsBannedByGameIdAndUserId(banned: Boolean, gameId: String, userId: String)
     fun existsByUserIdAndGameId(userId: String, gameId: String): Boolean
     fun countByUserIdAndIsOwned(userId: String, isOwned: Boolean): Long

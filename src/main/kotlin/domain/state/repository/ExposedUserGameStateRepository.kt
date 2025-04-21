@@ -145,6 +145,19 @@ class ExposedUserGameStateRepository : UserGameStateRepository {
         }
     }
 
+    override fun findWishlistStatesByUserAndGameIds(pairs: List<Pair<String, String>>): List<UserGameState> {
+        return transaction {
+            val userIds = pairs.map { it.first }.distinct()
+            val gameIds = pairs.map { it.second }.distinct()
+
+            UserGameStates
+                .selectAll().where {
+                    (UserGameStates.userId inList userIds) and (UserGameStates.gameId inList gameIds)
+                }
+                .map { rowToUserGameState(it) }
+        }
+    }
+
     private fun rowToUserGameState(it: ResultRow) = UserGameState(
         userId = it[UserGameStates.userId],
         gameId = it[UserGameStates.gameId],

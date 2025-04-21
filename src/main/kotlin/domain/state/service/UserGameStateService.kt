@@ -63,6 +63,16 @@ class UserGameStateService(private val userGameStateRepository: UserGameStateRep
             userId
         )
 
+    fun getWishlistStates(userIdAppIdPairs: List<Pair<String, String>>): Map<Pair<String, String>, Boolean> {
+        if (userIdAppIdPairs.isEmpty()) return emptyMap()
+
+        val states = userGameStateRepository.findWishlistStatesByUserAndGameIds(userIdAppIdPairs)
+
+        return userIdAppIdPairs.associateWith { pair ->
+            states.any { it.userId == pair.first && it.gameId == pair.second && it.isWished }
+        }
+    }
+
     fun checkExistsByUserIdAndGameId(userId: String, gameId: String): Boolean =
         userGameStateRepository.existsByUserIdAndGameId(userId, gameId)
 
