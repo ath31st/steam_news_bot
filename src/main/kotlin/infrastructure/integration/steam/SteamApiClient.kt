@@ -6,7 +6,6 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import sidim.doma.infrastructure.integration.steam.dto.SteamAppDetailsDto
 import sidim.doma.infrastructure.integration.steam.dto.SteamAppDto
 import sidim.doma.infrastructure.integration.steam.dto.SteamNewsItemDto
 import sidim.doma.infrastructure.integration.steam.dto.SteamWishlistAppDto
@@ -50,21 +49,6 @@ class SteamApiClient(
         return when {
             response in INVALID_RESPONSES -> emptyList()
             else -> parseGetApps(response)
-        }
-    }
-
-    suspend fun getAppDetails(appId: String): SteamAppDetailsDto? {
-        val response = fetch(APP_DETAILS_PATH) {
-            parameter("appids", appId)
-            parameter("filters", "basic")
-        }
-        return when {
-            response in INVALID_RESPONSES -> null
-            else -> try {
-                parseAppDetails(response)
-            } catch (_: Exception) {
-                null
-            }
         }
     }
 
@@ -131,71 +115,48 @@ class SteamApiClient(
         }.bodyAsText()
     }
 
-    private fun parseOwnedApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
-        .path("response")["games"]
-        .let { gamesNode ->
-            if (gamesNode.isArray) gamesNode.map {
-                objectMapper.convertValue(
-                    it,
-                    SteamAppDto::class.java
-                )
-            }
-            else emptyList()
+    private fun parseOwnedApps(json: String): List<SteamAppDto> {
+        val gameNode = objectMapper.readTree(json).path("response")["games"]
+        return when {
+            gameNode == null || !gameNode.isArray -> emptyList()
+            else -> gameNode.mapNotNull { objectMapper.convertValue<SteamAppDto>(it) }
         }
+    }
 
-    private fun parseGetApps(json: String): List<SteamAppDto> = objectMapper.readTree(json)
-        .path("response")["apps"]
-        .let { appsNode ->
-            if (appsNode.isArray) appsNode.mapNotNull { dataNode ->
-                val appId = dataNode.path("appid").asLong()
-                val name = dataNode.path("name").asText()
-                val icon = dataNode.path("icon").asText()
-                if (name.isNotEmpty() && icon.isNotEmpty()) SteamAppDto(
+    private fun parseGetApps(json: String): List<SteamAppDto> {
+        val appsNode = objectMapper.readTree(json).path("response")["apps"]
+        return when {
+            appsNode == null || !appsNode.isArray -> emptyList()
+            else -> appsNode.mapNotNull { appNode ->
+                val appId = appNode.path("appid").asLong()
+                val name = appNode.path("name").asText()
+                val icon = appNode.path("icon").asText()
+                val hasCommunityVisibleStats = appNode.path("community_visible_stats")
+                    .takeIf { it.isBoolean }?.asBoolean()
+
+                if (name.isNotEmpty()) SteamAppDto(
                     appid = appId,
                     name = name,
                     hashImgIconUrl = icon,
-                    hasCommunityVisibleStats = dataNode.path("community_visible_stats")
-                        .takeIf { it.isBoolean }?.asBoolean()
+                    hasCommunityVisibleStats = hasCommunityVisibleStats
                 ) else null
             }
-            else emptyList()
         }
+    }
 
-    private fun parseAppDetails(json: String): SteamAppDetailsDto = objectMapper.readTree(json)
-        .let { rootNode ->
-            val appEntry = rootNode.fields().next()
-            val dataNode = appEntry.value.path("data")
-
-            require(!dataNode.isEmpty && dataNode.path("success").asBoolean(true))
-
-            SteamAppDetailsDto(
-                appid = appEntry.key,
-                name = dataNode.path("name").asText(),
-                type = dataNode.path("type").asText().takeIf { !it.isNullOrEmpty() },
-                isFree = dataNode.path("is_free").asBoolean(false)
-                    .takeIf { dataNode.path("is_free").isBoolean }
-            )
+    private fun parseWishlistApps(json: String): List<SteamWishlistAppDto> {
+        val wishlistNode = objectMapper.readTree(json).path("response")["items"]
+        return when {
+            wishlistNode == null || !wishlistNode.isArray -> emptyList()
+            else -> wishlistNode.mapNotNull { objectMapper.convertValue<SteamWishlistAppDto>(it) }
         }
+    }
 
-    private fun parseWishlistApps(json: String): List<SteamWishlistAppDto> =
-        objectMapper.readTree(json)
-            .path("response")["items"]
-            .let { itemsNode ->
-                if (itemsNode.isArray) itemsNode.map {
-                    objectMapper.convertValue(
-                        it,
-                        SteamWishlistAppDto::class.java
-                    )
-                }
-                else emptyList()
-            }
-
-    private fun parseNewsItems(json: String): List<SteamNewsItemDto> =
-        objectMapper.readTree(json)
-            .path("appnews")["newsitems"]
-            .let { newsNode ->
-                if (newsNode.isArray) {
-                    newsNode.mapNotNull { objectMapper.convertValue<SteamNewsItemDto>(it) }
-                } else emptyList()
-            }
+    private fun parseNewsItems(json: String): List<SteamNewsItemDto> {
+        val newsNode = objectMapper.readTree(json).path("appnews")["newsitems"]
+        return when {
+            newsNode == null || !newsNode.isArray -> emptyList()
+            else -> newsNode.mapNotNull { objectMapper.convertValue<SteamNewsItemDto>(it) }
+        }
+    }
 }
