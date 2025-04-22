@@ -20,10 +20,12 @@ import sidim.doma.application.bot.controller.BotController
 import sidim.doma.application.bot.controller.CallbackCommandRegistry
 import sidim.doma.application.bot.controller.CommandHandler
 import sidim.doma.application.bot.service.*
-import sidim.doma.application.statistics.dto.Statistics
+import sidim.doma.application.statistics.dto.CommonStatistics
+import sidim.doma.application.statistics.dto.NewsStatistics
 import sidim.doma.application.statistics.service.StatisticsService
+import sidim.doma.common.config.InitializeConfig.COMMON_STATISTICS_EXPIRATION_TIME
+import sidim.doma.common.config.InitializeConfig.NEWS_STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.REQUEST_TIMEOUT
-import sidim.doma.common.config.InitializeConfig.STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.USER_STATE_EXPIRATION_TIME
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.repository.ExposedGameRepository
@@ -76,10 +78,15 @@ private val commonModule = module {
             .expireAfterWrite(USER_STATE_EXPIRATION_TIME.minutes)
             .asCache<Long, UserState>()
     }
-    single(named("statistics")) {
+    single(named("commonStatistics")) {
         Caffeine.newBuilder()
-            .expireAfterWrite(STATISTICS_EXPIRATION_TIME.hours)
-            .asCache<String, Statistics>()
+            .expireAfterWrite(COMMON_STATISTICS_EXPIRATION_TIME.hours)
+            .asCache<String, CommonStatistics>()
+    }
+    single(named("newsStatistics")) {
+        Caffeine.newBuilder()
+            .expireAfterWrite(NEWS_STATISTICS_EXPIRATION_TIME.minutes)
+            .asCache<String, NewsStatistics>()
     }
     single(named("newsItems")) { CopyOnWriteArraySet<NewsItem>() }
     single(named("problemGames")) { CopyOnWriteArraySet<Game>() }
@@ -130,7 +137,16 @@ private val applicationModule = module {
     }
     single { GameSubscriptionService(get(), get(), get(), get(), get()) }
     single { WishlistService(get(), get(), get()) }
-    single { StatisticsService(get(), get(), get(), get(named("statistics"))) }
+    single {
+        StatisticsService(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(named("newsStatistics")),
+            get(named("commonStatistics"))
+        )
+    }
     single<UserInteraction> {
         UserInteractionFacade(
             get(),

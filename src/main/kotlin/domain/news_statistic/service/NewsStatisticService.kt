@@ -7,5 +7,6 @@ class NewsStatisticService(private val newsStatisticRepository: NewsStatisticRep
     fun incrementDailyCount(date: LocalDate, count: Int) =
         newsStatisticRepository.incrementDailyCount(date, count)
 
+    fun getDailyCount(date: LocalDate) = newsStatisticRepository.getDailyCount(date)
     fun getTotalCount() = newsStatisticRepository.getTotalCount()
 }
