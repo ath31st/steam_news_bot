@@ -25,6 +25,15 @@ class ExposedNewsStatisticRepository : NewsStatisticRepository {
         }
     }
 
+    override fun getDailyCount(date: LocalDate): Int {
+        return transaction {
+            NewsStatistics.selectAll()
+                .where { recordDate eq date }
+                .firstOrNull()
+                ?.let { it[dailyCount] } ?: 0
+        }
+    }
+
     override fun getTotalCount(): Long = transaction {
         NewsStatistics.selectAll()
             .sumOf { it[dailyCount].toLong() }

@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import sidim.doma.domain.game.entity.Games
+import sidim.doma.domain.news_statistic.entity.NewsStatistics
 import sidim.doma.domain.state.entity.UserGameStates
 import sidim.doma.domain.user.entity.Users
 
@@ -19,7 +20,7 @@ fun configureDatabases() {
         logger.info("Database connected successfully")
 
         transaction(db) {
-            SchemaUtils.create(Games, Users, UserGameStates)
+            SchemaUtils.create(Games, Users, UserGameStates, NewsStatistics)
             logger.info("Tables checked/created successfully")
         }
     } catch (e: Exception) {

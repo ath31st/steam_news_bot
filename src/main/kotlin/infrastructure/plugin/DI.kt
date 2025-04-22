@@ -20,17 +20,20 @@ import sidim.doma.application.bot.controller.BotController
 import sidim.doma.application.bot.controller.CallbackCommandRegistry
 import sidim.doma.application.bot.controller.CommandHandler
 import sidim.doma.application.bot.service.*
+import sidim.doma.application.statistics.dto.Statistics
 import sidim.doma.application.statistics.service.StatisticsService
 import sidim.doma.common.config.InitializeConfig.REQUEST_TIMEOUT
 import sidim.doma.common.config.InitializeConfig.STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.USER_STATE_EXPIRATION_TIME
-import sidim.doma.application.statistics.dto.Statistics
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.repository.ExposedGameRepository
 import sidim.doma.domain.game.repository.GameRepository
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
+import sidim.doma.domain.news_statistic.repository.ExposedNewsStatisticRepository
+import sidim.doma.domain.news_statistic.repository.NewsStatisticRepository
+import sidim.doma.domain.news_statistic.service.NewsStatisticService
 import sidim.doma.domain.state.repository.ExposedUserGameStateRepository
 import sidim.doma.domain.state.repository.UserGameStateRepository
 import sidim.doma.domain.state.service.UserGameStateService
@@ -104,10 +107,12 @@ private val domainModule = module {
     single<GameRepository> { ExposedGameRepository() }
     single<UserGameStateRepository> { ExposedUserGameStateRepository() }
     single<UserRepository> { ExposedUserRepository() }
+    single<NewsStatisticRepository> { ExposedNewsStatisticRepository() }
     single { NewsItemService() }
     single { GameService(get()) }
     single { UserGameStateService(get()) }
     single { UserService(get()) }
+    single { NewsStatisticService(get()) }
 }
 
 private val applicationModule = module {

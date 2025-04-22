@@ -4,5 +4,6 @@ import java.time.LocalDate
 
 interface NewsStatisticRepository {
     fun incrementDailyCount(date: LocalDate, count: Int)
+    fun getDailyCount(date: LocalDate): Int
     fun getTotalCount(): Long
 }
