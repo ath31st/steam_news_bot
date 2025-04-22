@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "sidim.doma"
-version = "2.8.2"
+version = "2.9.0"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
