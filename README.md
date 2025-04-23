@@ -29,7 +29,9 @@ sluggishness. News about apps
 and games there are in disarray and without sorting by date and time. This bot allows you to receive
 the latest news
 from application developers in a timely manner, in a convenient application (telegram)<br/>
-![image info](images/image01.jpg)![image info](images/image00.jpg)
+![image info](images/image00.jpg)
+
+![image info](images/image01.jpg)
 
 Try it now: [Steam News Bot](https://t.me/steam_newsy_bot)
 
@@ -47,10 +49,11 @@ node.js).<br/>
 1. The first and most important thing is that the bot does not use or store any private information
    about users. Only
    open sources and the steam API are used.
-2. The bot determines the user's language from the set language in the telegram settings. Two
-   languages are supported so far - Russian and English. (21.08.2022).
-
-   France, Germany, Ukraine languages ware added (25.03.2025).
+2. The bot determines the user's language from the set language in the telegram settings.
+   Five languages are supported: ![](https://flagcdn.com/w20/ru.png)
+   Russian, ![](https://flagcdn.com/w20/gb.png)English, ![](https://flagcdn.com/w20/fr.png)
+   France, ![](https://flagcdn.com/w20/de.png)Germany, ![](https://flagcdn.com/w20/ua.png)Ukraine
+   (updated 25.03.2025).
 3. After the greeting, the bot will prompt the user to register. Registration is very simple, you
    only need a Steam ID.
    ![image info](images/image03.jpg)
@@ -74,12 +77,17 @@ node.js).<br/>
     - _"Black list"_ - List of blacklisted applications.
 7. You can add the application to the blacklist under the news.<br/>
    ![image info](images/image04.jpg)
-8. Added a wish list for accounts that have access to game information in steam settings. In order
-   for the bot to get access to the desired list, the privacy settings in steam should look like
+8. Blacklist management:<br/>
+   ![image info](images/image09.jpg)
+   ![image info](images/image10.jpg)
+9. Added a wishlist for accounts that have access to game information in steam settings. In order
+   for the bot to get access to the wishlist, the privacy settings in steam should look like
    this: (updated 21.08.2023)<br/>
    ![image info](images/image06.jpg)![image info](images/image07.jpg)
-9. Added statistics for the bot (updated 13.04.2025).<br/>
-   ![image info](images/image08.jpg)
+10. You can get links to the game by clicking under the news:<br/>
+    ![image info](images/image05.jpg)
+11. Show statistics for the bot (updated 13.04.2025).<br/>
+    ![image info](images/image08.jpg)
 
 ## List of supported commands:
 
