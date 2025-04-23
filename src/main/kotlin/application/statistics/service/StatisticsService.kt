@@ -2,6 +2,7 @@ package sidim.doma.application.statistics.service
 
 import com.sksamuel.aedile.core.Cache
 import dev.inmo.tgbotapi.types.IdChatIdentifier
+import org.slf4j.LoggerFactory
 import sidim.doma.application.bot.service.MessageService
 import sidim.doma.application.statistics.dto.CommonStatistics
 import sidim.doma.application.statistics.dto.NewsStatistics
@@ -15,13 +16,16 @@ class StatisticsService(
     private val gameService: GameService,
     private val newsStatisticService: NewsStatisticService,
     private val messageService: MessageService,
+    private val newsStatsCache: Cache<String, NewsStatistics>,
     private val statsCache: Cache<String, CommonStatistics>,
-    private val newsStatsCache: Cache<String, NewsStatistics>
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     suspend fun handleStats(chatId: IdChatIdentifier, locale: String) {
         val (countUsers, countActiveUsers, countGames) = statsCache.get(
             "commonStatistics",
             compute = {
+                logger.info("Computing common statistics")
                 CommonStatistics(
                     userService.countUsers(),
                     userService.countActiveUsers(),
@@ -32,6 +36,7 @@ class StatisticsService(
         val (dailyCount, totalCount) = newsStatsCache.get(
             "newsStatistics",
             compute = {
+                logger.info("Computing news statistics")
                 NewsStatistics(
                     newsStatisticService.getDailyCount(java.time.LocalDate.now()),
                     newsStatisticService.getTotalCount()
