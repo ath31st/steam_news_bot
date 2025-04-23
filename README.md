@@ -120,8 +120,6 @@ node.js).<br/>
 - Flyway: 11.7.2</br>
 - Gradle: 8.12</br>
 
-You can use its services yourself if it is online - https://t.me/steam_newsy_bot.
-
 ## Project Updates
 
 (update 21.08.2023)
