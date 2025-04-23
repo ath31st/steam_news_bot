@@ -33,9 +33,9 @@ import sidim.doma.domain.game.repository.GameRepository
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
-import sidim.doma.domain.news_statistic.repository.ExposedNewsStatisticRepository
-import sidim.doma.domain.news_statistic.repository.NewsStatisticRepository
-import sidim.doma.domain.news_statistic.service.NewsStatisticService
+import sidim.doma.domain.news_statistics.repository.ExposedNewsStatisticsRepository
+import sidim.doma.domain.news_statistics.repository.NewsStatisticsRepository
+import sidim.doma.domain.news_statistics.service.NewsStatisticsService
 import sidim.doma.domain.state.repository.ExposedUserGameStateRepository
 import sidim.doma.domain.state.repository.UserGameStateRepository
 import sidim.doma.domain.state.service.UserGameStateService
@@ -114,12 +114,12 @@ private val domainModule = module {
     single<GameRepository> { ExposedGameRepository() }
     single<UserGameStateRepository> { ExposedUserGameStateRepository() }
     single<UserRepository> { ExposedUserRepository() }
-    single<NewsStatisticRepository> { ExposedNewsStatisticRepository() }
+    single<NewsStatisticsRepository> { ExposedNewsStatisticsRepository() }
     single { NewsItemService() }
     single { GameService(get()) }
     single { UserGameStateService(get()) }
     single { UserService(get()) }
-    single { NewsStatisticService(get()) }
+    single { NewsStatisticsService(get()) }
 }
 
 private val applicationModule = module {

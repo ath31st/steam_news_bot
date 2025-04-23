@@ -1,4 +1,4 @@
-package sidim.doma.domain.news_statistic.entity
+package sidim.doma.domain.news_statistics.entity
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date

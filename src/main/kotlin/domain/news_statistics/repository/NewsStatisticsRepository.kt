@@ -1,8 +1,8 @@
-package sidim.doma.domain.news_statistic.repository
+package sidim.doma.domain.news_statistics.repository
 
 import java.time.LocalDate
 
-interface NewsStatisticRepository {
+interface NewsStatisticsRepository {
     fun incrementDailyCount(date: LocalDate, count: Int)
     fun getDailyCount(date: LocalDate): Int
     fun getTotalCount(): Long

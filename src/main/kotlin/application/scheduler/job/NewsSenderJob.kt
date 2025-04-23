@@ -16,7 +16,7 @@ import sidim.doma.common.util.formatted
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
-import sidim.doma.domain.news_statistic.service.NewsStatisticService
+import sidim.doma.domain.news_statistics.service.NewsStatisticsService
 import sidim.doma.domain.state.service.UserGameStateService
 import sidim.doma.domain.user.service.UserService
 import java.time.Duration
@@ -33,7 +33,7 @@ class NewsSenderJob : Job {
             val userService = GlobalContext.get().get<UserService>()
             val gameService = GlobalContext.get().get<GameService>()
             val newsItemService = GlobalContext.get().get<NewsItemService>()
-            val newsStatisticService = GlobalContext.get().get<NewsStatisticService>()
+            val newsStatisticsService = GlobalContext.get().get<NewsStatisticsService>()
             val userGameStateService = GlobalContext.get().get<UserGameStateService>()
             val newsItems =
                 GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
@@ -95,7 +95,7 @@ class NewsSenderJob : Job {
                 Duration.between(startCycle, Instant.now()).seconds
             )
 
-            newsStatisticService.incrementDailyCount(LocalDate.now(), newsItems.size)
+            newsStatisticsService.incrementDailyCount(LocalDate.now(), newsItems.size)
             newsItems.clear()
         }
     }
