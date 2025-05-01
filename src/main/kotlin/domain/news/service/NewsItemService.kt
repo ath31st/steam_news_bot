@@ -41,6 +41,9 @@ class NewsItemService {
     }
 
     private fun formatContent(content: String): String {
+        val openBTag = "<b>"
+        val closeBTag = "</b>"
+        val closeBTagWithN = "</b>\n"
         var result = content
 
         result = result.replace(Regex("<img\\s+[^>]*>"), "")
@@ -51,13 +54,13 @@ class NewsItemService {
 
         result = result.replace(Regex("<br\\s*/?>"), "\n")
             .replace(Regex("</?p>"), "\n")
-            .replace(Regex("<strong>"), "<b>")
-            .replace(Regex("</strong>"), "</b>")
+            .replace(Regex("<strong>"), openBTag)
+            .replace(Regex("</strong>"), closeBTag)
 
-        result = result.replace("[h1]", "<b>").replace("[/h1]", "</b>\n")
-            .replace("[h2]", "<b>").replace("[/h2]", "</b>\n")
-            .replace("[h3]", "<b>").replace("[/h3]", "</b>\n")
-            .replace("[b]", "<b>").replace("[/b]", "</b>")
+        result = result.replace("[h1]", openBTag).replace("[/h1]", closeBTagWithN)
+            .replace("[h2]", openBTag).replace("[/h2]", closeBTagWithN)
+            .replace("[h3]", openBTag).replace("[/h3]", closeBTagWithN)
+            .replace("[b]", openBTag).replace("[/b]", closeBTag)
             .replace("[i]", "<i>").replace("[/i]", "</i>")
 
         result = result.replace("[list]", "").replace("[/list]", "")
