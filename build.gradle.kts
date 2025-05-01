@@ -7,7 +7,7 @@ val tgbotapiVersion: String by project
 val quartzVersion: String by project
 val caffeineAedileVersion: String by project
 val flywayVersion: String by project
-val exposedJavatimeVersion: String by project
+val exposedJavaTimeVersion: String by project
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "sidim.doma"
-version = "2.9.1"
+version = "2.9.2"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -51,7 +51,7 @@ dependencies {
     implementation("io.ktor:ktor-server-config-yaml")
     implementation("dev.inmo:tgbotapi-jvm:$tgbotapiVersion")
     implementation("org.quartz-scheduler:quartz:$quartzVersion")
-    implementation("org.jetbrains.exposed:exposed-java-time:$exposedJavatimeVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedJavaTimeVersion")
     implementation("com.sksamuel.aedile:aedile-core:$caffeineAedileVersion")
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
