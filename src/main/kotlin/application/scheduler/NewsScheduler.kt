@@ -6,11 +6,11 @@ import org.quartz.SimpleScheduleBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.impl.StdSchedulerFactory
 import org.quartz.listeners.JobChainingJobListener
+import sidim.doma.application.scheduler.config.SchedulerConfig.NEWS_FETCHER_JOB_INTERVAL
+import sidim.doma.application.scheduler.config.SchedulerConfig.NEWS_FETCHER_START_JOB_DELAY
 import sidim.doma.application.scheduler.job.NewsFetcherJob
 import sidim.doma.application.scheduler.job.NewsSenderJob
 import sidim.doma.application.scheduler.job.ProblemGamesJob
-import sidim.doma.application.scheduler.config.SchedulerConfig.NEWS_FETCHER_JOB_INTERVAL
-import sidim.doma.application.scheduler.config.SchedulerConfig.NEWS_FETCHER_START_JOB_DELAY
 import java.time.Instant
 import java.util.*
 
