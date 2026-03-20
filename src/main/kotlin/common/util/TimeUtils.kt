@@ -1,9 +1,7 @@
 package sidim.doma.common.util
 
-import kotlinx.datetime.Clock
-
 fun isNewsRecent(
-    newsTimestamp: Long, timeWindow: Long, currentTime: Long = Clock.System.now().epochSeconds,
+    newsTimestamp: Long, timeWindow: Long, currentTime: Long = System.currentTimeMillis() / 1000,
 ): Boolean {
     return newsTimestamp >= (currentTime - timeWindow)
 }
