@@ -10,14 +10,14 @@ val flywayVersion: String by project
 val exposedJavaTimeVersion: String by project
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    id("io.ktor.plugin") version "3.0.3"
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.20"
-    id("org.flywaydb.flyway") version "11.7.2"
+    kotlin("jvm")
+    id("io.ktor.plugin")
+    id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.flywaydb.flyway")
 }
 
 group = "sidim.doma"
-version = "2.9.2"
+version = "2.9.3"
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
