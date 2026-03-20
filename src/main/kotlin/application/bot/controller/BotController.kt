@@ -6,6 +6,7 @@ import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onDataCa
 import dev.inmo.tgbotapi.extensions.behaviour_builder.triggers_handling.onText
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.from
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.text
+import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.utils.RiskFeature
 import org.slf4j.LoggerFactory
 import sidim.doma.application.bot.service.UserInteraction
@@ -28,7 +29,7 @@ class BotController(
                 val chatId = callback.from.id
                 val locale = callback.user.languageCode ?: "en"
                 logger.info("Handling callback query: ${callback.data} for chatId: $chatId")
-                callbackCommandRegistry.executeCommand(chatId, callback.data, locale)
+                callbackCommandRegistry.executeCommand(chatId as ChatId, callback.data, locale)
                 bot.answerCallbackQuery(callback)
             }
 
