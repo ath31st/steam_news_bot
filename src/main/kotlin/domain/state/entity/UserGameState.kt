@@ -1,6 +1,6 @@
 package sidim.doma.domain.state.entity
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Table
 import sidim.doma.domain.game.entity.Games
 import sidim.doma.domain.user.entity.Users
 

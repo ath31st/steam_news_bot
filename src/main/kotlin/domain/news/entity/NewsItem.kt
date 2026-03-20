@@ -1,6 +1,6 @@
 package sidim.doma.domain.news.entity
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Table
 
 data class NewsItem(
     val gid: Long,

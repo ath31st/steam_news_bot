@@ -1,6 +1,7 @@
 package sidim.doma.domain.user.entity
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Table
+
 
 data class User(
     val chatId: String,

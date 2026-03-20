@@ -1,7 +1,7 @@
 package sidim.doma.domain.news_statistics.entity
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.date
+import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.javatime.date
 
 object NewsStatistics : Table("news_statistics") {
     val recordDate = date("date").uniqueIndex()

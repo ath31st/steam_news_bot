@@ -3,7 +3,7 @@ package sidim.doma.application.bot.service
 import com.sksamuel.aedile.core.Cache
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import sidim.doma.application.game.mapper.toGame
 import sidim.doma.common.util.LocalizationUtils
 import sidim.doma.domain.game.entity.Game

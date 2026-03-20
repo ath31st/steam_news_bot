@@ -2,7 +2,7 @@ package sidim.doma.domain.game.entity
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.v1.core.Table
 
 data class Game @JsonCreator constructor(
     @JsonProperty("appid") val appid: String,

@@ -1,9 +1,10 @@
 package sidim.doma.domain.news_statistics.repository
 
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.plus
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.upsert
 import sidim.doma.domain.news_statistics.entity.NewsStatistics
 import sidim.doma.domain.news_statistics.entity.NewsStatistics.dailyCount
 import sidim.doma.domain.news_statistics.entity.NewsStatistics.recordDate
