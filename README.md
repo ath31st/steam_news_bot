@@ -20,7 +20,7 @@
 
 ## Program version
 
-2.9.2
+2.10.0
 
 ## Introduction
 
@@ -109,15 +109,15 @@ node.js).<br/>
 
 ## Versions:
 
-- Kotlin: 2.1.20</br>
-- Ktor: 3.1.2</br>
-- Koin: 4.0.4</br>
-- SQLite: 3.49.1.0</br>
-- Exposed: 0.60.0</br>
+- Kotlin: 2.3.20</br>
+- Ktor: 3.4.1</br>
+- Koin: 4.2.0</br>
+- SQLite: 3.51.3.0</br>
+- Exposed: 1.1.1</br>
 - Quartz: 2.5.0</br>
-- TelegramBotAPI: 24.0.2</br>
+- TelegramBotAPI: 32.0.0</br>
 - Caffeine (Aedile): 2.0.3</br>
-- Flyway: 11.7.2</br>
+- Flyway: 12.1.1</br>
 - Gradle: 8.12</br>
 
 ## Project Updates
