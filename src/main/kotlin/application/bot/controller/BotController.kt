@@ -13,11 +13,11 @@ import sidim.doma.application.bot.service.UserInteraction
 import sidim.doma.common.util.LocalizationUtils
 
 class BotController(
-    private val interaction: UserInteraction
+    private val interaction: UserInteraction,
+    private val commandHandler: CommandHandler,
+    private val callbackCommandRegistry: CallbackCommandRegistry,
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
-    private val commandHandler = CommandHandler(interaction)
-    private val callbackCommandRegistry = CallbackCommandRegistry(interaction)
 
     @OptIn(RiskFeature::class)
     suspend fun registerHandlers(context: BehaviourContext) {

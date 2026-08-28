@@ -163,7 +163,7 @@ private val applicationModule = module {
     }
     single { CommandHandler(get()) }
     single { CallbackCommandRegistry(get()) }
-    single { BotController(get()) }
+    single { BotController(get(), get(), get()) }
     single { TelegramBotLauncher(get(), get()) }
 }
 
