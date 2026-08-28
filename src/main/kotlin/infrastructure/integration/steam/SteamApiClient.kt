@@ -6,6 +6,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import org.slf4j.LoggerFactory
 import sidim.doma.infrastructure.integration.steam.dto.SteamAppDto
 import sidim.doma.infrastructure.integration.steam.dto.SteamNewsItemDto
 import sidim.doma.infrastructure.integration.steam.dto.SteamWishlistAppDto
@@ -16,6 +17,8 @@ class SteamApiClient(
     private val client: HttpClient,
     private val objectMapper: ObjectMapper
 ) {
+    private val logger = LoggerFactory.getLogger(SteamApiClient::class.java)
+
     companion object {
         private const val USER_AGENT = "Mozilla/5.0"
         private const val BASE_API_URL = "http://api.steampowered.com"
@@ -108,11 +111,15 @@ class SteamApiClient(
         url: String,
         params: (HttpRequestBuilder.() -> Unit)? = null
     ): String {
-        return client.get(url) {
+        val response = client.get(url) {
             header(HttpHeaders.UserAgent, USER_AGENT)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
             params?.invoke(this)
-        }.bodyAsText()
+        }
+        if (!response.status.isSuccess()) {
+            logger.warn("Steam API returned {} for {}", response.status.value, url)
+        }
+        return response.bodyAsText()
     }
 
     private fun parseOwnedApps(json: String): List<SteamAppDto> {
