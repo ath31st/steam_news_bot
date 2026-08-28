@@ -13,6 +13,8 @@ interface UserRepository {
         isBanned: Boolean
     ): List<User>
 
+    fun findActiveUsersByAppIds(appIds: Set<String>, isBanned: Boolean): Map<String, List<User>>
+    fun countByActive(isActive: Boolean): Long
     fun create(user: User): User?
     fun update(chatId: String, name: String?, steamId: Long, locale: String): User?
     fun updateActiveByChatId(isActive: Boolean, chatId: String): Int

@@ -3,6 +3,7 @@ package sidim.doma.domain.user.repository
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.inList
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -59,6 +60,30 @@ class ExposedUserRepository : UserRepository {
                             (UserGameStates.isBanned eq isBanned)
                 }
                 .map { rowToUser(it) }
+        }
+    }
+
+    override fun findActiveUsersByAppIds(appIds: Set<String>, isBanned: Boolean): Map<String, List<User>> {
+        if (appIds.isEmpty()) return emptyMap()
+
+        return transaction {
+            (Users innerJoin UserGameStates)
+                .selectAll()
+                .where {
+                    (Users.active eq true) and
+                            (UserGameStates.gameId inList appIds) and
+                            (UserGameStates.isBanned eq isBanned)
+                }
+                .map { rowToUser(it) to it[UserGameStates.gameId] }
+                .groupBy({ it.second }, { it.first })
+        }
+    }
+
+    override fun countByActive(isActive: Boolean): Long {
+        return transaction {
+            Users.selectAll()
+                .where(Users.active eq isActive)
+                .count()
         }
     }
 

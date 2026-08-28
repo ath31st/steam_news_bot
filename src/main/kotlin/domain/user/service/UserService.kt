@@ -13,6 +13,9 @@ class UserService(private val userRepository: UserRepository) {
     fun getActiveUsersByAppId(appId: String): List<User> =
         userRepository.findByActiveAndAppidAndBanned(true, appId, false)
 
+    fun getActiveUsersByAppIds(appIds: Set<String>): Map<String, List<User>> =
+        userRepository.findActiveUsersByAppIds(appIds, isBanned = false)
+
     fun registerOrUpdateUser(
         chatId: String,
         name: String,
@@ -46,5 +49,5 @@ class UserService(private val userRepository: UserRepository) {
 
     fun countUsers(): Long = userRepository.countUsers()
 
-    fun countActiveUsers(): Long = userRepository.findAllByActive(true).size.toLong()
+    fun countActiveUsers(): Long = userRepository.countByActive(true)
 }
