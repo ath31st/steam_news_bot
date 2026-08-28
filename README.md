@@ -109,8 +109,8 @@ node.js).<br/>
 
 ## Versions:
 
-- Kotlin: 2.3.20</br>
-- Ktor: 3.4.1</br>
+- Kotlin: 2.4.10</br>
+- Ktor: 3.5.2</br>
 - Koin: 4.2.0</br>
 - SQLite: 3.51.3.0</br>
 - Exposed: 1.1.1</br>
@@ -118,7 +118,7 @@ node.js).<br/>
 - TelegramBotAPI: 32.0.0</br>
 - Caffeine (Aedile): 2.0.3</br>
 - Flyway: 12.1.1</br>
-- Gradle: 8.12</br>
+- Gradle: 9.5.1</br>
 
 ## Project Updates
 
