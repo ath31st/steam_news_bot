@@ -111,13 +111,13 @@ node.js).<br/>
 
 - Kotlin: 2.4.10</br>
 - Ktor: 3.5.2</br>
-- Koin: 4.2.0</br>
-- SQLite: 3.51.3.0</br>
-- Exposed: 1.1.1</br>
-- Quartz: 2.5.0</br>
-- TelegramBotAPI: 32.0.0</br>
-- Caffeine (Aedile): 2.0.3</br>
-- Flyway: 12.1.1</br>
+- Koin: 4.2.2</br>
+- SQLite: 3.53.4.0</br>
+- Exposed: 1.5.0</br>
+- Quartz: 2.5.2</br>
+- TelegramBotAPI: 36.1.0</br>
+- Caffeine (Aedile): 3.0.4</br>
+- Flyway: 13.4.0</br>
 - Gradle: 9.5.1</br>
 
 ## Project Updates

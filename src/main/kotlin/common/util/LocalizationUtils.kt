@@ -2,7 +2,7 @@ package sidim.doma.common.util
 
 import dev.inmo.tgbotapi.extensions.utils.extensions.raw.from
 import dev.inmo.tgbotapi.types.chat.CommonUser
-import dev.inmo.tgbotapi.types.message.abstracts.CommonMessage
+import dev.inmo.tgbotapi.types.message.abstracts.ChatContentMessage
 import dev.inmo.tgbotapi.utils.RiskFeature
 import java.util.*
 
@@ -39,6 +39,6 @@ object LocalizationUtils {
     }
 
     @OptIn(RiskFeature::class)
-    fun getUserLocale(message: CommonMessage<*>): String =
+    fun getUserLocale(message: ChatContentMessage<*>): String =
         (message.from as CommonUser).languageCode ?: "en"
 }
