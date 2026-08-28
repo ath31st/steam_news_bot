@@ -5,9 +5,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.io.IOException
-import org.koin.core.context.GlobalContext
-import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -23,21 +20,20 @@ import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.service.GameService
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
+import java.io.IOException
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.CopyOnWriteArraySet
 
-class NewsFetcherJob : Job {
+class NewsFetcherJob(
+    private val gameService: GameService,
+    private val steamApiClient: SteamApiClient,
+    private val problemGames: CopyOnWriteArraySet<Game>,
+    private val newsItems: CopyOnWriteArraySet<NewsItem>,
+) : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
-
-            val gameService = GlobalContext.get().get<GameService>()
-            val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-            val problemGames =
-                GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
-            val newsItems =
-                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
 
             val games = gameService.getAllGamesByActiveUsersAndNotBanned()
             if (games.isEmpty()) {

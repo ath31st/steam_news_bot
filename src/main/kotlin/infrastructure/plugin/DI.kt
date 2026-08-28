@@ -16,6 +16,11 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import sidim.doma.application.bot.TelegramBotLauncher
+import sidim.doma.application.scheduler.job.GameStatesJob
+import sidim.doma.application.scheduler.job.NewsFetcherJob
+import sidim.doma.application.scheduler.job.NewsSenderJob
+import sidim.doma.application.scheduler.job.ProblemGamesJob
+import sidim.doma.application.scheduler.job.UpdateGamesJob
 import sidim.doma.application.bot.controller.BotController
 import sidim.doma.application.bot.controller.CallbackCommandRegistry
 import sidim.doma.application.bot.controller.CommandHandler
@@ -58,7 +63,8 @@ fun Application.configureDependencyInjection() {
             commonModule,
             infrastructureModule(botToken, steamWebApiKey),
             domainModule,
-            applicationModule
+            applicationModule,
+            schedulerModule
         )
     }
 }
@@ -159,4 +165,35 @@ private val applicationModule = module {
     single { CallbackCommandRegistry(get()) }
     single { BotController(get()) }
     single { TelegramBotLauncher(get(), get()) }
+}
+
+private val schedulerModule = module {
+    factory {
+        NewsFetcherJob(
+            get(),
+            get(),
+            get(named("problemGames")),
+            get(named("newsItems"))
+        )
+    }
+    factory {
+        ProblemGamesJob(
+            get(),
+            get(named("newsItems")),
+            get(named("problemGames"))
+        )
+    }
+    factory {
+        NewsSenderJob(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(named("newsItems"))
+        )
+    }
+    factory { GameStatesJob(get(), get(), get(), get()) }
+    factory { UpdateGamesJob(get(), get()) }
 }

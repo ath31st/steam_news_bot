@@ -6,8 +6,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.koin.core.context.GlobalContext
-import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -24,19 +22,18 @@ import java.time.Instant
 import java.time.LocalDate
 import java.util.concurrent.CopyOnWriteArraySet
 
-class NewsSenderJob : Job {
+class NewsSenderJob(
+    private val messageService: MessageService,
+    private val userService: UserService,
+    private val gameService: GameService,
+    private val newsItemService: NewsItemService,
+    private val newsStatisticsService: NewsStatisticsService,
+    private val userGameStateService: UserGameStateService,
+    private val newsItems: CopyOnWriteArraySet<NewsItem>,
+) : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
-
-            val messageService = GlobalContext.get().get<MessageService>()
-            val userService = GlobalContext.get().get<UserService>()
-            val gameService = GlobalContext.get().get<GameService>()
-            val newsItemService = GlobalContext.get().get<NewsItemService>()
-            val newsStatisticsService = GlobalContext.get().get<NewsStatisticsService>()
-            val userGameStateService = GlobalContext.get().get<UserGameStateService>()
-            val newsItems =
-                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
 
             if (newsItems.isEmpty()) {
                 return@runBlocking
@@ -48,10 +45,7 @@ class NewsSenderJob : Job {
 
             val appIds = newsItems.map { it.appid }.toSet()
             val gamesMap = gameService.getGamesByAppIds(appIds).associateBy { it.appid }
-
-            val usersByAppId = newsItems.associate { news ->
-                news.appid to userService.getActiveUsersByAppId(news.appid)
-            }
+            val usersByAppId = userService.getActiveUsersByAppIds(appIds)
 
             val userIdAppIdPairs = usersByAppId.flatMap { (appid, users) ->
                 users.map { user -> user.chatId to appid }

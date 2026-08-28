@@ -5,7 +5,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import org.koin.core.context.GlobalContext
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -19,13 +18,13 @@ import sidim.doma.infrastructure.integration.steam.dto.SteamAppDto
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-class UpdateGamesJob : Job {
+class UpdateGamesJob(
+    private val steamApiClient: SteamApiClient,
+    private val gameService: GameService,
+) : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
-
-            val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-            val gameService = GlobalContext.get().get<GameService>()
 
             val gamesWithNullName = gameService.getGamesWithNullName()
             if (gamesWithNullName.isEmpty()) {

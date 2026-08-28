@@ -5,8 +5,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.io.IOException
-import org.koin.core.context.GlobalContext
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.Logger
@@ -20,18 +18,19 @@ import sidim.doma.domain.state.service.UserGameStateService
 import sidim.doma.domain.user.entity.User
 import sidim.doma.domain.user.service.UserService
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
+import java.io.IOException
 import java.time.Duration
 import java.time.Instant
 
-class GameStatesJob : Job {
+class GameStatesJob(
+    private val steamApiClient: SteamApiClient,
+    private val userService: UserService,
+    private val gameService: GameService,
+    private val userGameStateService: UserGameStateService,
+) : Job {
     override fun execute(context: JobExecutionContext) {
         runBlocking {
             val logger = LoggerFactory.getLogger(this::class.java)
-
-            val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-            val userService = GlobalContext.get().get<UserService>()
-            val gameService = GlobalContext.get().get<GameService>()
-            val userGameStateService = GlobalContext.get().get<UserGameStateService>()
 
             val activeUsers = userService.getAllActiveUsers()
             if (activeUsers.isEmpty()) {
@@ -158,4 +157,3 @@ class GameStatesJob : Job {
         }
     }
 }
-

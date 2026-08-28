@@ -4,9 +4,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.io.IOException
-import org.koin.core.context.GlobalContext
-import org.koin.core.qualifier.named
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.slf4j.LoggerFactory
@@ -21,21 +18,20 @@ import sidim.doma.common.util.isNewsRecent
 import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.infrastructure.integration.steam.SteamApiClient
+import java.io.IOException
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.minutes
 
-class ProblemGamesJob : Job {
+class ProblemGamesJob(
+    private val steamApiClient: SteamApiClient,
+    private val newsItems: CopyOnWriteArraySet<NewsItem>,
+    private val problemGames: CopyOnWriteArraySet<Game>,
+) : Job {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun execute(context: JobExecutionContext) {
         runBlocking {
-            val steamApiClient = GlobalContext.get().get<SteamApiClient>()
-            val newsItems =
-                GlobalContext.get().get<CopyOnWriteArraySet<NewsItem>>(named("newsItems"))
-            val problemGames =
-                GlobalContext.get().get<CopyOnWriteArraySet<Game>>(named("problemGames"))
             val semaphore = Semaphore(SEMAPHORE_LIMIT)
-
             processProblemGames(problemGames, newsItems, steamApiClient, semaphore)
         }
     }
