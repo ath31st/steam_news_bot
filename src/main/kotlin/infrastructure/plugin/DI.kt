@@ -23,6 +23,7 @@ import sidim.doma.application.bot.service.*
 import sidim.doma.application.statistics.dto.CommonStatistics
 import sidim.doma.application.statistics.dto.NewsStatistics
 import sidim.doma.application.statistics.service.StatisticsService
+import sidim.doma.common.config.Env
 import sidim.doma.common.config.InitializeConfig.COMMON_STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.NEWS_STATISTICS_EXPIRATION_TIME
 import sidim.doma.common.config.InitializeConfig.REQUEST_TIMEOUT
@@ -48,11 +49,8 @@ import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.time.Duration.Companion.hours
 
 fun Application.configureDependencyInjection() {
-    val botToken = System.getenv("TELEGRAM_BOT_TOKEN")
-        ?: throw IllegalStateException("Telegram bot token not provided in config or environment")
-
-    val steamWebApiKey = System.getenv("STEAM_WEB_API_KEY")
-        ?: throw IllegalStateException("Steam web api key not provided in environment variables")
+    val botToken = Env.require("TELEGRAM_BOT_TOKEN")
+    val steamWebApiKey = Env.require("STEAM_WEB_API_KEY")
 
     install(Koin) {
         slf4jLogger()
