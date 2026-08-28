@@ -42,5 +42,8 @@ out/
 ### Data base ###
 *.db
 
+### Editor backups ###
+*~
+
 ### Local secrets ###
 .env

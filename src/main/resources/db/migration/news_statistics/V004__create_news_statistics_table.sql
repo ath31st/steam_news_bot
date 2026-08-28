@@ -1,4 +1,4 @@
-create table news_statistics
+create table if not exists news_statistics
 (
     date        TEXT          not null primary key,
     daily_count INT default 0 not null,
@@ -6,6 +6,5 @@ create table news_statistics
         check (daily_count BETWEEN -2147483648 AND 2147483647)
 );
 
-create unique index main.news_statistics_date
+create unique index if not exists news_statistics_date
     on news_statistics (date);
-
