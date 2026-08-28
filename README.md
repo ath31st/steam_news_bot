@@ -10,17 +10,18 @@
 
 1. [Program version](#program-version)
 2. [Introduction](#introduction)
-3. [Project objectives](#program-version)
+3. [Project objectives](#project-objectives)
 4. [What can the bot do?](#what-can-the-bot-do)
 5. [List of supported commands](#list-of-supported-commands)
-6. [List of used libraries](#list-of-used-libraries)
-7. [Versions](#versions)
-8. [Project Updates](#project-updates)
-9. [License](#license)
+6. [Requirements and run](#requirements-and-run)
+7. [List of used libraries](#list-of-used-libraries)
+8. [Versions](#versions)
+9. [Project Updates](#project-updates)
+10. [License](#license)
 
 ## Program version
 
-2.10.0
+2.11.0
 
 ## Introduction
 
@@ -60,11 +61,11 @@ node.js).<br/>
 4. When registering, the bot requests the user's application library from the steam, according to
    the entered Steam ID,
    and then saves the user's data to the database.
-5. The bot has a scheduler.
-    - Every 30 minutes, news is searched for and sent to users.
-    - In case of problems (and the steam platform is not the
-      most agile), problematic requests will be repeated every 5 minutes after failure.
-    - Every 24 hours, the bot updates the user application database.
+5. The bot has a scheduler (single Quartz instance):
+    - Every 30 minutes: fetch news → retry failed Steam requests → send news to users.
+    - Failed game requests are retried up to 5 times with a 1-minute pause between attempts (within the same cycle).
+    - Every 24 hours: sync owned games and wishlists for active users.
+    - Every 2 hours: update game names that are missing in the database.
 6. In the settings you can find:<br/>
    ![image info](images/image02.jpg)
     - _"Set/Update Steam ID"_ - This is necessary for registration.
@@ -96,7 +97,29 @@ node.js).<br/>
     /stats
     /help
 
-## List of used libraries:
+## Requirements and run
+
+**Requirements:** JDK 25, Telegram bot token, Steam Web API key.
+
+1. Copy `.env.example` to `.env` and fill in the variables:
+
+       TELEGRAM_BOT_TOKEN=
+       STEAM_WEB_API_KEY=
+
+   Variables can also be exported in the shell instead of using `.env`.
+
+2. Run the bot:
+
+       ./gradlew run
+
+3. Database: SQLite file `steamidusers.db` in the project root. Schema is applied automatically
+   via Flyway on startup. SQL migrations live in `src/main/resources/db/migration/`.
+
+   For manual migration (optional):
+
+       ./gradlew flywayMigrate
+
+## List of used libraries
 
 1. telegram bot API - library for working with Telegram Bot API
 2. slf4j + logback - logger
@@ -119,6 +142,7 @@ node.js).<br/>
 - Caffeine (Aedile): 3.0.4</br>
 - Flyway: 13.4.0</br>
 - Gradle: 9.5.1</br>
+- JDK: 25</br>
 
 ## Project Updates
 
@@ -137,6 +161,10 @@ Added statistics for the bot.
 
 (update 16.04.2025)
 Pagination added for blacklist games.
+
+(update 28.08.2026)
+Flyway migrations run automatically on startup. Quartz schedulers consolidated into a single
+instance; jobs receive dependencies via Koin. Added `.env` support for local configuration.
 
 ## License
 
