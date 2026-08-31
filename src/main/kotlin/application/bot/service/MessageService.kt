@@ -2,11 +2,13 @@ package sidim.doma.application.bot.service
 
 import dev.inmo.tgbotapi.bot.TelegramBot
 import dev.inmo.tgbotapi.bot.exceptions.CommonRequestException
+import dev.inmo.tgbotapi.extensions.api.send.sendRichMessage
 import dev.inmo.tgbotapi.extensions.api.send.sendTextMessage
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
 import dev.inmo.tgbotapi.types.buttons.InlineKeyboardMarkup
 import dev.inmo.tgbotapi.types.message.HTMLParseMode
+import dev.inmo.tgbotapi.types.rich.InputRichMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import sidim.doma.domain.user.service.UserService
@@ -33,26 +35,42 @@ class MessageService(
             )
         } catch (e: CommonRequestException) {
             if (e.response.errorCode == 403) {
-                val chatIdStr = chatId.chatId.toString()
-                userService.updateActiveByChatId(false, chatIdStr).let {
-                    when (it) {
-                        1 -> logger.info("User $chatIdStr deactivated")
-                        0 -> logger.info("Failed to deactivate user $chatIdStr")
-                    }
-                }
+                handleBlockedUser(chatId)
             }
         } catch (e: Exception) {
             logger.error("Unexpected error while sending message to $chatId: ${e.message}")
         }
     }
 
-    suspend fun sendNewsMessage(
+    suspend fun sendRichNewsMessage(
         chatId: ChatId,
-        text: String,
+        richMessage: InputRichMessage,
+        fallbackHtml: String,
         appid: String,
-        locale: String,
+        locale: String
     ) {
-        sendTextMessage(chatId, text, uiService.newsMenuKeyboard(appid, locale))
+        val keyboard = uiService.newsMenuKeyboard(appid, locale)
+        try {
+            bot.sendRichMessage(
+                chatId = chatId,
+                richMessage = richMessage,
+                replyMarkup = keyboard,
+                disableNotification = true
+            )
+        } catch (e: CommonRequestException) {
+            when (e.response.errorCode) {
+                403 -> handleBlockedUser(chatId)
+                else -> {
+                    logger.warn(
+                        "Rich message failed for $chatId (code=${e.response.errorCode}), falling back to HTML"
+                    )
+                    sendTextMessage(chatId, fallbackHtml, keyboard)
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("Unexpected error while sending rich news to $chatId: ${e.message}")
+            sendTextMessage(chatId, fallbackHtml, keyboard)
+        }
     }
 
     suspend fun sendMessageWithKeyboard(
@@ -61,5 +79,15 @@ class MessageService(
         keyboard: InlineKeyboardMarkup
     ) {
         sendTextMessage(chatId, text, keyboard)
+    }
+
+    private suspend fun handleBlockedUser(chatId: IdChatIdentifier) {
+        val chatIdStr = chatId.chatId.toString()
+        userService.updateActiveByChatId(false, chatIdStr).let {
+            when (it) {
+                1 -> logger.info("User $chatIdStr deactivated")
+                0 -> logger.info("Failed to deactivate user $chatIdStr")
+            }
+        }
     }
 }

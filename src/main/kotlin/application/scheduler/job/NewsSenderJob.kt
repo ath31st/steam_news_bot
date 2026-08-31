@@ -64,16 +64,23 @@ class NewsSenderJob(
                             val gameName = gamesMap[news.appid]?.name
                             val isInWishlist = wishlistStates[user.chatId to news.appid] ?: false
 
-                            val newsText = newsItemService.prepareNewsMessageForTelegram(
+                            val richMessage = newsItemService.buildRichNewsMessage(
+                                news,
+                                gameName,
+                                isInWishlist,
+                                user.locale
+                            )
+                            val fallbackHtml = newsItemService.buildFallbackHtml(
                                 news,
                                 gameName,
                                 isInWishlist,
                                 user.locale
                             )
 
-                            messageService.sendNewsMessage(
+                            messageService.sendRichNewsMessage(
                                 chatId = chatId,
-                                text = newsText,
+                                richMessage = richMessage,
+                                fallbackHtml = fallbackHtml,
                                 appid = news.appid,
                                 locale = user.locale
                             )
