@@ -8,6 +8,7 @@ fun SteamNewsItemDto.toNewsItem() = NewsItem(
     title = title,
     url = url,
     author = author,
+    feedLabel = feedLabel,
     contents = contents,
     appid = appid,
     date = date

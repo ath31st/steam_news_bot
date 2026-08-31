@@ -7,6 +7,7 @@ data class NewsItem(
     val title: String,
     val url: String,
     val author: String,
+    val feedLabel: String,
     val contents: String,
     val appid: String,
     val date: Long
