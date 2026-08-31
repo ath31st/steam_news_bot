@@ -37,6 +37,11 @@ import sidim.doma.domain.game.entity.Game
 import sidim.doma.domain.game.repository.ExposedGameRepository
 import sidim.doma.domain.game.repository.GameRepository
 import sidim.doma.domain.game.service.GameService
+import sidim.doma.application.news.parser.SteamContentParser
+import sidim.doma.application.news.parser.SteamContentToRichBlocksMapper
+import sidim.doma.application.news.parser.SteamImageUrlResolver
+import sidim.doma.application.news.presentation.NewsFallbackFormatter
+import sidim.doma.application.news.presentation.NewsPresentationBuilder
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
 import sidim.doma.domain.news_statistics.repository.ExposedNewsStatisticsRepository
@@ -63,6 +68,7 @@ fun Application.configureDependencyInjection() {
             commonModule,
             infrastructureModule(botToken, steamWebApiKey),
             domainModule,
+            newsModule,
             applicationModule,
             schedulerModule
         )
@@ -119,11 +125,19 @@ private val domainModule = module {
     single<UserGameStateRepository> { ExposedUserGameStateRepository() }
     single<UserRepository> { ExposedUserRepository() }
     single<NewsStatisticsRepository> { ExposedNewsStatisticsRepository() }
-    single { NewsItemService() }
     single { GameService(get()) }
     single { UserGameStateService(get()) }
     single { UserService(get()) }
     single { NewsStatisticsService(get()) }
+}
+
+private val newsModule = module {
+    single { SteamImageUrlResolver() }
+    single { SteamContentParser(get()) }
+    single { SteamContentToRichBlocksMapper() }
+    single { NewsPresentationBuilder(get(), get()) }
+    single { NewsFallbackFormatter(get()) }
+    single { NewsItemService(get(), get()) }
 }
 
 private val applicationModule = module {

@@ -1,0 +1,16 @@
+[h1]Title[/h1][p]Text with [b]bold[/b] and [i]italic[/i][/p]
+[h2]Patch Notes[/h2][p]Fixed issues.[/p]
+[list][*]Item 1[*]Item 2[/list]
+[quote]Quoted text with [b]bold[/b][/quote]
+[url=https://store.steampowered.com]Visit Steam[/url]
+{STEAM_CLAN_IMAGE}/18499191/d02a57c07e02.png[p]After image[/p]
+[img]https://cdn.example.com/image.png[/img]
+<pre>code block</pre>
+<p>HTML paragraph with <strong>strong</strong> and <a href="https://example.com">link</a></p>
+RELATED LINKS: should be removed
+[h1]Visible[/h1]RELATED LINKS: hidden content
+[b]Bold only[/b] plain text
+[h3]Heading[/h3][list][*][b]Bold item[/b][*]Second[/list]
+[strike]removed[/strike] kept
+[u]underlined[/u]
+[code]inline code[/code]
