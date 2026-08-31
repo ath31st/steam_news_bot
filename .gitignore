@@ -47,3 +47,5 @@ out/
 
 ### Local secrets ###
 .env
+
+.tmp/

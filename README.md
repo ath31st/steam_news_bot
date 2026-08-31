@@ -21,7 +21,7 @@
 
 ## Program version
 
-2.11.0
+2.12.0
 
 ## Introduction
 
@@ -68,6 +68,7 @@ node.js).<br/>
     - Every 2 hours: update game names that are missing in the database.
 6. In the settings you can find:<br/>
    ![image info](images/image02.jpg)
+   Menu buttons use colored styles (primary, success, danger) for quicker navigation.<br/>
     - _"Set/Update Steam ID"_ - This is necessary for registration.
     - _"Check your steam ID"_ - Here you can see the installed steam ID and activity mode.
     - _"Check available wishlist"_ - Checking that the wishlist is available and news on games from
@@ -78,6 +79,8 @@ node.js).<br/>
     - _"Black list"_ - List of blacklisted applications.
 7. You can add the application to the blacklist under the news.<br/>
    ![image info](images/image04.jpg)
+   News cards are sent as Telegram Rich Messages: Steam markup (BBCode) is parsed into formatted
+   text, images, and links. If Rich Message delivery fails, the bot falls back to HTML.
 8. Blacklist management:<br/>
    ![image info](images/image09.jpg)
    ![image info](images/image10.jpg)
@@ -87,7 +90,9 @@ node.js).<br/>
    ![image info](images/image06.jpg)![image info](images/image07.jpg)
 10. You can get links to the game by clicking under the news:<br/>
     ![image info](images/image05.jpg)
-11. Show statistics for the bot (updated 13.04.2025).<br/>
+11. Show statistics for the bot (updated 31.08.2026). `/stats` sends a Rich Message with a
+    markdown table: global user, game, and news counters, plus your owned games and wishlist
+    counts when you are registered.<br/>
     ![image info](images/image08.jpg)
 
 ## List of supported commands:
@@ -165,6 +170,11 @@ Pagination added for blacklist games.
 (update 28.08.2026)
 Flyway migrations run automatically on startup. Quartz schedulers consolidated into a single
 instance; jobs receive dependencies via Koin. Added `.env` support for local configuration.
+
+(update 31.08.2026)
+News is delivered as Telegram Rich Messages with Steam BBCode parsing and HTML fallback.
+Bot statistics use a Rich Message markdown table with per-user game and wishlist counts.
+Inline keyboard buttons in settings and under news use colored styles.
 
 ## License
 
