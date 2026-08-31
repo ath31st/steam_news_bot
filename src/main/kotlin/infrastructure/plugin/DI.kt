@@ -27,6 +27,7 @@ import sidim.doma.application.bot.controller.CommandHandler
 import sidim.doma.application.bot.service.*
 import sidim.doma.application.statistics.dto.CommonStatistics
 import sidim.doma.application.statistics.dto.NewsStatistics
+import sidim.doma.application.statistics.presentation.StatsPresentationBuilder
 import sidim.doma.application.statistics.service.StatisticsService
 import sidim.doma.common.config.Env
 import sidim.doma.common.config.InitializeConfig.COMMON_STATISTICS_EXPIRATION_TIME
@@ -155,8 +156,11 @@ private val applicationModule = module {
     }
     single { GameSubscriptionService(get(), get(), get(), get(), get()) }
     single { WishlistService(get(), get(), get()) }
+    single { StatsPresentationBuilder() }
     single {
         StatisticsService(
+            get(),
+            get(),
             get(),
             get(),
             get(),
