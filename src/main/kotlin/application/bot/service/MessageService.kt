@@ -42,19 +42,17 @@ class MessageService(
         }
     }
 
-    suspend fun sendRichNewsMessage(
-        chatId: ChatId,
+    suspend fun sendRichMessage(
+        chatId: IdChatIdentifier,
         richMessage: InputRichMessage,
-        fallbackHtml: String,
-        appid: String,
-        locale: String
+        fallbackHtml: String? = null,
+        replyMarkup: InlineKeyboardMarkup? = null
     ) {
-        val keyboard = uiService.newsMenuKeyboard(appid, locale)
         try {
             bot.sendRichMessage(
                 chatId = chatId,
                 richMessage = richMessage,
-                replyMarkup = keyboard,
+                replyMarkup = replyMarkup,
                 disableNotification = true
             )
         } catch (e: CommonRequestException) {
@@ -64,13 +62,24 @@ class MessageService(
                     logger.warn(
                         "Rich message failed for $chatId (code=${e.response.errorCode}), falling back to HTML"
                     )
-                    sendTextMessage(chatId, fallbackHtml, keyboard)
+                    fallbackHtml?.let { sendTextMessage(chatId, it, replyMarkup) }
                 }
             }
         } catch (e: Exception) {
-            logger.error("Unexpected error while sending rich news to $chatId: ${e.message}")
-            sendTextMessage(chatId, fallbackHtml, keyboard)
+            logger.error("Unexpected error while sending rich message to $chatId: ${e.message}")
+            fallbackHtml?.let { sendTextMessage(chatId, it, replyMarkup) }
         }
+    }
+
+    suspend fun sendRichNewsMessage(
+        chatId: ChatId,
+        richMessage: InputRichMessage,
+        fallbackHtml: String,
+        appid: String,
+        locale: String
+    ) {
+        val keyboard = uiService.newsMenuKeyboard(appid, locale)
+        sendRichMessage(chatId, richMessage, fallbackHtml, keyboard)
     }
 
     suspend fun sendMessageWithKeyboard(
