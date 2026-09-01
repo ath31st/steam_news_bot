@@ -43,6 +43,54 @@ fun plainTextOf(node: SteamContentNode): String = when (node) {
 
 fun plainTextLength(node: SteamContentNode): Int = plainTextOf(node).length
 
+data class SplitBlocksResult(
+    val visible: List<SteamContentNode>,
+    val folded: List<SteamContentNode>,
+    val hasFolded: Boolean,
+)
+
+fun splitBlocks(blocks: List<SteamContentNode>, maxVisibleLength: Int): SplitBlocksResult {
+    if (maxVisibleLength <= 0) {
+        val nonEmpty = blocks.filter { plainTextLength(it) > 0 }
+        return SplitBlocksResult(emptyList(), nonEmpty, nonEmpty.isNotEmpty())
+    }
+
+    val visible = mutableListOf<SteamContentNode>()
+    val folded = mutableListOf<SteamContentNode>()
+    var length = 0
+    var splitDone = false
+
+    for (block in blocks) {
+        val blockLength = plainTextLength(block)
+        if (blockLength == 0) continue
+
+        if (splitDone) {
+            folded.add(block)
+            continue
+        }
+
+        when {
+            length + blockLength <= maxVisibleLength -> {
+                visible.add(block)
+                length += blockLength
+            }
+            else -> {
+                val remaining = maxVisibleLength - length
+                if (remaining > 0) {
+                    val (visiblePart, foldedPart) = splitBlockPlainText(block, remaining)
+                    visiblePart?.let { visible.add(it) }
+                    foldedPart?.let { folded.add(it) }
+                } else {
+                    folded.add(block)
+                }
+                splitDone = true
+            }
+        }
+    }
+
+    return SplitBlocksResult(visible, folded, folded.isNotEmpty())
+}
+
 fun truncateBlocks(blocks: List<SteamContentNode>, maxLength: Int): Pair<List<SteamContentNode>, Boolean> {
     if (maxLength <= 0) return emptyList<SteamContentNode>() to blocks.isNotEmpty()
 
@@ -72,6 +120,25 @@ fun truncateBlocks(blocks: List<SteamContentNode>, maxLength: Int): Pair<List<St
     return result to truncated
 }
 
+private fun splitBlockPlainText(
+    block: SteamContentNode,
+    visibleChars: Int,
+): Pair<SteamContentNode?, SteamContentNode?> {
+    if (visibleChars <= 0) return null to blockToPlainNode(block, plainTextOf(block))
+
+    val text = plainTextOf(block)
+    if (text.isEmpty()) return null to null
+    if (visibleChars >= text.length) return block to null
+
+    val visibleText = text.take(visibleChars).trimEnd()
+    val foldedText = text.drop(visibleChars).trimStart()
+
+    if (visibleText.isEmpty()) return null to blockToPlainNode(block, text)
+    if (foldedText.isEmpty()) return blockToPlainNode(block, visibleText) to null
+
+    return blockToPlainNode(block, visibleText) to blockToPlainNode(block, foldedText)
+}
+
 private fun truncateBlockPlainText(block: SteamContentNode, maxChars: Int): SteamContentNode? {
     if (maxChars <= 0) return null
 
@@ -84,12 +151,14 @@ private fun truncateBlockPlainText(block: SteamContentNode, maxChars: Int): Stea
         text.take(maxChars).trimEnd() + "…"
     }
 
-    return when (block) {
-        is SteamContentNode.Pre -> SteamContentNode.Pre(truncatedText)
-        is SteamContentNode.Heading -> SteamContentNode.Heading(
-            block.level,
-            listOf(SteamContentNode.Text(truncatedText))
-        )
-        else -> SteamContentNode.Paragraph(listOf(SteamContentNode.Text(truncatedText)))
-    }
+    return blockToPlainNode(block, truncatedText)
+}
+
+private fun blockToPlainNode(block: SteamContentNode, text: String): SteamContentNode = when (block) {
+    is SteamContentNode.Pre -> SteamContentNode.Pre(text)
+    is SteamContentNode.Heading -> SteamContentNode.Heading(
+        block.level,
+        listOf(SteamContentNode.Text(text))
+    )
+    else -> SteamContentNode.Paragraph(listOf(SteamContentNode.Text(text)))
 }
