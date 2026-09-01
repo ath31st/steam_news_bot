@@ -47,21 +47,6 @@ class StatsPresentationBuilderTest {
         assertFalse(markdown.contains("In wishlist:"))
     }
 
-    @Test
-    fun buildsHtmlFallbackWithPreformattedTable() {
-        val html = builder.buildFallbackHtml(sampleCommon(), sampleNews(), "ru")
-
-        assertContains(html, "<b>")
-        assertContains(html, "<pre>")
-        assertContains(html, "👥 Всего пользователей")
-    }
-
-    @Test
-    fun escapesHtmlInFallback() {
-        val html = builder.buildFallbackHtml(sampleCommon(), sampleNews(), "en")
-        assertTrue(!html.contains("<pre>| Metric | Value |</pre>") || html.contains("&lt;") || html.contains("<pre>"))
-    }
-
     private fun sampleCommon() = CommonStatistics(
         countUsers = 10,
         countActiveUsers = 4,

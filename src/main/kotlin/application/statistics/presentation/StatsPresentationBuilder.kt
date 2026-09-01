@@ -16,17 +16,6 @@ class StatsPresentationBuilder {
         userStats: UserStatistics? = null,
     ): InputRichMessage = InputRichMessageMarkdown(buildMarkdownTable(common, news, locale, userStats))
 
-    fun buildFallbackHtml(
-        common: CommonStatistics,
-        news: NewsStatistics,
-        locale: String,
-        userStats: UserStatistics? = null,
-    ): String {
-        val title = getText("stats.title", locale)
-        val table = buildMarkdownTable(common, news, locale, userStats)
-        return "<b>${escapeHtml(title)}</b>\n<pre>${escapeHtml(table)}</pre>"
-    }
-
     private fun buildMarkdownTable(
         common: CommonStatistics,
         news: NewsStatistics,
@@ -58,9 +47,4 @@ class StatsPresentationBuilder {
     ) {
         appendLine("| ${getText(labelKey, locale)} | **$amount** |")
     }
-
-    private fun escapeHtml(text: String): String = text
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
 }

@@ -58,7 +58,6 @@ class StatisticsService(
         messageService.sendRichMessage(
             chatId = chatId,
             richMessage = statsPresentationBuilder.buildRichMessage(commonStats, newsStats, locale, userStats),
-            fallbackHtml = statsPresentationBuilder.buildFallbackHtml(commonStats, newsStats, locale, userStats)
         )
     }
 }
