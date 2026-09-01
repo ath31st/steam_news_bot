@@ -41,7 +41,6 @@ import sidim.doma.domain.game.service.GameService
 import sidim.doma.application.news.parser.SteamContentParser
 import sidim.doma.application.news.parser.SteamContentToRichBlocksMapper
 import sidim.doma.application.news.parser.SteamImageUrlResolver
-import sidim.doma.application.news.presentation.NewsFallbackFormatter
 import sidim.doma.application.news.presentation.NewsPresentationBuilder
 import sidim.doma.domain.news.entity.NewsItem
 import sidim.doma.domain.news.service.NewsItemService
@@ -137,8 +136,7 @@ private val newsModule = module {
     single { SteamContentParser(get()) }
     single { SteamContentToRichBlocksMapper() }
     single { NewsPresentationBuilder(get(), get()) }
-    single { NewsFallbackFormatter(get()) }
-    single { NewsItemService(get(), get()) }
+    single { NewsItemService(get()) }
 }
 
 private val applicationModule = module {

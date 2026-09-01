@@ -70,17 +70,10 @@ class NewsSenderJob(
                                 isInWishlist,
                                 user.locale
                             )
-                            val fallbackHtml = newsItemService.buildFallbackHtml(
-                                news,
-                                gameName,
-                                isInWishlist,
-                                user.locale
-                            )
 
                             messageService.sendRichNewsMessage(
                                 chatId = chatId,
                                 richMessage = richMessage,
-                                fallbackHtml = fallbackHtml,
                                 appid = news.appid,
                                 locale = user.locale
                             )
