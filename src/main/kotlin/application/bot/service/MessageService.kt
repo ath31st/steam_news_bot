@@ -45,7 +45,6 @@ class MessageService(
     suspend fun sendRichMessage(
         chatId: IdChatIdentifier,
         richMessage: InputRichMessage,
-        fallbackHtml: String? = null,
         replyMarkup: InlineKeyboardMarkup? = null
     ) {
         try {
@@ -58,28 +57,23 @@ class MessageService(
         } catch (e: CommonRequestException) {
             when (e.response.errorCode) {
                 403 -> handleBlockedUser(chatId)
-                else -> {
-                    logger.warn(
-                        "Rich message failed for $chatId (code=${e.response.errorCode}), falling back to HTML"
-                    )
-                    fallbackHtml?.let { sendTextMessage(chatId, it, replyMarkup) }
-                }
+                else -> logger.warn(
+                    "Rich message failed for $chatId (code=${e.response.errorCode})"
+                )
             }
         } catch (e: Exception) {
             logger.error("Unexpected error while sending rich message to $chatId: ${e.message}")
-            fallbackHtml?.let { sendTextMessage(chatId, it, replyMarkup) }
         }
     }
 
     suspend fun sendRichNewsMessage(
         chatId: ChatId,
         richMessage: InputRichMessage,
-        fallbackHtml: String,
         appid: String,
         locale: String
     ) {
         val keyboard = uiService.newsMenuKeyboard(appid, locale)
-        sendRichMessage(chatId, richMessage, fallbackHtml, keyboard)
+        sendRichMessage(chatId, richMessage, keyboard)
     }
 
     suspend fun sendMessageWithKeyboard(
