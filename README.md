@@ -21,7 +21,7 @@
 
 ## Program version
 
-2.12.0
+2.13.0
 
 ## Introduction
 
