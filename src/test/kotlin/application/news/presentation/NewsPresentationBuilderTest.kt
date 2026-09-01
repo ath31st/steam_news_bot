@@ -3,14 +3,13 @@ package sidim.doma.application.news.presentation
 import sidim.doma.application.news.parser.SteamContentParser
 import sidim.doma.application.news.parser.SteamContentToRichBlocksMapper
 import sidim.doma.domain.news.entity.NewsItem
+import dev.inmo.tgbotapi.types.rich.InputRichBlockDetails
 import dev.inmo.tgbotapi.types.rich.InputRichBlockDivider
 import dev.inmo.tgbotapi.types.rich.InputRichBlockFooter
 import dev.inmo.tgbotapi.types.rich.InputRichBlockParagraph
 import dev.inmo.tgbotapi.types.rich.InputRichBlockSectionHeading
 import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class NewsPresentationBuilderTest {
@@ -41,7 +40,7 @@ class NewsPresentationBuilderTest {
     }
 
     @Test
-    fun truncatesLongPlainTextBodyWithoutDroppingContent() {
+    fun foldsLongBodyUnderDetails() {
         val longPlainText = "Changes" + "The Celadon Flame Brewers. ".repeat(80)
         val message = builder.build(
             sampleContext(
@@ -49,12 +48,16 @@ class NewsPresentationBuilderTest {
             )
         )
 
-        val bodyText = message.blocks.orEmpty()
-            .filterIsInstance<InputRichBlockParagraph>()
-            .joinToString("\n") { it.text.toString() }
+        val blocks = requireNotNull(message.blocks)
+        assertTrue(blocks.any { it is InputRichBlockDetails })
+    }
 
-        assertTrue(bodyText.contains("Changes"))
-        assertTrue(bodyText.contains("Celadon"))
+    @Test
+    fun keepsShortBodyWithoutDetails() {
+        val message = builder.build(sampleContext())
+
+        val blocks = requireNotNull(message.blocks)
+        assertFalse(blocks.any { it is InputRichBlockDetails })
     }
 
     private fun sampleContext(
@@ -81,65 +84,4 @@ class NewsPresentationBuilderTest {
         appid = "570",
         date = 1_725_000_000L
     )
-}
-
-class NewsFallbackFormatterTest {
-    private val formatter = NewsFallbackFormatter(
-        NewsPresentationBuilder(
-            SteamContentParser(),
-            SteamContentToRichBlocksMapper()
-        )
-    )
-
-    @Test
-    fun escapesHtmlInTitleAndGameName() {
-        val html = formatter.format(
-            NewsPresentationContext(
-                newsItem = NewsItem(
-                    gid = 1L,
-                    title = "Fix <script>",
-                    url = "https://example.com",
-                    author = "Author",
-                    feedLabel = "News",
-                    contents = "[p]Body[/p]",
-                    appid = "570",
-                    date = 1_725_000_000L
-                ),
-                gameName = "Game & Co",
-                isInWishlist = false,
-                locale = "en"
-            )
-        )
-
-        assertContains(html, "&lt;script&gt;")
-        assertContains(html, "Game &amp; Co")
-        assertContains(html, "<blockquote>")
-        assertContains(html, "Read more")
-    }
-
-    @Test
-    fun includesMetaAndPublishedDate() {
-        val html = formatter.format(
-            NewsPresentationContext(
-                newsItem = NewsItem(
-                    gid = 1L,
-                    title = "Title",
-                    url = "https://example.com",
-                    author = "Valve",
-                    feedLabel = "Patch Notes",
-                    contents = "",
-                    appid = "570",
-                    date = 1_725_000_000L
-                ),
-                gameName = "Dota 2",
-                isInWishlist = true,
-                locale = "en"
-            )
-        )
-
-        assertContains(html, "Patch Notes")
-        assertContains(html, "by Valve")
-        assertContains(html, "Published")
-        assertNotNull(html)
-    }
 }

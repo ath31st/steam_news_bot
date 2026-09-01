@@ -1,12 +1,9 @@
 package sidim.doma.application.news.presentation
 
-import sidim.doma.application.news.parser.ParsedSteamContent
 import sidim.doma.application.news.parser.SteamContentParser
 import sidim.doma.application.news.parser.SteamContentToRichBlocksMapper
-import sidim.doma.application.news.parser.plainTextOf
-import sidim.doma.application.news.parser.truncateBlocks
+import sidim.doma.application.news.parser.splitBlocks
 import sidim.doma.common.util.LocalizationUtils.getText
-import sidim.doma.domain.news.entity.NewsItem
 import dev.inmo.tgbotapi.requests.abstracts.InputFile
 import dev.inmo.tgbotapi.types.media.TelegramMediaPhoto
 import dev.inmo.tgbotapi.types.rich.InputRichMessage
@@ -21,9 +18,8 @@ class NewsPresentationBuilder(
 ) {
     fun build(context: NewsPresentationContext): InputRichMessage {
         val parsed = contentParser.parse(context.newsItem.contents)
-        val (bodyBlocks, truncated) = truncateBlocks(parsed.blocks, MAX_BODY_PLAIN_TEXT_LENGTH)
-        val truncatedParsed = ParsedSteamContent(bodyBlocks, parsed.heroImageUrl)
-        val richBodyBlocks = richBlocksMapper.toRichBlocks(truncatedParsed.blocks, parsed.heroImageUrl)
+        val split = splitBlocks(parsed.blocks, MAX_VISIBLE_PLAIN_TEXT_LENGTH)
+        val visibleRich = richBlocksMapper.toRichBlocks(split.visible, parsed.heroImageUrl)
 
         return InputRichMessageBlocks {
             buildHeader(context)
@@ -31,9 +27,15 @@ class NewsPresentationBuilder(
             h3(context.newsItem.title)
             buildMetaLine(context)?.let { paragraph { italic(it) } }
             buildHeroPhoto(parsed.heroImageUrl)?.let { photo(it) }
-            richBodyBlocks.forEach { add(it) }
-            if (truncated) {
-                paragraph { italic(getText("news.truncated", context.locale)) }
+            visibleRich.forEach { add(it) }
+            if (split.hasFolded) {
+                val foldedRich = richBlocksMapper.toRichBlocks(split.folded, heroImageUrl = null)
+                details(
+                    summary = getText("news.expand", context.locale),
+                    isOpen = false
+                ) {
+                    foldedRich.forEach { add(it) }
+                }
             }
             divider()
             footer(formatDate(context.newsItem.date, context.locale))
@@ -44,12 +46,6 @@ class NewsPresentationBuilder(
                 )
             }
         }
-    }
-
-    fun buildPlainTextExcerpt(newsItem: NewsItem): String {
-        val parsed = contentParser.parse(newsItem.contents)
-        val (bodyBlocks, _) = truncateBlocks(parsed.blocks, MAX_BODY_PLAIN_TEXT_LENGTH)
-        return bodyBlocks.joinToString("\n\n") { plainTextOf(it) }.trim()
     }
 
     private fun dev.inmo.tgbotapi.types.rich.InputRichBlocksBuilder.buildHeader(context: NewsPresentationContext) {
@@ -80,6 +76,6 @@ class NewsPresentationBuilder(
     }
 
     companion object {
-        const val MAX_BODY_PLAIN_TEXT_LENGTH = 1200
+        const val MAX_VISIBLE_PLAIN_TEXT_LENGTH = 500
     }
 }
