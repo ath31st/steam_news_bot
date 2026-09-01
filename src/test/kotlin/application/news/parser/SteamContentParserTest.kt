@@ -133,6 +133,46 @@ class SteamContentParserTest {
         assertEquals(1, truncatedBlocks.size)
     }
 
+    @Test
+    fun splitBlocksKeepsShortContentWithoutFold() {
+        val blocks = listOf(
+            SteamContentNode.Paragraph(listOf(SteamContentNode.Text("short")))
+        )
+        val split = splitBlocks(blocks, 500)
+
+        assertFalse(split.hasFolded)
+        assertEquals(1, split.visible.size)
+        assertTrue(split.folded.isEmpty())
+    }
+
+    @Test
+    fun splitBlocksFoldsLongContent() {
+        val blocks = listOf(
+            SteamContentNode.Paragraph(listOf(SteamContentNode.Text("a".repeat(400)))),
+            SteamContentNode.Paragraph(listOf(SteamContentNode.Text("b".repeat(400))))
+        )
+        val split = splitBlocks(blocks, 500)
+
+        assertTrue(split.hasFolded)
+        assertTrue(split.visible.isNotEmpty())
+        assertTrue(split.folded.isNotEmpty())
+        assertTrue(plainTextOf(split.visible.first()).length <= 500)
+    }
+
+    @Test
+    fun splitBlocksSplitsWithinSingleParagraph() {
+        val blocks = listOf(
+            SteamContentNode.Paragraph(listOf(SteamContentNode.Text("word ".repeat(400))))
+        )
+        val split = splitBlocks(blocks, 500)
+
+        assertTrue(split.hasFolded)
+        assertEquals(1, split.visible.size)
+        assertEquals(1, split.folded.size)
+        assertTrue(plainTextOf(split.visible.single()).length <= 500)
+        assertTrue(plainTextOf(split.folded.single()).isNotEmpty())
+    }
+
     private fun <T : SteamContentNode> findFirstNode(blocks: List<SteamContentNode>, type: Class<T>): T? {
         for (block in blocks) {
             if (type.isInstance(block)) {
