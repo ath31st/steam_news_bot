@@ -55,18 +55,21 @@ node.js).<br/>
    Russian, ![](https://flagcdn.com/w20/gb.png)English, ![](https://flagcdn.com/w20/fr.png)
    France, ![](https://flagcdn.com/w20/de.png)Germany, ![](https://flagcdn.com/w20/ua.png)Ukraine
    (updated 25.03.2025).
-3. After the greeting, the bot will prompt the user to register. Registration is very simple, you
-   only need a Steam ID.
+3. `/start` shows a Rich Message welcome with a Steam banner and quick actions to enter
+   Steam ID or open help.
+   ![image info](images/image11.jpg)
+4. `/help` explains how the bot works, commands, Steam ID, wishlist privacy, and blacklist
+   in a structured message.
    ![image info](images/image03.jpg)
-4. When registering, the bot requests the user's application library from the steam, according to
+5. When registering, the bot requests the user's application library from the steam, according to
    the entered Steam ID,
    and then saves the user's data to the database.
-5. The bot has a scheduler (single Quartz instance):
+6. The bot has a scheduler (single Quartz instance):
     - Every 30 minutes: fetch news → retry failed Steam requests → send news to users.
     - Failed game requests are retried up to 5 times with a 1-minute pause between attempts (within the same cycle).
     - Every 24 hours: sync owned games and wishlists for active users.
     - Every 2 hours: update game names that are missing in the database.
-6. In the settings you can find:<br/>
+7. In the settings you can find:<br/>
    ![image info](images/image02.jpg)
    Menu buttons use colored styles (primary, success, danger) for quicker navigation.<br/>
     - _"Set/Update Steam ID"_ - This is necessary for registration.
@@ -77,20 +80,20 @@ node.js).<br/>
     - _"Set \"inactive\" mode"_ - Set inactive mode if you are tired of the news in general.
     - _"Clear black list"_ - Clearing the blacklist.
     - _"Black list"_ - List of blacklisted applications.
-7. You can add the application to the blacklist under the news.<br/>
+8. You can add the application to the blacklist under the news.<br/>
    ![image info](images/image04.jpg)
    News cards are sent as Telegram Rich Messages: Steam markup (BBCode) is parsed into formatted
    text, images, and links. If Rich Message delivery fails, the bot falls back to HTML.
-8. Blacklist management:<br/>
+9. Blacklist management:<br/>
    ![image info](images/image09.jpg)
    ![image info](images/image10.jpg)
-9. Added a wishlist for accounts that have access to game information in steam settings. In order
+10. Added a wishlist for accounts that have access to game information in steam settings. In order
    for the bot to get access to the wishlist, the privacy settings in steam should look like
    this: (updated 21.08.2023)<br/>
    ![image info](images/image06.jpg)![image info](images/image07.jpg)
-10. You can get links to the game by clicking under the news:<br/>
+11. You can get links to the game by clicking under the news:<br/>
     ![image info](images/image05.jpg)
-11. Show statistics for the bot (updated 31.08.2026). `/stats` sends a Rich Message with a
+12. Show statistics for the bot (updated 31.08.2026). `/stats` sends a Rich Message with a
     markdown table: global user, game, and news counters, plus your owned games and wishlist
     counts when you are registered.<br/>
     ![image info](images/image08.jpg)
