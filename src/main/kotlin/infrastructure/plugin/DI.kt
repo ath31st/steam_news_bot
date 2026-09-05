@@ -24,6 +24,8 @@ import sidim.doma.application.scheduler.job.UpdateGamesJob
 import sidim.doma.application.bot.controller.BotController
 import sidim.doma.application.bot.controller.CallbackCommandRegistry
 import sidim.doma.application.bot.controller.CommandHandler
+import sidim.doma.application.bot.presentation.HelpPresentationBuilder
+import sidim.doma.application.bot.presentation.StartPresentationBuilder
 import sidim.doma.application.bot.service.*
 import sidim.doma.application.statistics.dto.CommonStatistics
 import sidim.doma.application.statistics.dto.NewsStatistics
@@ -155,6 +157,8 @@ private val applicationModule = module {
     single { GameSubscriptionService(get(), get(), get(), get(), get()) }
     single { WishlistService(get(), get(), get()) }
     single { StatsPresentationBuilder() }
+    single { StartPresentationBuilder() }
+    single { HelpPresentationBuilder() }
     single {
         StatisticsService(
             get(),
@@ -169,6 +173,8 @@ private val applicationModule = module {
     }
     single<UserInteraction> {
         UserInteractionFacade(
+            get(),
+            get(),
             get(),
             get(),
             get(),

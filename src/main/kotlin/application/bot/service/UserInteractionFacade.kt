@@ -2,6 +2,8 @@ package sidim.doma.application.bot.service
 
 import dev.inmo.tgbotapi.types.ChatId
 import dev.inmo.tgbotapi.types.IdChatIdentifier
+import sidim.doma.application.bot.presentation.HelpPresentationBuilder
+import sidim.doma.application.bot.presentation.StartPresentationBuilder
 import sidim.doma.application.statistics.service.StatisticsService
 import sidim.doma.common.util.LocalizationUtils
 
@@ -11,7 +13,9 @@ class UserInteractionFacade(
     private val wishlistService: WishlistService,
     private val statisticsService: StatisticsService,
     private val messageService: MessageService,
-    private val uiService: BotUiService
+    private val uiService: BotUiService,
+    private val startPresentationBuilder: StartPresentationBuilder,
+    private val helpPresentationBuilder: HelpPresentationBuilder,
 ) : UserInteraction {
     override suspend fun handleUnknownCommand(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(
@@ -20,10 +24,17 @@ class UserInteractionFacade(
         )
 
     override suspend fun handleStart(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(chatId, LocalizationUtils.getText("message.start", locale))
+        messageService.sendRichMessage(
+            chatId,
+            startPresentationBuilder.build(locale),
+            replyMarkup = uiService.startMenuKeyboard(locale)
+        )
 
     override suspend fun handleHelp(chatId: IdChatIdentifier, locale: String) =
-        messageService.sendTextMessage(chatId, LocalizationUtils.getText("message.help", locale))
+        messageService.sendRichMessage(
+            chatId,
+            helpPresentationBuilder.build(locale)
+        )
 
     override suspend fun handleSettings(chatId: IdChatIdentifier, locale: String) =
         messageService.sendTextMessage(
