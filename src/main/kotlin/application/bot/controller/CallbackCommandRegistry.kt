@@ -16,7 +16,8 @@ class CallbackCommandRegistry(
         "/set_active_mode" to SetActiveModeCommand(interaction),
         "/set_inactive_mode" to SetInactiveModeCommand(interaction),
         "/check_wishlist" to CheckWishlistCommand(interaction),
-        "/clear_black_list" to ClearBlackListCommand(interaction)
+        "/clear_black_list" to ClearBlackListCommand(interaction),
+        "/help" to HelpCommand(interaction),
     )
 
     private val prefixCommands: Map<String, CallbackCommand> = mapOf(

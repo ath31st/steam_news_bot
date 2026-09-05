@@ -10,6 +10,27 @@ import sidim.doma.common.util.LocalizationUtils
 import sidim.doma.domain.game.entity.Game
 
 class BotUiService {
+    fun startMenuKeyboard(locale: String): InlineKeyboardMarkup = inlineKeyboard {
+        row {
+            menuButton(
+                emoji = "🔑",
+                labelKey = "button.set_upd_steam_id",
+                locale = locale,
+                data = "/set_steam_id",
+                style = KeyboardButtonStyle.Primary
+            )
+        }
+        row {
+            menuButton(
+                emoji = "❓",
+                labelKey = "button.help_steam_id",
+                locale = locale,
+                data = "/help",
+                style = KeyboardButtonStyle.Primary
+            )
+        }
+    }
+
     fun mainMenuKeyboard(locale: String): InlineKeyboardMarkup = inlineKeyboard {
         row {
             menuButton(
